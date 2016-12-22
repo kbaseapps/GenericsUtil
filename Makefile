@@ -22,6 +22,11 @@ default: compile
 
 all: compile build build-startup-script build-executable-script build-test-script
 
+compile-java-typespec-data:
+	gen_java_types -S KBaseGenerics.spec -s lib/src/
+	rm lib/src/us/kbase/kbasegenerics/KBaseGenericsClient.java
+	rm lib/src/us/kbase/kbasegenerics/KBaseGenericsServer.java
+
 compile:
 	kb-sdk compile $(SPEC_FILE) \
 		--out $(LIB_DIR) \
