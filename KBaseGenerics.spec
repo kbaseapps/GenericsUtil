@@ -1,6 +1,6 @@
 module KBaseGenerics {
     typedef int bool;
-
+  
     /*
     Generic reference to another KBase WS object or subobject.
     Note that we need to devise a good format for subobject
