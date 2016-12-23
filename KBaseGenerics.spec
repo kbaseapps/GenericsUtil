@@ -35,9 +35,10 @@ module KBaseGenerics {
     float - float_data
     string - string_data
     object - object_ref_data (NOTE: subobject refs may need to be stored as 2 strings?
-			      We may also want to store the type of object that the ref maps to, which
-			      is currently stored in the ontology; e.g., KBaseGenomeAnnotations.Taxon)
+      We may also want to store the type of object that the ref maps to, which
+      is currently stored in the ontology; e.g., KBaseGenomeAnnotations.Taxon)
     ontology - ontology_ref_data (NOTE: could also store in same string as object)
+    @optional object_ref_data ontology_ref_data int_data float_data string_data
     */
     typedef structure {
         data_type primitive_type;
@@ -53,6 +54,7 @@ module KBaseGenerics {
     metadata describing it.  This is just like DataValue, but with an array
     of data.  n is the length of the list being used.  Other lists are null.
     The list being used may include some null values.
+    @optional object_ref_data ontology_ref_data int_data float_data string_data
     */
     typedef structure {
         data_type primitive_type;
@@ -66,6 +68,7 @@ module KBaseGenerics {
     
     /*
     A single piece of metadata (i.e., metadatum)
+    @optional measurement units context
     */
     typedef structure{
         string original_description; 
@@ -76,6 +79,7 @@ module KBaseGenerics {
 
     /*
     One piece of metadata describing the entire matrix.
+    @optional value
     */
     typedef structure {
         MetadataItem metadata;

@@ -73,7 +73,8 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Imports a DataMatrix object from CSV file
+       Imports a DataMatrix object from CSV file.
+       Needs error checking!
     */
     public static ImportDataMatrixResult importDataMatrixCSV(String wsURL,
                                                              String shockURL,
@@ -93,16 +94,74 @@ public class GenericsUtilImpl {
         String buffer = null;
         int inDimension = 0;
         int nDimensions = 0;
+        List<Long> dLength = null;
+        List<List<DimensionMetadataItem>> dMeta = null;
+        DimensionMetadataItem curDMI = null;
         while ((buffer = infile.readLine()) != null) {
             String[] f = buffer.split(",");
+            if ((f==null) || (f.length < 1))
+                continue;
             if (f[0].equals("name")) {
                 dm.setName(f[1]);
             }
             else if (f[0].equals("description")) {
                 dm.setDescription(f[1]);
             }
-            else if (f[1].equals("values")) {
-                dm.setDescription(f[1]);
+            else if (f[0].equals("values")) {
+                String original = f[1];
+                for (int i=2; i<f.length; i++)
+                    original += ", "+f[i];
+                MatrixMetadataItem valuesMeta = new MatrixMetadataItem()
+                    .withMetadata(new MetadataItem().withOriginalDescription(original));
+                dm.setValuesMetadata(valuesMeta);
+            }
+            else if (f[0].equals("meta")) {
+                String original = f[1];
+                for (int i=2; i<f.length; i++)
+                    original += ", "+f[i];
+                MatrixMetadataItem matrixMetaItem = new MatrixMetadataItem()
+                    .withMetadata(new MetadataItem().withOriginalDescription(original));
+                List<MatrixMetadataItem> matrixMetadata = dm.getMatrixMetadata();
+                if (matrixMetadata==null)
+                    matrixMetadata = new ArrayList<MatrixMetadataItem>();
+                matrixMetadata.add(matrixMetaItem);
+                dm.setMatrixMetadata(matrixMetadata);
+            }
+            else if (f[0].equals("size")) {
+                nDimensions = f.length - 1;
+                System.out.println("dimensions = "+nDimensions);
+                dm.setNDimensions(new Long((long)nDimensions));
+                dLength = new ArrayList<Long>(nDimensions);
+                dMeta = new ArrayList<List<DimensionMetadataItem>>(nDimensions);
+                for (int i=0; i<nDimensions; i++) {
+                    System.out.println("dimensionLength = "+f[i+1]);
+                    dLength.set(i,new Long(StringUtil.atol(f[i+1])));
+                    dMeta.set(i,new ArrayList<DimensionMetadataItem>());
+                }
+                dm.setDimensionLength(dLength);
+                dm.setDimensionMetadata(dMeta);
+            }
+            else if (f[0].equals("dmeta")) {
+                inDimension = StringUtil.atoi(f[1]);
+                String original = f[2];
+                for (int i=3; i<f.length; i++)
+                    original += ", "+f[i];
+                List<DimensionMetadataItem> dMetaI = dMeta.get(inDimension-1);
+                curDMI = new DimensionMetadataItem().
+                    withMetadata(new MetadataItem().withOriginalDescription(original));
+                dMetaI.add(curDMI);
+            }
+            else if (f[0].equals("data")) {
+                inDimension = nDimensions+1;
+            }
+            else {
+                // must be numeric value greater than 0
+                if (inDimension <= nDimensions) {
+                    // parse curDMI values
+                }
+                else {
+                    // parse data values
+                }
             }
         }
         infile.close();

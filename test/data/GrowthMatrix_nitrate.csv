@@ -7,7 +7,7 @@ meta, wavelength, 590, angstrom
 meta, date, 2014-03-11
 meta, time, 12:30
 meta, strain, N2E2
-dimensions, 2
+size, 8, 10
 dmeta, 1, time series, time since inoculation, hour
 1, 0
 2, 6
