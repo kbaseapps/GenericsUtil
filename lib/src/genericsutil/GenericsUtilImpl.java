@@ -68,6 +68,10 @@ public class GenericsUtilImpl {
         return new String[] { ri.getName(), ri.getRef() };
     }
 
+    private static String getRefFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
+        return info.getE7() + "/" + info.getE1() + "/" + info.getE5();
+    }
+
     /**
        Imports a DataMatrix object from CSV file
     */
@@ -78,7 +82,40 @@ public class GenericsUtilImpl {
                                                              ImportDataMatrixCSV params) throws Exception {
         WorkspaceClient wc = createWsClient(wsURL,token);
 
-        String dmRef = null;
+        // currently only supports local files;
+        // to work in UI, needs to support shock files also
+        String filePath = params.getFile().getPath();
+
+        // read CSV file into matrix object
+        DataMatrix dm = new DataMatrix().withOntologiesMapped(new Long(0L));
+            
+        BufferedReader infile = IO.openReader(filePath);
+        String buffer = null;
+        int inDimension = 0;
+        int nDimensions = 0;
+        while ((buffer = infile.readLine()) != null) {
+            String[] f = buffer.split(",");
+            if (f[0].equals("name")) {
+                dm.setName(f[1]);
+            }
+            else if (f[0].equals("description")) {
+                dm.setDescription(f[1]);
+            }
+            else if (f[1].equals("values")) {
+                dm.setDescription(f[1]);
+            }
+        }
+        infile.close();
+
+        // save it
+        String dmRef =
+            getRefFromObjectInfo(wc.saveObjects(new SaveObjectsParams()
+                                                .withWorkspace(params.getWorkspaceName())
+                                                .withObjects(Arrays.asList(new ObjectSaveData()
+                                                                           .withType("KBaseGenerics.DataMatrix")
+                                                                           .withName(params.getMatrixName())
+                                                                           .withData(new UObject(dm))))).get(0));
+        
         
         ImportDataMatrixResult rv = new ImportDataMatrixResult()
             .withMatrixRef(dmRef);

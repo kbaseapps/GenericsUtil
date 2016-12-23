@@ -84,9 +84,9 @@ public class GenericsUtilServerTest {
     @Test
     public void testImportCSV() throws Exception {
         ImportDataMatrixCSV params = new ImportDataMatrixCSV()
-            .withFile(new genericsutil.File().withPath("data/GrowthMatrix_nitrate.csv"))
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/GrowthMatrix_nitrate.csv"))
             .withMatrixName("nitrate_growth")
-            .withWorkspaceName(wsName);
+            .withWorkspaceName("jmc:1480966800200");
         ImportDataMatrixResult rv = impl.importDataMatrixCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import CSV test finished");
