@@ -1,5 +1,7 @@
 package genericsutil.test;
 
+import genericsutil.*;
+
 import java.io.File;
 import java.net.URL;
 import java.util.Arrays;
@@ -26,6 +28,8 @@ import us.kbase.workspace.ProvenanceAction;
 import us.kbase.workspace.SaveObjectsParams;
 import us.kbase.workspace.WorkspaceClient;
 import us.kbase.workspace.WorkspaceIdentity;
+
+import us.kbase.common.service.RpcContext;
 
 public class GenericsUtilServerTest {
     private static AuthToken token = null;
@@ -80,10 +84,10 @@ public class GenericsUtilServerTest {
     @Test
     public void testImportCSV() throws Exception {
         ImportDataMatrixCSV params = new ImportDataMatrixCSV()
-            .withFile(new File().withPath("data/GrowthMatrix_nitrate.csv"))
+            .withFile(new genericsutil.File().withPath("data/GrowthMatrix_nitrate.csv"))
             .withMatrixName("nitrate_growth")
             .withWorkspaceName(wsName);
-        ImportDataMatrixCSVResult rv = impl.importDataMatrixCsv(params, token, (RpcContext)null);
+        ImportDataMatrixResult rv = impl.importDataMatrixCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import CSV test finished");
     }

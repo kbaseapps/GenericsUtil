@@ -14,7 +14,6 @@ import us.kbase.workspace.*;
 
 import us.kbase.common.utils.CorrectProcess;
 import us.kbase.workspace.ObjectData;
-import us.kbase.workspace.ObjectIdentity;
 
 import kbasereport.*;
 import us.kbase.kbasegenerics.*;
@@ -48,16 +47,6 @@ public class GenericsUtilImpl {
     }
 
     /**
-       look up the type of an object
-    */
-    public static String lookupWsType(WorkspaceClient wc,
-                                      String ref) throws Exception {
-
-        return wc.getObjectInfoNew(new GetObjectInfoNewParams()
-                                   .withObjects(Arrays.asList(new ObjectIdentity().withRef(ref)))).get(0).getE3();
-    }
-
-    /**
        Make and save Report object, returning its name and reference
     */
     public static String[] makeReport(AuthToken token,
@@ -86,7 +75,7 @@ public class GenericsUtilImpl {
                                                              String shockURL,
                                                              String serviceWizardURL,
                                                              AuthToken token,
-                                                             ImportDataMatrixCSV params) {
+                                                             ImportDataMatrixCSV params) throws Exception {
         WorkspaceClient wc = createWsClient(wsURL,token);
 
         String dmRef = null;
