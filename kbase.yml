@@ -2,7 +2,7 @@ module-name:
     GenericsUtil
 
 module-description:
-    A KBase module
+    Utilities to import and manipulate KBaseGenerics objects
 
 service-language:
     java
@@ -11,5 +11,5 @@ module-version:
     0.0.1
 
 owners:
-    [jmc]
+    [jmc,psnovichkov]
 

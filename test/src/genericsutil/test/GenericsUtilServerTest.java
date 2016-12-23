@@ -78,16 +78,13 @@ public class GenericsUtilServerTest {
     }
     
     @Test
-    public void testYourMethod() throws Exception {
-        // Prepare test objects in workspace if needed using 
-        // wsClient.saveObjects(new SaveObjectsParams().withWorkspace(getWsName()).withObjects(Arrays.asList(
-        //         new ObjectSaveData().withType("SomeModule.SomeType").withName(objName).withData(new UObject(obj)))));
-        //
-        // Run your method by
-        // YourRetType ret = impl.yourMethod(params, token);
-        //
-        // Check returned data with
-        // Assert.assertEquals(..., ret.getSomeProperty());
-        // ... or other JUnit methods.
+    public void testImportCSV() throws Exception {
+        ImportDataMatrixCSV params = new ImportDataMatrixCSV()
+            .withFile(new File().withPath("data/GrowthMatrix_nitrate.csv"))
+            .withMatrixName("nitrate_growth")
+            .withWorkspaceName(wsName);
+        ImportDataMatrixCSVResult rv = impl.importDataMatrixCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import CSV test finished");
     }
 }

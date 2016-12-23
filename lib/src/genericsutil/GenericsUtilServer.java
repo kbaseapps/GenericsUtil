@@ -25,11 +25,21 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final String gitCommitHash = "b81e47fa3f16bb157865c16f5710c5095b29fc64";
 
     //BEGIN_CLASS_HEADER
+    private final String wsUrl;
+    private final String shockUrl;
+    private final String serviceWizardUrl;
     //END_CLASS_HEADER
 
     public GenericsUtilServer() throws Exception {
         super("GenericsUtil");
         //BEGIN_CONSTRUCTOR
+        wsUrl = config.get("workspace-url");
+        shockUrl = config.get("shock-url");
+        String x = config.get("service-wizard-url");
+        if ((x==null) || (!x.startsWith("http")))
+            serviceWizardUrl = "https://ci.kbase.us/services/service_wizard";
+        else
+            serviceWizardUrl = x;
         //END_CONSTRUCTOR
     }
 
@@ -44,6 +54,11 @@ public class GenericsUtilServer extends JsonServerServlet {
     public ImportDataMatrixResult importDataMatrixCsv(ImportDataMatrixCSV params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
         ImportDataMatrixResult returnVal = null;
         //BEGIN import_data_matrix_csv
+        returnVal = GenericsUtilImpl.importDataMatrixCSV(wsUrl,
+                                                         shockUrl,
+                                                         serviceWizardUrl,
+                                                         authPart,
+                                                         params);
         //END import_data_matrix_csv
         return returnVal;
     }

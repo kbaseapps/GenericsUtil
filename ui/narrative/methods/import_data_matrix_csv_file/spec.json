@@ -1,0 +1,59 @@
+{
+  "ver" : "",
+  "authors" : [ ],
+  "contact" : "help@kbase.us",
+  "visble" : true,
+  "categories" : [ "importers" ],
+  "widgets" : {
+    "input" : "kbaseNarrativeMethodInput"
+  },
+  "parameters" : [ 
+  {
+      "id" : "csvFile",
+      "optional" : false,
+      "advanced" : false,
+      "allow_multiple" : false,
+      "default_values" : [ "" ],
+      "field_type" : "file",
+      "text_options" : {
+	  "valid_ws_types" : [ ]
+      }
+  }, 
+  {
+      "id" : "outputObject",
+      "optional" : true,
+      "advanced" : false,
+      "allow_multiple" : false,
+      "default_values" : [ "" ],
+      "field_type" : "text",
+      "text_options" : {
+	  "valid_ws_types" : [ "KBaseGenerics.DataMatrix" ],
+	  "is_output_name" : true
+      }
+  }
+  ],
+  "behavior" : {
+    "service-mapping" : {
+      "url" : "",
+      "name" : "GenericsUtil",
+      "method" : "import_data_matrix_csv",
+      "input_mapping" : [
+        {
+          "narrative_system_variable": "workspace",
+          "target_property": "workspace_name"
+        },
+        {
+          "input_parameter": "outputObject",
+          "target_property": "matrix_name"
+        },
+        {
+          "input_parameter": "csvFile",
+          "target_property": "file/shock_id"
+        }
+      ],
+      "output_mapping" : [
+      ]
+    }
+  },
+  "job_id_output_field": "docker"
+}

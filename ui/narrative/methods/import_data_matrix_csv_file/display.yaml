@@ -1,0 +1,52 @@
+#
+# Define basic display information
+#
+name     : UPLOAD CSV FILE
+subtitle : none
+tooltip  : |
+    Import a DataMatrix in CSV format.
+
+screenshots :
+    []
+
+#
+# Define the set of other narrative methods that should be suggested to the user.
+#
+suggestions :
+    apps:
+        related :
+            []
+        next :
+            []
+    methods:
+        related :
+            []
+        next :
+            []
+
+
+#
+# Configure the display and description of the parameters
+#
+parameters :
+    csvFile :
+        ui-name : |
+            CSV file
+        short-hint : |
+            File with data matrix in CSV format.
+        long-hint  : |
+            File with data matrix in CSV format.
+
+    outputObject :
+        ui-name : |
+            Name of the data matrix
+        short-hint : |
+            Provide a name for the data matrix you are uploading.
+        long-hint  : |
+            Provide a name for the data matrix you are uploading.
+
+
+description : none
+
+
+technical-description : none
