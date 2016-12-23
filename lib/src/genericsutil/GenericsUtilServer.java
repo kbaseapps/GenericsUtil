@@ -56,7 +56,6 @@ public class GenericsUtilServer extends JsonServerServlet {
         //BEGIN import_data_matrix_csv
         returnVal = GenericsUtilImpl.importDataMatrixCSV(wsUrl,
                                                          shockUrl,
-                                                         serviceWizardUrl,
                                                          authPart,
                                                          params);
         //END import_data_matrix_csv

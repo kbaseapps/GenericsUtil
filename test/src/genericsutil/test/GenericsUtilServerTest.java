@@ -41,7 +41,8 @@ public class GenericsUtilServerTest {
     @BeforeClass
     public static void init() throws Exception {
         //TODO AUTH make configurable?
-        token = AuthService.validateToken(System.getenv("KB_AUTH_TOKEN"));
+        // token = AuthService.validateToken(System.getenv("KB_AUTH_TOKEN"));
+        token = new AuthToken(System.getenv("KB_AUTH_TOKEN"));
         String configFilePath = System.getenv("KB_DEPLOYMENT_CONFIG");
         File deploy = new File(configFilePath);
         Ini ini = new Ini(deploy);
