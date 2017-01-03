@@ -21,12 +21,12 @@ module GenericsUtil {
         string workspace_name;
 
         usermeta metadata;
-    } ImportDataMatrixCSV;
+    } ImportNDArrayCSV;
 
     typedef structure {
         string matrix_ref;
-    } ImportDataMatrixResult;
+    } ImportNDArrayResult;
 
-    funcdef import_data_matrix_csv(ImportDataMatrixCSV params)
-            returns (ImportDataMatrixResult result) authentication required;
+    funcdef import_ndarray_csv(ImportNDArrayCSV params)
+      returns (ImportNDArrayResult result) authentication required;
 };

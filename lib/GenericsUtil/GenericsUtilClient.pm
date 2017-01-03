@@ -109,9 +109,9 @@ sub new
 
 
 
-=head2 import_data_matrix_csv
+=head2 import_ndarray_csv
 
-  $result = $obj->import_data_matrix_csv($params)
+  $result = $obj->import_ndarray_csv($params)
 
 =over 4
 
@@ -120,9 +120,9 @@ sub new
 =begin html
 
 <pre>
-$params is a GenericsUtil.ImportDataMatrixCSV
-$result is a GenericsUtil.ImportDataMatrixResult
-ImportDataMatrixCSV is a reference to a hash where the following keys are defined:
+$params is a GenericsUtil.ImportNDArrayCSV
+$result is a GenericsUtil.ImportNDArrayResult
+ImportNDArrayCSV is a reference to a hash where the following keys are defined:
 	file has a value which is a GenericsUtil.File
 	matrix_name has a value which is a string
 	workspace_name has a value which is a string
@@ -131,7 +131,7 @@ File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
 usermeta is a reference to a hash where the key is a string and the value is a string
-ImportDataMatrixResult is a reference to a hash where the following keys are defined:
+ImportNDArrayResult is a reference to a hash where the following keys are defined:
 	matrix_ref has a value which is a string
 
 </pre>
@@ -140,9 +140,9 @@ ImportDataMatrixResult is a reference to a hash where the following keys are def
 
 =begin text
 
-$params is a GenericsUtil.ImportDataMatrixCSV
-$result is a GenericsUtil.ImportDataMatrixResult
-ImportDataMatrixCSV is a reference to a hash where the following keys are defined:
+$params is a GenericsUtil.ImportNDArrayCSV
+$result is a GenericsUtil.ImportNDArrayResult
+ImportNDArrayCSV is a reference to a hash where the following keys are defined:
 	file has a value which is a GenericsUtil.File
 	matrix_name has a value which is a string
 	workspace_name has a value which is a string
@@ -151,7 +151,7 @@ File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
 usermeta is a reference to a hash where the key is a string and the value is a string
-ImportDataMatrixResult is a reference to a hash where the following keys are defined:
+ImportNDArrayResult is a reference to a hash where the following keys are defined:
 	matrix_ref has a value which is a string
 
 
@@ -165,7 +165,7 @@ ImportDataMatrixResult is a reference to a hash where the following keys are def
 
 =cut
 
- sub import_data_matrix_csv
+ sub import_ndarray_csv
 {
     my($self, @args) = @_;
 
@@ -174,7 +174,7 @@ ImportDataMatrixResult is a reference to a hash where the following keys are def
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function import_data_matrix_csv (received $n, expecting 1)");
+							       "Invalid argument count for function import_ndarray_csv (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -182,31 +182,31 @@ ImportDataMatrixResult is a reference to a hash where the following keys are def
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to import_data_matrix_csv:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to import_ndarray_csv:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'import_data_matrix_csv');
+								   method_name => 'import_ndarray_csv');
 	}
     }
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "GenericsUtil.import_data_matrix_csv",
+	    method => "GenericsUtil.import_ndarray_csv",
 	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'import_data_matrix_csv',
+					       method_name => 'import_ndarray_csv',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method import_data_matrix_csv",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method import_ndarray_csv",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'import_data_matrix_csv',
+					    method_name => 'import_ndarray_csv',
 				       );
     }
 }
@@ -254,16 +254,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'import_data_matrix_csv',
+                method_name => 'import_ndarray_csv',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method import_data_matrix_csv",
+            error => "Error invoking method import_ndarray_csv",
             status_line => $self->{client}->status_line,
-            method_name => 'import_data_matrix_csv',
+            method_name => 'import_ndarray_csv',
         );
     }
 }
@@ -358,7 +358,7 @@ a reference to a hash where the key is a string and the value is a string
 
 
 
-=head2 ImportDataMatrixCSV
+=head2 ImportNDArrayCSV
 
 =over 4
 
@@ -400,7 +400,7 @@ metadata has a value which is a GenericsUtil.usermeta
 
 
 
-=head2 ImportDataMatrixResult
+=head2 ImportNDArrayResult
 
 =over 4
 

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportDataMatrixCSV</p>
+ * <p>Original spec-file type: ImportNDArrayCSV</p>
  * <pre>
  * matrix_name - name of object
  * workspace_name - workspace it gets saved to
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "workspace_name",
     "metadata"
 })
-public class ImportDataMatrixCSV {
+public class ImportNDArrayCSV {
 
     /**
      * <p>Original spec-file type: File</p>
@@ -64,7 +64,7 @@ public class ImportDataMatrixCSV {
         this.file = file;
     }
 
-    public ImportDataMatrixCSV withFile(File file) {
+    public ImportNDArrayCSV withFile(File file) {
         this.file = file;
         return this;
     }
@@ -79,7 +79,7 @@ public class ImportDataMatrixCSV {
         this.matrixName = matrixName;
     }
 
-    public ImportDataMatrixCSV withMatrixName(java.lang.String matrixName) {
+    public ImportNDArrayCSV withMatrixName(java.lang.String matrixName) {
         this.matrixName = matrixName;
         return this;
     }
@@ -94,7 +94,7 @@ public class ImportDataMatrixCSV {
         this.workspaceName = workspaceName;
     }
 
-    public ImportDataMatrixCSV withWorkspaceName(java.lang.String workspaceName) {
+    public ImportNDArrayCSV withWorkspaceName(java.lang.String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
@@ -109,7 +109,7 @@ public class ImportDataMatrixCSV {
         this.metadata = metadata;
     }
 
-    public ImportDataMatrixCSV withMetadata(Map<String, String> metadata) {
+    public ImportNDArrayCSV withMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -126,7 +126,7 @@ public class ImportDataMatrixCSV {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((("ImportDataMatrixCSV"+" [file=")+ file)+", matrixName=")+ matrixName)+", workspaceName=")+ workspaceName)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("ImportNDArrayCSV"+" [file=")+ file)+", matrixName=")+ matrixName)+", workspaceName=")+ workspaceName)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

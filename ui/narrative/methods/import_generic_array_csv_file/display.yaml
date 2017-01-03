@@ -4,7 +4,7 @@
 name     : UPLOAD CSV FILE
 subtitle : none
 tooltip  : |
-    Import a DataMatrix in CSV format.
+    Import a N-Dimensional Array in CSV format.
 
 screenshots :
     []
@@ -33,17 +33,17 @@ parameters :
         ui-name : |
             CSV file
         short-hint : |
-            File with data matrix in CSV format.
+            File with n-dimensional array in CSV format.
         long-hint  : |
-            File with data matrix in CSV format.
+            File with n-dimensional array in CSV format.
 
     outputObject :
         ui-name : |
-            Name of the data matrix
+            Name of the n-dimensional array
         short-hint : |
-            Provide a name for the data matrix you are uploading.
+            Provide a name for the n-dimensional array you are uploading.
         long-hint  : |
-            Provide a name for the data matrix you are uploading.
+            Provide a name for the n-dimensional array you are uploading.
 
 
 description : none

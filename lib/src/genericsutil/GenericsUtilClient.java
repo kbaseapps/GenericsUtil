@@ -163,19 +163,19 @@ public class GenericsUtilClient {
     }
 
     /**
-     * <p>Original spec-file function name: import_data_matrix_csv</p>
+     * <p>Original spec-file function name: import_ndarray_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportDataMatrixCSV ImportDataMatrixCSV}
-     * @return   parameter "result" of type {@link genericsutil.ImportDataMatrixResult ImportDataMatrixResult}
+     * @param   params   instance of type {@link genericsutil.ImportNDArrayCSV ImportNDArrayCSV}
+     * @return   parameter "result" of type {@link genericsutil.ImportNDArrayResult ImportNDArrayResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public ImportDataMatrixResult importDataMatrixCsv(ImportDataMatrixCSV params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ImportNDArrayResult importNdarrayCsv(ImportNDArrayCSV params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
-        TypeReference<List<ImportDataMatrixResult>> retType = new TypeReference<List<ImportDataMatrixResult>>() {};
-        List<ImportDataMatrixResult> res = caller.jsonrpcCall("GenericsUtil.import_data_matrix_csv", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        TypeReference<List<ImportNDArrayResult>> retType = new TypeReference<List<ImportNDArrayResult>>() {};
+        List<ImportNDArrayResult> res = caller.jsonrpcCall("GenericsUtil.import_ndarray_csv", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

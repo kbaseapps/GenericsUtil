@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportDataMatrixResult</p>
+ * <p>Original spec-file type: ImportNDArrayResult</p>
  * 
  * 
  */
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "matrix_ref"
 })
-public class ImportDataMatrixResult {
+public class ImportNDArrayResult {
 
     @JsonProperty("matrix_ref")
     private String matrixRef;
@@ -37,7 +37,7 @@ public class ImportDataMatrixResult {
         this.matrixRef = matrixRef;
     }
 
-    public ImportDataMatrixResult withMatrixRef(String matrixRef) {
+    public ImportNDArrayResult withMatrixRef(String matrixRef) {
         this.matrixRef = matrixRef;
         return this;
     }
@@ -54,7 +54,7 @@ public class ImportDataMatrixResult {
 
     @Override
     public String toString() {
-        return ((((("ImportDataMatrixResult"+" [matrixRef=")+ matrixRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ImportNDArrayResult"+" [matrixRef=")+ matrixRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -27,7 +27,7 @@
       "default_values" : [ "" ],
       "field_type" : "text",
       "text_options" : {
-	  "valid_ws_types" : [ "KBaseGenerics.DataMatrix" ],
+	  "valid_ws_types" : [ "KBaseGenerics.NDArray" ],
 	  "is_output_name" : true
       }
   }
@@ -36,7 +36,7 @@
     "service-mapping" : {
       "url" : "",
       "name" : "GenericsUtil",
-      "method" : "import_data_matrix_csv",
+      "method" : "import_ndarray_csv",
       "input_mapping" : [
         {
           "narrative_system_variable": "workspace",

@@ -33,20 +33,20 @@ class GenericsUtil(object):
             trust_all_ssl_certificates=trust_all_ssl_certificates,
             auth_svc=auth_svc)
 
-    def import_data_matrix_csv(self, params, context=None):
+    def import_ndarray_csv(self, params, context=None):
         """
-        :param params: instance of type "ImportDataMatrixCSV" (matrix_name -
+        :param params: instance of type "ImportNDArrayCSV" (matrix_name -
            name of object workspace_name - workspace it gets saved to) ->
            structure: parameter "file" of type "File" -> structure: parameter
            "path" of String, parameter "shock_id" of String, parameter
            "matrix_name" of String, parameter "workspace_name" of String,
            parameter "metadata" of type "usermeta" -> mapping from String to
            String
-        :returns: instance of type "ImportDataMatrixResult" -> structure:
+        :returns: instance of type "ImportNDArrayResult" -> structure:
            parameter "matrix_ref" of String
         """
         return self._client.call_method(
-            'GenericsUtil.import_data_matrix_csv',
+            'GenericsUtil.import_ndarray_csv',
             [params], self._service_ver, context)
 
     def status(self, context=None):
