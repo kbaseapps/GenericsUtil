@@ -176,7 +176,7 @@ public class GenericsUtilImpl {
         return rv;
     }
     
-    public static ContextItem makeContextItem(String description) throws Exception {
+    public static ContextItem makeCI(String description) throws Exception {
         String[] f = description.split(",");
         ContextItem rv = new ContextItem()
             .withProperty(makeTerm(f[0]))
@@ -189,6 +189,19 @@ public class GenericsUtilImpl {
         return rv;
     }
 
+    public static DimensionContextItem makeDCI(String description) throws Exception {
+        String[] f = description.split(",");
+        DimensionContextItem rv = new DimensionContextItem();
+        if (f.length > 1) {
+            rv.setProperty(makeTerm(joinString(f,0,f.length-1)));
+            rv.setUnits(makeTerm(f[f.length-1]));
+        }
+        else {
+            rv.setProperty(makeTerm(f[0]));
+        }
+        return rv;
+    }
+    
     /**
        Imports a NDArray object from CSV file.
        Needs a lot more format checking!
@@ -252,7 +265,7 @@ public class GenericsUtilImpl {
                 nda.setValueUnits(makeTerm(f[2]));
             }
             else if (f[0].equals("meta")) {
-                ContextItem ci = makeContextItem(joinString(f,1));
+                ContextItem ci = makeCI(joinString(f,1));
                 List<ContextItem> cis = nda.getArrayContext();
                 if (cis==null)
                     cis = new ArrayList<ContextItem>();
@@ -274,18 +287,16 @@ public class GenericsUtilImpl {
                 nda.setDimensionsContext(dContexts);
             }
             else if (f[0].equals("dmeta")) {
-                if (f.length < 4)
-                    throw new Exception("Bad format for dmeta; need at least 4 columns; got: "+buffer);
+                if (f.length < 3)
+                    throw new Exception("Bad format for dmeta; need at least 3 columns; got: "+buffer);
                 inDimension = StringUtil.atoi(f[1]);
                 DimensionContext dc = dContexts.get(inDimension-1);
                 long dLength = dLengths[inDimension-1].longValue();
                 curValues = new Values()
                     .withScalarType("string")
                     .withStringValues(Arrays.asList(new String[(int)dLength]));
-                DimensionContextItem dci = new DimensionContextItem()
-                    .withProperty(makeTerm(joinString(f,2,f.length-2)))
-                    .withUnits(makeTerm(f[f.length-1]))
-                    .withValues(curValues);
+                DimensionContextItem dci = makeDCI(joinString(f,2));
+                dci.setValues(curValues);
                 List<DimensionContextItem> dcis = dc.getItems();
                 if (dcis==null)
                     dcis = new ArrayList<DimensionContextItem>();
@@ -307,14 +318,16 @@ public class GenericsUtilImpl {
             else {
                 // must be numeric value greater than 0
                 long index = StringUtil.atol(f[0]);
+                String val = null;
                 if (index <= 0L)
                     throw new Exception("Bad format; was expecting comma-separated index (or indices) starting with 1; got: "+buffer);
                 if ((inDimension > dLengths.length) &&
                     (dLengths.length > 1)) {
                     // multidimensional data
-                    if (f.length != dLengths.length+1) {
+                    if (f.length < dLengths.length+1) {
                         throw new Exception("Bad format; was expecting "+(dLengths.length+1)+" columns instead of "+(f.length)+": "+buffer);
                     }
+                    val = joinString(f,dLengths.length);
                     // get all the dimensions
                     long[] indices = new long[dLengths.length];
                     indices[0] = index;
@@ -333,9 +346,11 @@ public class GenericsUtilImpl {
                     }
                 }
                 else {
-                    if (f.length != 2) {
-                        throw new Exception("Bad format; was expecting "+(dLengths.length+1)+" columns instead of "+(f.length)+": "+buffer);
+                    if (f.length < 2) {
+                        throw new Exception("Bad format; was expecting 2 columns instead of "+(f.length)+": "+buffer);
                     }
+                    val = joinString(f,1);
+
                     // convert from 1-based to 0-based indexing
                     index--;
                 }
@@ -343,7 +358,7 @@ public class GenericsUtilImpl {
                 // store the value in the string data array
                 // see not above about converting to the correct
                 // type at mapping time
-                curValues.getStringValues().set((int)index,f[f.length-1]);
+                curValues.getStringValues().set((int)index,val);
             }
         }
         infile.close();

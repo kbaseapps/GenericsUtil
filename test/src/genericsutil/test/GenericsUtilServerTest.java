@@ -86,6 +86,7 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
+    @Test
     public void testImportGrowth() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/GrowthMatrix_nitrate.csv"))
@@ -102,7 +103,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testImportFitness() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/Fitness_jw710.csv"))
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_jw710.csv"))
             .withMatrixName("fitness_jw710")
             .withWorkspaceName("jmc:1480966800200");
         ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
@@ -116,7 +117,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testImportFitness2() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/Fitness_multi.csv"))
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_multi.csv"))
             .withMatrixName("fitness_multiple_dvh_strains")
             .withWorkspaceName("jmc:1480966800200");
         ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
