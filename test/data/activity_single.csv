@@ -1,0 +1,16 @@
+name, FDH_specific_activity
+description, FDH specific activity in multiple media
+type, enzyme activity data
+values, specific activity, micromol/min/mg protein
+meta, strain, Desulfovibrio vulgaris Hildenborough
+size, 4
+dmeta, 1, media
+1, lactate-sulfate + W
+2, lactate-sulfate + W + Mo
+3, lactate-sulfate + Mo
+4, lactate-sulfate
+data
+1, 2.0
+2, 1.9
+3, 0.4
+4, 0.2

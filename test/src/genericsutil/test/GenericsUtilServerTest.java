@@ -85,10 +85,10 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    @Test
+    // @Test
     public void testImportGrowth() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/GrowthMatrix_nitrate.csv"))
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_multi.csv"))
             .withMatrixName("nitrate_growth")
             .withWorkspaceName("jmc:1480966800200");
         ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
@@ -97,9 +97,23 @@ public class GenericsUtilServerTest {
     }
 
     /**
-       import some fitness data
+       import some growth data
     */
     @Test
+    public void testImportGrowth2() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_simple.csv"))
+            .withMatrixName("nitrate_growth_simple")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import Growth Simple test finished");
+    }
+    
+    /**
+       import some fitness data
+    */
+    // @Test
     public void testImportFitness() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_jw710_random.csv"))
@@ -113,7 +127,7 @@ public class GenericsUtilServerTest {
     /**
        import some multi-strain fitness data
     */
-    @Test
+    // @Test
     public void testImportFitness2() throws Exception {
         ImportNDArrayCSV params = new ImportNDArrayCSV()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_multi_random.csv"))
@@ -122,5 +136,89 @@ public class GenericsUtilServerTest {
         ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import multi-strain fitness test finished");
+    }
+
+    /**
+       import some enzyme activity data
+    */
+    // @Test
+    public void testImportEA() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_single.csv"))
+            .withMatrixName("enzyme_activity_dvh")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import enzyme activity test finished");
+    }
+
+    /**
+       import some enzyme activity data, replicates
+    */
+    @Test
+    public void testImportEA2() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
+            .withMatrixName("enzyme_activity_dvh_replicates")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import enzyme activity replicates test finished");
+    }
+
+    /**
+       import some enzyme activity data, statistics
+    */
+    @Test
+    public void testImportEA3() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_statistics.csv"))
+            .withMatrixName("enzyme_activity_dvh_stats")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import enzyme activity statistics test finished");
+    }
+
+    /**
+       import some taxonomic data
+    */
+    @Test
+    public void testImportTax() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
+            .withMatrixName("taxonomic_abundance_simple")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import taxonomic data test finished");
+    }
+
+    /**
+       import some taxonomic data
+    */
+    @Test
+    public void testImportTax2() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))
+            .withMatrixName("taxonomic_abundance_multiwell")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import multiwell taxonomic data test finished");
+    }
+
+    /**
+       import some taxonomic data
+    */
+    @Test
+    public void testImportTax3() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_timeseries.csv"))
+            .withMatrixName("taxonomic_abundance_timeseries")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import time series taxonomic data test finished");
     }
 }

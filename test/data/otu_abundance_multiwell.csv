@@ -1,0 +1,81 @@
+name, OTU_abundance_multiwell
+description, Phyla of OTUs found in multiple wells by 16S survey
+type, taxonomic data
+values, relative abundance, dimensionless unit
+meta, date, 2009
+meta, condition, EVO pre-injection
+size, 3, 17
+dmeta, 1, well
+1, FW215
+2, GP01
+3, GP03
+dmeta, 2, phyla
+1, Deferribacteres
+2, Spirochaetes
+3, Gemmatimonadetes
+4, Lentisphaerae
+5, Aquificae
+6, Verrucomicrobia
+7, Actinobacteria
+8, Chlamydiae
+9, Chloroflexi
+10, Parcubacteria
+11, Planctomycetes
+12, Acidobacteria
+13, Bacteroidetes
+14, OD1
+15, Proteobacteria
+16, Firmicutes
+17, Bacteria
+data
+1, 1, 0.01
+1, 2, 0.01
+1, 3, 0.01
+1, 4, 0.01
+1, 5, 0.01
+1, 6, 0.01
+1, 7, 0.01
+1, 8, 0.01
+1, 9, 0.01
+1, 10, 0.05
+1, 11, 0.1
+1, 12, 0.03
+1, 13, 0.04
+1, 14, 0.01
+1, 15, 0.56
+1, 16, 0.11
+1, 17, 0
+2, 1, 0.01
+2, 2, 0.01
+2, 3, 0.01
+2, 4, 0.01
+2, 5, 0.01
+2, 6, 0.01
+2, 7, 0.01
+2, 8, 0.01
+2, 9, 0.01
+2, 10, 0.05
+2, 11, 0.08
+2, 12, 0.045
+2, 13, 0.2
+2, 14, 0.05
+2, 15, 0.36
+2, 16, 0.11
+2, 17, 0
+3, 1, 0.01
+3, 2, 0.01
+3, 3, 0.01
+3, 4, 0.01
+3, 5, 0.01
+3, 6, 0.01
+3, 7, 0.01
+3, 8, 0.01
+3, 9, 0.01
+3, 10, 0.03
+3, 11, 0.1
+3, 12, 0.02
+3, 13, 0.13
+3, 14, 0.04
+3, 15, 0.45
+3, 16, 0.13
+3, 17, 0
