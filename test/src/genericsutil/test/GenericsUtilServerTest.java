@@ -81,7 +81,6 @@ public class GenericsUtilServerTest {
             }
         }
     }
-    
 
     /**
        import some growth data

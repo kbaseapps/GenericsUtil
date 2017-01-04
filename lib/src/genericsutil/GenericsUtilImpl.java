@@ -142,20 +142,24 @@ public class GenericsUtilImpl {
     }
 
     /**
-       helper function to re-assemble part of a CSV line
+       helper function to re-assemble part of a CSV line.  Like
+       substring, includes all fields from firstField to lastField-1,
+       separated by ", "
     */
     public static String joinString(String [] f, int firstField, int lastField) {
         String rv = f[firstField].trim();
-        for (int i=firstField+1; i<lastField+1; i++)
+        for (int i=firstField+1; i<lastField; i++)
             rv += ", "+f[i].trim();
         return rv;
     }
 
     /**
-       helper function to re-assemble part of a CSV line
+       helper function to re-assemble part of a CSV line.  Assembles
+       all fields starting from 0-indexed firstFields, separated
+       by ", "
     */
     public static String joinString(String [] f, int firstField) {
-        return joinString(f,firstField,f.length-1);
+        return joinString(f,firstField,f.length);
     }
     
     /**
@@ -175,9 +179,20 @@ public class GenericsUtilImpl {
             .withStringValue(description);
         return rv;
     }
+
+    /**
+       splits on commas, then trims parts.  This should be replaced
+       with a "real" CSV parser, like OpenCSV.
+    */
+    public static String[] splitTrim(String x) {
+        String[] f = x.split(",");
+        for (int i=0; i<f.length; i++)
+            f[i] = f[i].trim();
+        return f;
+    }
     
     public static ContextItem makeCI(String description) throws Exception {
-        String[] f = description.split(",");
+        String[] f = splitTrim(description);
         ContextItem rv = new ContextItem()
             .withProperty(makeTerm(f[0]))
             .withValue(makeValue(f[1]));
@@ -190,7 +205,7 @@ public class GenericsUtilImpl {
     }
 
     public static DimensionContextItem makeDCI(String description) throws Exception {
-        String[] f = description.split(",");
+        String[] f = splitTrim(description);
         DimensionContextItem rv = new DimensionContextItem();
         if (f.length > 1) {
             rv.setProperty(makeTerm(joinString(f,0,f.length-1)));
@@ -244,7 +259,7 @@ public class GenericsUtilImpl {
         List<DimensionContext> dContexts = null;
         Values curValues = null;
         while ((buffer = infile.readLine()) != null) {
-            String[] f = buffer.split(",");
+            String[] f = splitTrim(buffer);
             if ((f==null) || (f.length < 1))
                 continue;
             if (f[0].equals("name")) {
