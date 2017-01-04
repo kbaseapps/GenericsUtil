@@ -76,20 +76,20 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Save DataMatrix object to workspace, returning reference.
+       Save NDArray object to workspace, returning reference.
     */
-    public static String saveDataMatrix(WorkspaceClient wc,
+    public static String saveNDArray(WorkspaceClient wc,
                                         String ws,
-                                        String dmName,
-                                        DataMatrix dm,
+                                        String name,
+                                        NDArray nda,
                                         List<ProvenanceAction> provenance) throws Exception {
         // we may want to calculate some workspace metadata on the
         // matrix when saving it, or create search indices here.
         ObjectSaveData data = new ObjectSaveData()
-            .withType("KBaseGenerics.DataMatrix")
+            .withType("KBaseGenerics.NDArray")
             .withProvenance(provenance)
-            .withData(new UObject(dm))
-            .withName(dmName);
+            .withData(new UObject(nda))
+            .withName(name);
         return getRefFromObjectInfo(wc.saveObjects(new SaveObjectsParams().withWorkspace(ws).withObjects(Arrays.asList(data))).get(0));
     }
 
@@ -144,34 +144,63 @@ public class GenericsUtilImpl {
     /**
        helper function to re-assemble part of a CSV line
     */
-    public static String joinString(String [] f, int firstField) {
+    public static String joinString(String [] f, int firstField, int lastField) {
         String rv = f[firstField].trim();
-        for (int i=firstField+1; i<f.length; i++)
+        for (int i=firstField+1; i<lastField+1; i++)
             rv += ", "+f[i].trim();
         return rv;
     }
+
+    /**
+       helper function to re-assemble part of a CSV line
+    */
+    public static String joinString(String [] f, int firstField) {
+        return joinString(f,firstField,f.length-1);
+    }
     
     /**
-       helper function to make a metadata item from a description
+       helper function to make a new (unmapped) Term from a description
     */
-    public static MetadataItem makeMDI(String originalDescription) {
-        MetadataItem rv = new MetadataItem()
-            .withOriginalDescription(originalDescription);
+    public static Term makeTerm(String description) {
+        Term rv = new Term().withTermName(description);
         return rv;
     }
 
     /**
-       Imports a DataMatrix object from CSV file.
+       helper function to make a new (unmapped) Value from a description
+    */
+    public static Value makeValue(String description) {
+        Value rv = new Value()
+            .withScalarType("string")
+            .withStringValue(description);
+        return rv;
+    }
+    
+    public static ContextItem makeContextItem(String description) throws Exception {
+        String[] f = description.split(",");
+        ContextItem rv = new ContextItem()
+            .withProperty(makeTerm(f[0]))
+            .withValue(makeValue(f[1]));
+        if (f.length == 3)
+            rv.setUnits(makeTerm(f[2]));
+        if (f.length > 3) {
+            throw new Exception("Error in context item '"+description+"'; need only 2 or 3 comma-separated fields: item, value [, units]");
+        }
+        return rv;
+    }
+
+    /**
+       Imports a NDArray object from CSV file.
        Needs a lot more format checking!
     */
-    public static ImportDataMatrixResult importDataMatrixCSV(String wsURL,
-                                                             String shockURL,
-                                                             AuthToken token,
-                                                             ImportDataMatrixCSV params) throws Exception {
+    public static ImportNDArrayResult importNDArrayCSV(String wsURL,
+                                                       String shockURL,
+                                                       AuthToken token,
+                                                       ImportNDArrayCSV params) throws Exception {
         WorkspaceClient wc = createWsClient(wsURL,token);
 
         // for provenance
-        String methodName = "GenericsUtil.importDataMatrixCSV";
+        String methodName = "GenericsUtil.importNDArrayCSV";
         List<UObject> methodParams = Arrays.asList(new UObject(params));
 
         // looks for local file; if not given, get from shock
@@ -192,83 +221,76 @@ public class GenericsUtilImpl {
         else
             System.out.println("Reading local file "+filePath);
 
-        // read CSV file into matrix object
-        DataMatrix dm = new DataMatrix().withOntologiesMapped(new Long(0L));
+        // read CSV file into NDArray object
+        NDArray nda = new NDArray();
             
         BufferedReader infile = IO.openReader(filePath);
         String buffer = null;
         int inDimension = 0;
         Long[] dLengths = null;
-        List<List<DimensionMetadataItem>> dMeta = null;
-        DataValues curDV = null;
+        List<DimensionContext> dContexts = null;
+        Values curValues = null;
         while ((buffer = infile.readLine()) != null) {
             String[] f = buffer.split(",");
             if ((f==null) || (f.length < 1))
                 continue;
             if (f[0].equals("name")) {
-                dm.setName(joinString(f,1));
+                nda.setName(joinString(f,1));
             }
             else if (f[0].equals("description")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for description; need at least 2 columns; got: "+buffer);
-                dm.setDescription(joinString(f,1));
+                nda.setDescription(joinString(f,1));
+            }
+            else if (f[0].equals("type")) {
+                nda.setDataType(makeTerm(joinString(f,1)));
             }
             else if (f[0].equals("values")) {
-                if (f.length < 3)
-                    throw new Exception("Bad format for values; need at least 3 columns; got: "+buffer);
-                MatrixMetadataItem valuesMeta = new MatrixMetadataItem()
-                    .withMetadata(makeMDI(joinString(f,1)));
-                dm.setValuesMetadata(valuesMeta);
-                // NOTE TO PAVEL:  Values metadata should probably
-                // just be a MetadataItem, not a MatrixMetadataItem;
-                // I can't think of a circumstance where you need values here.
-                // --JMC
+                if (f.length != 3)
+                    throw new Exception("Bad format for values; need 3 columns; got: "+buffer);
+                nda.setValueType(makeTerm(f[1]));
+                nda.setValueUnits(makeTerm(f[2]));
             }
             else if (f[0].equals("meta")) {
-                MatrixMetadataItem mmdi = new MatrixMetadataItem()
-                    .withMetadata(makeMDI(joinString(f,1)));
-                List<MatrixMetadataItem> mmd = dm.getMatrixMetadata();
-                if (mmd==null)
-                    mmd = new ArrayList<MatrixMetadataItem>();
-                mmd.add(mmdi);
-                dm.setMatrixMetadata(mmd);
+                ContextItem ci = makeContextItem(joinString(f,1));
+                List<ContextItem> cis = nda.getArrayContext();
+                if (cis==null)
+                    cis = new ArrayList<ContextItem>();
+                cis.add(ci);
+                nda.setArrayContext(cis);
             }
             else if (f[0].equals("size")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for size; need at least 2 columns; got: "+buffer);
                 int nDimensions = f.length - 1;
-                dm.setNDimensions(new Long((long)nDimensions));
+                nda.setDimensionNumber(new Long((long)nDimensions));
                 dLengths = new Long[nDimensions];
-                dMeta = new ArrayList<List<DimensionMetadataItem>>(nDimensions);
+                dContexts = new ArrayList<DimensionContext>(nDimensions);
                 for (int i=0; i<nDimensions; i++) {
                     dLengths[i] = new Long(StringUtil.atol(f[i+1]));
-                    dMeta.add(new ArrayList<DimensionMetadataItem>());
+                    dContexts.add(new DimensionContext()
+                                  .withDimensionSize(dLengths[i]));
                 }
-                dm.setDimensionLength(Arrays.asList(dLengths));
-                dm.setDimensionMetadata(dMeta);
+                nda.setDimensionsContext(dContexts);
             }
             else if (f[0].equals("dmeta")) {
                 if (f.length < 4)
                     throw new Exception("Bad format for dmeta; need at least 4 columns; got: "+buffer);
                 inDimension = StringUtil.atoi(f[1]);
-                List<DimensionMetadataItem> dmdis = dMeta.get(inDimension-1);
+                DimensionContext dc = dContexts.get(inDimension-1);
                 long dLength = dLengths[inDimension-1].longValue();
-                // NOTE TO PAVEL:
-                // I'm initially storing all values as strings.
-                // They should be converted to other data types
-                // (references, integers, floats, etc)
-                // at the time of Ontology mapping.
-                // The correct primitive type is stored in the
-                // ontology; e.g.: property_value: data_type float
-                // --JMC
-                curDV = new DataValues()
-                    .withN(new Long(dLength))
-                    .withPrimitiveType("string")
-                    .withStringData(Arrays.asList(new String[(int)dLength]));
-                DimensionMetadataItem dmdi = new DimensionMetadataItem()
-                    .withMetadata(makeMDI(joinString(f,2)))
-                    .withValues(curDV);
-                dmdis.add(dmdi);
+                curValues = new Values()
+                    .withScalarType("string")
+                    .withStringValues(Arrays.asList(new String[(int)dLength]));
+                DimensionContextItem dci = new DimensionContextItem()
+                    .withProperty(makeTerm(joinString(f,2,f.length-2)))
+                    .withUnits(makeTerm(f[f.length-1]))
+                    .withValues(curValues);
+                List<DimensionContextItem> dcis = dc.getItems();
+                if (dcis==null)
+                    dcis = new ArrayList<DimensionContextItem>();
+                dcis.add(dci);
+                dc.setItems(dcis);
             }
             else if (f[0].equals("data")) {
                 if (f.length > 1)
@@ -277,11 +299,10 @@ public class GenericsUtilImpl {
                 long dLength = 1L;
                 for (int i=0; i<dLengths.length; i++)
                     dLength *= dLengths[i];
-                curDV = new DataValues()
-                    .withN(new Long(dLength))
-                    .withPrimitiveType("string")
-                    .withStringData(Arrays.asList(new String[(int)dLength]));
-                dm.setData(curDV);
+                curValues = new Values()
+                    .withScalarType("string")
+                    .withStringValues(Arrays.asList(new String[(int)dLength]));
+                nda.setValues(curValues);
             }
             else {
                 // must be numeric value greater than 0
@@ -322,22 +343,22 @@ public class GenericsUtilImpl {
                 // store the value in the string data array
                 // see not above about converting to the correct
                 // type at mapping time
-                curDV.getStringData().set((int)index,f[f.length-1]);
+                curValues.getStringValues().set((int)index,f[f.length-1]);
             }
         }
         infile.close();
 
         // save in workspace
-        String dmRef = saveDataMatrix(wc,
-                                      params.getWorkspaceName(),
-                                      params.getMatrixName(),
-                                      dm,
-                                      makeProvenance("Data Matrix",
-                                                     methodName,
-                                                     methodParams));
+        String ndaRef = saveNDArray(wc,
+                                    params.getWorkspaceName(),
+                                    params.getMatrixName(),
+                                    nda,
+                                    makeProvenance("Generic N-dimensional Array",
+                                                   methodName,
+                                                   methodParams));
 
-        ImportDataMatrixResult rv = new ImportDataMatrixResult()
-            .withMatrixRef(dmRef);
+        ImportNDArrayResult rv = new ImportNDArrayResult()
+            .withMatrixRef(ndaRef);
 
         // clean up tmp file if we used one
         if (isShockFile) {

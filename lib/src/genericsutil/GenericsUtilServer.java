@@ -22,7 +22,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "b81e47fa3f16bb157865c16f5710c5095b29fc64";
+    private static final String gitCommitHash = "0aea6b498add23a9a43925faa4543fcc1791ffac";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;
@@ -44,21 +44,21 @@ public class GenericsUtilServer extends JsonServerServlet {
     }
 
     /**
-     * <p>Original spec-file function name: import_data_matrix_csv</p>
+     * <p>Original spec-file function name: import_ndarray_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportDataMatrixCSV ImportDataMatrixCSV}
-     * @return   parameter "result" of type {@link genericsutil.ImportDataMatrixResult ImportDataMatrixResult}
+     * @param   params   instance of type {@link genericsutil.ImportNDArrayCSV ImportNDArrayCSV}
+     * @return   parameter "result" of type {@link genericsutil.ImportNDArrayResult ImportNDArrayResult}
      */
-    @JsonServerMethod(rpc = "GenericsUtil.import_data_matrix_csv", async=true)
-    public ImportDataMatrixResult importDataMatrixCsv(ImportDataMatrixCSV params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
-        ImportDataMatrixResult returnVal = null;
-        //BEGIN import_data_matrix_csv
-        returnVal = GenericsUtilImpl.importDataMatrixCSV(wsUrl,
-                                                         shockUrl,
-                                                         authPart,
-                                                         params);
-        //END import_data_matrix_csv
+    @JsonServerMethod(rpc = "GenericsUtil.import_ndarray_csv", async=true)
+    public ImportNDArrayResult importNdarrayCsv(ImportNDArrayCSV params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        ImportNDArrayResult returnVal = null;
+        //BEGIN import_ndarray_csv
+        returnVal = GenericsUtilImpl.importNDArrayCSV(wsUrl,
+                                                      shockUrl,
+                                                      authPart,
+                                                      params);
+        //END import_ndarray_csv
         return returnVal;
     }
     @JsonServerMethod(rpc = "GenericsUtil.status")

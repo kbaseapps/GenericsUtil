@@ -82,14 +82,45 @@ public class GenericsUtilServerTest {
         }
     }
     
-    @Test
-    public void testImportCSV() throws Exception {
-        ImportDataMatrixCSV params = new ImportDataMatrixCSV()
+
+    /**
+       import some growth data
+    */
+    public void testImportGrowth() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/GrowthMatrix_nitrate.csv"))
             .withMatrixName("nitrate_growth")
             .withWorkspaceName("jmc:1480966800200");
-        ImportDataMatrixResult rv = impl.importDataMatrixCsv(params, token, (RpcContext)null);
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
-        System.out.println("Import CSV test finished");
+        System.out.println("Import Growth test finished");
+    }
+
+    /**
+       import some fitness data
+    */
+    @Test
+    public void testImportFitness() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/Fitness_jw710.csv"))
+            .withMatrixName("fitness_jw710")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import simple fitness test finished");
+    }
+
+    /**
+       import some multi-strain fitness data
+    */
+    @Test
+    public void testImportFitness2() throws Exception {
+        ImportNDArrayCSV params = new ImportNDArrayCSV()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/Fitness_multi.csv"))
+            .withMatrixName("fitness_multiple_dvh_strains")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportNDArrayResult rv = impl.importNdarrayCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import multi-strain fitness test finished");
     }
 }
