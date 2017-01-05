@@ -4,7 +4,7 @@
 name     : UPLOAD CSV FILE
 subtitle : none
 tooltip  : |
-    Import a N-Dimensional Array in CSV format.
+    Import a Generic Array (possibly multi-dimensional) in CSV format.
 
 screenshots :
     []
@@ -29,21 +29,29 @@ suggestions :
 # Configure the display and description of the parameters
 #
 parameters :
-    csvFile :
+    csv_file :
         ui-name : |
             CSV file
         short-hint : |
-            File with n-dimensional array in CSV format.
+            File with a generic array in CSV format.
         long-hint  : |
-            File with n-dimensional array in CSV format.
+            File with a generic (possibly multi-dimensional) array in CSV format.
 
-    outputObject :
+    object_name :
         ui-name : |
-            Name of the n-dimensional array
+            Name of the object to create
         short-hint : |
-            Provide a name for the n-dimensional array you are uploading.
+            Provide a name for the data you are uploading.
         long-hint  : |
-            Provide a name for the n-dimensional array you are uploading.
+            Provide a name for the data you are uploading.
+
+    object_type :
+        ui-name : |
+            Type of object to create
+        short-hint : |
+            Provide an object type for the data you are uploading.
+        long-hint  : |
+            Provide an object type for the data you are uploading.
 
 
 description : none

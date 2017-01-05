@@ -12,33 +12,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportNDArrayResult</p>
+ * <p>Original spec-file type: ImportCSVResult</p>
  * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "matrix_ref"
+    "object_ref"
 })
-public class ImportNDArrayResult {
+public class ImportCSVResult {
 
-    @JsonProperty("matrix_ref")
-    private String matrixRef;
+    @JsonProperty("object_ref")
+    private String objectRef;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("matrix_ref")
-    public String getMatrixRef() {
-        return matrixRef;
+    @JsonProperty("object_ref")
+    public String getObjectRef() {
+        return objectRef;
     }
 
-    @JsonProperty("matrix_ref")
-    public void setMatrixRef(String matrixRef) {
-        this.matrixRef = matrixRef;
+    @JsonProperty("object_ref")
+    public void setObjectRef(String objectRef) {
+        this.objectRef = objectRef;
     }
 
-    public ImportNDArrayResult withMatrixRef(String matrixRef) {
-        this.matrixRef = matrixRef;
+    public ImportCSVResult withObjectRef(String objectRef) {
+        this.objectRef = objectRef;
         return this;
     }
 
@@ -54,7 +54,7 @@ public class ImportNDArrayResult {
 
     @Override
     public String toString() {
-        return ((((("ImportNDArrayResult"+" [matrixRef=")+ matrixRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ImportCSVResult"+" [objectRef=")+ objectRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

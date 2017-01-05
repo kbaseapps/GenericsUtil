@@ -17,16 +17,17 @@ module GenericsUtil {
     typedef structure {
 	File file;
 
-        string matrix_name;
         string workspace_name;
+        string object_name;
+	string object_type;
 
         usermeta metadata;
-    } ImportNDArrayCSV;
+    } ImportCSVParams;
 
     typedef structure {
-        string matrix_ref;
-    } ImportNDArrayResult;
+        string object_ref;
+    } ImportCSVResult;
 
-    funcdef import_ndarray_csv(ImportNDArrayCSV params)
-      returns (ImportNDArrayResult result) authentication required;
+    funcdef import_csv(ImportCSVParams params)
+      returns (ImportCSVResult result) authentication required;
 };

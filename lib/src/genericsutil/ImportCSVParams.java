@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportNDArrayCSV</p>
+ * <p>Original spec-file type: ImportCSVParams</p>
  * <pre>
  * matrix_name - name of object
  * workspace_name - workspace it gets saved to
@@ -23,11 +23,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
     "file",
-    "matrix_name",
     "workspace_name",
+    "object_name",
+    "object_type",
     "metadata"
 })
-public class ImportNDArrayCSV {
+public class ImportCSVParams {
 
     /**
      * <p>Original spec-file type: File</p>
@@ -36,10 +37,12 @@ public class ImportNDArrayCSV {
      */
     @JsonProperty("file")
     private File file;
-    @JsonProperty("matrix_name")
-    private java.lang.String matrixName;
     @JsonProperty("workspace_name")
     private java.lang.String workspaceName;
+    @JsonProperty("object_name")
+    private java.lang.String objectName;
+    @JsonProperty("object_type")
+    private java.lang.String objectType;
     @JsonProperty("metadata")
     private Map<String, String> metadata;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
@@ -64,23 +67,8 @@ public class ImportNDArrayCSV {
         this.file = file;
     }
 
-    public ImportNDArrayCSV withFile(File file) {
+    public ImportCSVParams withFile(File file) {
         this.file = file;
-        return this;
-    }
-
-    @JsonProperty("matrix_name")
-    public java.lang.String getMatrixName() {
-        return matrixName;
-    }
-
-    @JsonProperty("matrix_name")
-    public void setMatrixName(java.lang.String matrixName) {
-        this.matrixName = matrixName;
-    }
-
-    public ImportNDArrayCSV withMatrixName(java.lang.String matrixName) {
-        this.matrixName = matrixName;
         return this;
     }
 
@@ -94,8 +82,38 @@ public class ImportNDArrayCSV {
         this.workspaceName = workspaceName;
     }
 
-    public ImportNDArrayCSV withWorkspaceName(java.lang.String workspaceName) {
+    public ImportCSVParams withWorkspaceName(java.lang.String workspaceName) {
         this.workspaceName = workspaceName;
+        return this;
+    }
+
+    @JsonProperty("object_name")
+    public java.lang.String getObjectName() {
+        return objectName;
+    }
+
+    @JsonProperty("object_name")
+    public void setObjectName(java.lang.String objectName) {
+        this.objectName = objectName;
+    }
+
+    public ImportCSVParams withObjectName(java.lang.String objectName) {
+        this.objectName = objectName;
+        return this;
+    }
+
+    @JsonProperty("object_type")
+    public java.lang.String getObjectType() {
+        return objectType;
+    }
+
+    @JsonProperty("object_type")
+    public void setObjectType(java.lang.String objectType) {
+        this.objectType = objectType;
+    }
+
+    public ImportCSVParams withObjectType(java.lang.String objectType) {
+        this.objectType = objectType;
         return this;
     }
 
@@ -109,7 +127,7 @@ public class ImportNDArrayCSV {
         this.metadata = metadata;
     }
 
-    public ImportNDArrayCSV withMetadata(Map<String, String> metadata) {
+    public ImportCSVParams withMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -126,7 +144,7 @@ public class ImportNDArrayCSV {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((("ImportNDArrayCSV"+" [file=")+ file)+", matrixName=")+ matrixName)+", workspaceName=")+ workspaceName)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((("ImportCSVParams"+" [file=")+ file)+", workspaceName=")+ workspaceName)+", objectName=")+ objectName)+", objectType=")+ objectType)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

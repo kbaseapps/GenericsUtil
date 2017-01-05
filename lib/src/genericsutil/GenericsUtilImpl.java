@@ -78,17 +78,18 @@ public class GenericsUtilImpl {
     /**
        Save NDArray object to workspace, returning reference.
     */
-    public static String saveNDArray(WorkspaceClient wc,
-                                        String ws,
-                                        String name,
-                                        NDArray nda,
-                                        List<ProvenanceAction> provenance) throws Exception {
+    public static String saveObject(WorkspaceClient wc,
+                                    String ws,
+                                    String name,
+                                    String objectType,
+                                    Object o,
+                                    List<ProvenanceAction> provenance) throws Exception {
         // we may want to calculate some workspace metadata on the
         // matrix when saving it, or create search indices here.
         ObjectSaveData data = new ObjectSaveData()
-            .withType("KBaseGenerics.NDArray")
+            .withType(objectType)
             .withProvenance(provenance)
-            .withData(new UObject(nda))
+            .withData(new UObject(o))
             .withName(name);
         return getRefFromObjectInfo(wc.saveObjects(new SaveObjectsParams().withWorkspace(ws).withObjects(Arrays.asList(data))).get(0));
     }
@@ -385,17 +386,17 @@ public class GenericsUtilImpl {
     }
     
     /**
-       Imports a NDArray object from CSV file.
+       Imports a generic object from CSV file.
        Needs a lot more format checking!
     */
-    public static ImportNDArrayResult importNDArrayCSV(String wsURL,
-                                                       String shockURL,
-                                                       AuthToken token,
-                                                       ImportNDArrayCSV params) throws Exception {
+    public static ImportCSVResult importCSV(String wsURL,
+                                            String shockURL,
+                                            AuthToken token,
+                                            ImportCSVParams params) throws Exception {
         WorkspaceClient wc = createWsClient(wsURL,token);
 
         // for provenance
-        String methodName = "GenericsUtil.importNDArrayCSV";
+        String methodName = "GenericsUtil.importCSV";
         List<UObject> methodParams = Arrays.asList(new UObject(params));
 
         // looks for local file; if not given, get from shock
@@ -405,16 +406,17 @@ public class GenericsUtilImpl {
         NDArray nda = parseCSV(filePath);
 
         // save in workspace
-        String ndaRef = saveNDArray(wc,
-                                    params.getWorkspaceName(),
-                                    params.getMatrixName(),
-                                    nda,
-                                    makeProvenance("Generic N-dimensional Array",
-                                                   methodName,
-                                                   methodParams));
+        String ndaRef = saveObject(wc,
+                                   params.getWorkspaceName(),
+                                   params.getObjectName(),
+                                   params.getObjectType(),
+                                   nda,
+                                   makeProvenance(params.getObjectType()+" imported from CSV file",
+                                                  methodName,
+                                                  methodParams));
 
-        ImportNDArrayResult rv = new ImportNDArrayResult()
-            .withMatrixRef(ndaRef);
+        ImportCSVResult rv = new ImportCSVResult()
+            .withObjectRef(ndaRef);
 
         // clean up tmp file if we used one
         if (params.getFile().getPath()==null) {

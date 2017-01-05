@@ -1,59 +1,100 @@
 {
-  "ver" : "",
-  "authors" : [ ],
-  "contact" : "help@kbase.us",
-  "visble" : true,
-  "categories" : [ "importers" ],
-  "widgets" : {
-    "input" : "kbaseNarrativeMethodInput"
-  },
-  "parameters" : [ 
-  {
-      "id" : "csvFile",
-      "optional" : false,
-      "advanced" : false,
-      "allow_multiple" : false,
-      "default_values" : [ "" ],
-      "field_type" : "file",
-      "text_options" : {
-	  "valid_ws_types" : [ ]
-      }
-  }, 
-  {
-      "id" : "outputObject",
-      "optional" : true,
-      "advanced" : false,
-      "allow_multiple" : false,
-      "default_values" : [ "" ],
-      "field_type" : "text",
-      "text_options" : {
-	  "valid_ws_types" : [ "KBaseGenerics.NDArray" ],
-	  "is_output_name" : true
-      }
-  }
-  ],
-  "behavior" : {
-    "service-mapping" : {
-      "url" : "",
-      "name" : "GenericsUtil",
-      "method" : "import_ndarray_csv",
-      "input_mapping" : [
-        {
-          "narrative_system_variable": "workspace",
-          "target_property": "workspace_name"
-        },
-        {
-          "input_parameter": "outputObject",
-          "target_property": "matrix_name"
-        },
-        {
-          "input_parameter": "csvFile",
-          "target_property": "file/shock_id"
-        }
-      ],
-      "output_mapping" : [
-      ]
-    }
-  },
-  "job_id_output_field": "docker"
+    "ver" : "",
+    "authors" : [ ],
+    "contact" : "help@kbase.us",
+    "visble" : true,
+    "categories" : [ "importers" ],
+    "widgets" : {
+	"input" : "kbaseNarrativeMethodInput"
+    },
+    "parameters" : [ 
+	{
+	    "id" : "csv_file",
+	    "optional" : false,
+	    "advanced" : false,
+	    "allow_multiple" : false,
+	    "default_values" : [ "" ],
+	    "field_type" : "file",
+	    "text_options" : {
+		"valid_ws_types" : [ ]
+	    }
+	}, 
+	{
+	    "id" : "object_name",
+	    "optional" : false,
+	    "advanced" : false,
+	    "allow_multiple" : false,
+	    "default_values" : [ "" ],
+	    "field_type" : "text",
+	    "text_options" : {
+		"valid_ws_types" : [ "KBaseGenerics.NDArray", "KBaseGenerics.Array", "KBaseGenerics.Matrix2D", "KBaseGenerics.Matrix3D", "KBaseGenerics.Matrix2DFloatWithReplicates", "KBaseGenerics.Matrix2DFloatWithStat" ],
+		"is_output_name" : true
+	    }
+	},
+	{
+	    "id" : "object_type",
+	    "optional" : true,
+	    "advanced" : false,
+	    "allow_multiple" : false,
+	    "default_values" : [ "KBaseGenerics.NDArray" ],
+	    "field_type" : "dropdown",
+	    "dropdown_options" : {
+		"options": [
+		    {
+			"value": "KBaseGenerics.NDArray",
+			"display": "N-Dimensional Array (can hold all other generic types)"
+		    },
+		    {
+			"value": "KBaseGenerics.Array",
+			"display": "1-Dimensional Array"
+		    },
+		    {
+			"value": "KBaseGenerics.Matrix2D",
+			"display": "2-Dimensional Matrix"
+		    },
+		    {
+			"value": "KBaseGenerics.Matrix3D",
+			"display": "3-Dimensional Matrix"
+		    },
+		    {
+			"value": "KBaseGenerics.Matrix2DFloatWithReplicates",
+			"display": "2-Dimensional Matrix of Floating point data, with Replicates"
+		    },
+		    {
+			"value": "KBaseGenerics.Matrix2DFloatWithStat",
+			"display": "2-Dimensional Matrix of Floating point data, with Statistics"
+		    }
+		],
+		"is_output_name" : true
+	    }
+	}
+    ],
+    "behavior" : {
+	"service-mapping" : {
+	    "url" : "",
+	    "name" : "GenericsUtil",
+	    "method" : "import_csv",
+	    "input_mapping" : [
+		{
+		    "narrative_system_variable": "workspace",
+		    "target_property": "workspace_name"
+		},
+		{
+		    "input_parameter": "object_name",
+		    "target_property": "object_name"
+		},
+		{
+		    "input_parameter": "object_type",
+		    "target_property": "object_type"
+		},
+		{
+		    "input_parameter": "csv_file",
+		    "target_property": "file/shock_id"
+		}
+	    ],
+	    "output_mapping" : [
+	    ]
+	}
+    },
+    "job_id_output_field": "docker"
 }
