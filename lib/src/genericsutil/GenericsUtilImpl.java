@@ -191,6 +191,9 @@ public class GenericsUtilImpl {
         return f;
     }
     
+    /**
+       parse a description into a ContextItem
+    */
     public static ContextItem makeCI(String description) throws Exception {
         String[] f = splitTrim(description);
         ContextItem rv = new ContextItem()
@@ -204,6 +207,10 @@ public class GenericsUtilImpl {
         return rv;
     }
 
+    /**
+       parse a description into a DimensionContextItem, minus the
+       values.
+    */
     public static DimensionContextItem makeDCI(String description) throws Exception {
         String[] f = splitTrim(description);
         DimensionContextItem rv = new DimensionContextItem();
@@ -216,39 +223,35 @@ public class GenericsUtilImpl {
         }
         return rv;
     }
-    
+
     /**
-       Imports a NDArray object from CSV file.
-       Needs a lot more format checking!
+       Set up a file, either Shock or local; returns path to the
+       file.
     */
-    public static ImportNDArrayResult importNDArrayCSV(String wsURL,
-                                                       String shockURL,
-                                                       AuthToken token,
-                                                       ImportNDArrayCSV params) throws Exception {
-        WorkspaceClient wc = createWsClient(wsURL,token);
-
-        // for provenance
-        String methodName = "GenericsUtil.importNDArrayCSV";
-        List<UObject> methodParams = Arrays.asList(new UObject(params));
-
-        // looks for local file; if not given, get from shock
-        String filePath = params.getFile().getPath();
-        boolean isShockFile = false;
-        if (filePath==null) {
-            isShockFile = true;
+    public static String setupFile(File f,
+                                   String shockURL,
+                                   AuthToken token) throws Exception {
+        String rv = f.getPath();
+        if (rv==null) {
             System.out.println("Getting file from Shock");
             java.io.File tmpFile = java.io.File.createTempFile("mat", ".csv", tempDir);
             tmpFile.delete();
-            tmpFile = fromShock(params.getFile().getShockId(),
+            tmpFile = fromShock(f.getShockId(),
                                 shockURL,
                                 token,
                                 tmpFile,
                                 false);
-            filePath = tmpFile.getPath();
+            rv = tmpFile.getPath();
         }
         else
-            System.out.println("Reading local file "+filePath);
+            System.out.println("Reading local file "+rv);
+        return rv;
+    }
 
+    /**
+       Makes a NDArray object from CSV file.
+    */
+    public static NDArray parseCSV(String filePath) throws Exception {
         // read CSV file into NDArray object
         NDArray nda = new NDArray();
             
@@ -378,6 +381,29 @@ public class GenericsUtilImpl {
         }
         infile.close();
 
+        return nda;
+    }
+    
+    /**
+       Imports a NDArray object from CSV file.
+       Needs a lot more format checking!
+    */
+    public static ImportNDArrayResult importNDArrayCSV(String wsURL,
+                                                       String shockURL,
+                                                       AuthToken token,
+                                                       ImportNDArrayCSV params) throws Exception {
+        WorkspaceClient wc = createWsClient(wsURL,token);
+
+        // for provenance
+        String methodName = "GenericsUtil.importNDArrayCSV";
+        List<UObject> methodParams = Arrays.asList(new UObject(params));
+
+        // looks for local file; if not given, get from shock
+        String filePath = setupFile(params.getFile(), shockURL, token);
+
+        // parse it into the object
+        NDArray nda = parseCSV(filePath);
+
         // save in workspace
         String ndaRef = saveNDArray(wc,
                                     params.getWorkspaceName(),
@@ -391,7 +417,7 @@ public class GenericsUtilImpl {
             .withMatrixRef(ndaRef);
 
         // clean up tmp file if we used one
-        if (isShockFile) {
+        if (params.getFile().getPath()==null) {
             java.io.File f = new java.io.File(filePath);
             f.delete();
         }
