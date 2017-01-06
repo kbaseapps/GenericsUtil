@@ -407,26 +407,47 @@ public class GenericsUtilImpl {
 
         // map values in row major order
         Values oldV = nda.getValues();
-        Values2D newV = new Values2D()
-            .withScalarType(oldV.getScalarType());
+        String scalarType = oldV.getScalarType();
+        Values2D newV = new Values2D().withScalarType(scalarType);
         Long[] dLengths = new Long[nDimensions];
         for (int i=0; i<nDimensions; i++)
             dLengths[i] = dContexts.get(i).getDimensionSize();
         long[] indices = new long[dLengths.length];
-        newV.setStringValues(new ArrayList<List<String>>((int)dLengths[0].longValue()));
-        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++)
-            newV.getStringValues().add(Arrays.asList(new String[(int)dLengths[1].longValue()]));
-        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
-            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
-                long index = 0L;
-                for (int i=0; i<dLengths.length; i++) {
-                    long k = 1L;
-                    for (int j=i+1; j<dLengths.length; j++)
-                        k *= dLengths[j].longValue();
-                    index += indices[i] * k;
+
+        if (scalarType.equals("string")) {
+            newV.setStringValues(new ArrayList<List<String>>((int)dLengths[0].longValue()));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++)
+                newV.getStringValues().add(Arrays.asList(new String[(int)dLengths[1].longValue()]));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                    long index = 0L;
+                    for (int i=0; i<dLengths.length; i++) {
+                        long k = 1L;
+                        for (int j=i+1; j<dLengths.length; j++)
+                            k *= dLengths[j].longValue();
+                        index += indices[i] * k;
+                    }
+                    String val = oldV.getStringValues().get((int)index);
+                    newV.getStringValues().get((int)indices[0]).set((int)indices[1],val);
                 }
-                String val = oldV.getStringValues().get((int)index);
-                newV.getStringValues().get((int)indices[0]).set((int)indices[1],val);
+            }
+        }
+        else if (scalarType.equals("float")) {
+            newV.setFloatValues(new ArrayList<List<Double>>((int)dLengths[0].longValue()));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++)
+                newV.getFloatValues().add(Arrays.asList(new Double[(int)dLengths[1].longValue()]));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                    long index = 0L;
+                    for (int i=0; i<dLengths.length; i++) {
+                        long k = 1L;
+                        for (int j=i+1; j<dLengths.length; j++)
+                            k *= dLengths[j].longValue();
+                        index += indices[i] * k;
+                    }
+                    Double val = oldV.getFloatValues().get((int)index);
+                    newV.getFloatValues().get((int)indices[0]).set((int)indices[1],val);
+                }
             }
         }
         rv.setValues(newV);
@@ -456,38 +477,63 @@ public class GenericsUtilImpl {
 
         // map values in row major order
         Values oldV = nda.getValues();
-        Values3D newV = new Values3D()
-            .withScalarType(oldV.getScalarType());
+        String scalarType = oldV.getScalarType();
+        Values3D newV = new Values3D().withScalarType(scalarType);
         Long[] dLengths = new Long[nDimensions];
         for (int i=0; i<nDimensions; i++)
             dLengths[i] = dContexts.get(i).getDimensionSize();
         long[] indices = new long[dLengths.length];
-        newV.setStringValues(new ArrayList<List<List<String>>>((int)dLengths[0].longValue()));
-        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
-            List<List<String>> lls = new ArrayList<List<String>>((int)dLengths[1].longValue());
-            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++)
-                lls.add(Arrays.asList(new String[(int)dLengths[2].longValue()]));
-            newV.getStringValues().add(lls);
-        }
-        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
-            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
-                for (indices[2]=0; indices[2]<dLengths[2].longValue(); indices[2]++) {
-                    long index = 0L;
-                    for (int i=0; i<dLengths.length; i++) {
-                        long k = 1L;
-                        for (int j=i+1; j<dLengths.length; j++)
-                            k *= dLengths[j].longValue();
-                        index += indices[i] * k;
+        if (scalarType.equals("string")) {
+            newV.setStringValues(new ArrayList<List<List<String>>>((int)dLengths[0].longValue()));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                List<List<String>> lls = new ArrayList<List<String>>((int)dLengths[1].longValue());
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++)
+                    lls.add(Arrays.asList(new String[(int)dLengths[2].longValue()]));
+                newV.getStringValues().add(lls);
+            }
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                    for (indices[2]=0; indices[2]<dLengths[2].longValue(); indices[2]++) {
+                        long index = 0L;
+                        for (int i=0; i<dLengths.length; i++) {
+                            long k = 1L;
+                            for (int j=i+1; j<dLengths.length; j++)
+                                k *= dLengths[j].longValue();
+                            index += indices[i] * k;
+                        }
+                        String val = oldV.getStringValues().get((int)index);
+                        newV.getStringValues().get((int)indices[0]).get((int)indices[1]).set((int)indices[2],val);
                     }
-                    String val = oldV.getStringValues().get((int)index);
-                    newV.getStringValues().get((int)indices[0]).get((int)indices[1]).set((int)indices[2],val);
                 }
             }
         }
+        else if (scalarType.equals("float")) {
+            newV.setFloatValues(new ArrayList<List<List<Double>>>((int)dLengths[0].longValue()));
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                List<List<Double>> lls = new ArrayList<List<Double>>((int)dLengths[1].longValue());
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++)
+                    lls.add(Arrays.asList(new Double[(int)dLengths[2].longValue()]));
+                newV.getFloatValues().add(lls);
+            }
+            for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+                for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                    for (indices[2]=0; indices[2]<dLengths[2].longValue(); indices[2]++) {
+                        long index = 0L;
+                        for (int i=0; i<dLengths.length; i++) {
+                            long k = 1L;
+                            for (int j=i+1; j<dLengths.length; j++)
+                                k *= dLengths[j].longValue();
+                            index += indices[i] * k;
+                        }
+                        Double val = oldV.getFloatValues().get((int)index);
+                        newV.getFloatValues().get((int)indices[0]).get((int)indices[1]).set((int)indices[2],val);
+                    }
+                }
+            }
+        }            
         rv.setValues(newV);        
         return rv;
     }    
-    
 
     /**
        turn a NDArray into an Array
@@ -508,7 +554,146 @@ public class GenericsUtilImpl {
             .withValues(nda.getValues());
         
         return rv;
-    }    
+    }
+
+    /**
+       update a pre-mapped term with a mapping (in parentheses)
+    */
+    public static void map(Term t) {
+        if (t==null)
+            return;
+        String name = t.getTermName();
+        if (name.endsWith(")")) {
+            int pos = name.indexOf(" (");
+            String ref = name.substring(pos+2,name.length()-1);
+            name = name.substring(0,pos);
+            t.setTermName(name);
+            t.setOtermRef(ref);
+            t.setOtermName(name);
+        }
+    }
+
+    /**
+       update a pre-mapped value with a reference.
+    */
+    public static void map(Value v) {
+        if (v==null)
+            return;
+        String sv = v.getStringValue();
+        if (sv.endsWith(")")) {
+            int pos = sv.indexOf(" (");
+            String ref = sv.substring(pos+2,sv.length()-1);
+            sv = sv.substring(0,pos);
+            v.setStringValue(sv);
+            if (ref.indexOf(":")>-1) {
+                v.setOtermRef(ref);
+                v.setScalarType("oterm");
+            }
+            else {
+                v.setObjectRef(ref);
+                v.setScalarType("object");
+            }
+        }
+    }
+
+    /**
+       update pre-mapped values with a reference.
+    */
+    public static void map(Values v) {
+        if (v==null)
+            return;
+        List<String> svs = v.getStringValues();
+        if (svs.get(0).endsWith(")")) {
+            int l = svs.size();
+            List<String> refs = new ArrayList<String>(l);
+            for (int i=0; i<l; i++) {
+                String sv = svs.get(i);
+                int pos = sv.indexOf(" (");
+                String ref = sv.substring(pos+2,sv.length()-1);
+                sv = sv.substring(0,pos);
+                svs.set(i,sv);
+                refs.add(ref);
+            }
+            v.setOtermRefs(refs);
+            v.setScalarType("oterm");
+        }
+    }
+    
+    /**
+       update a Values object from String to Float
+    */
+    public static void makeFloatValues(Values v) {
+        List<String> sv = v.getStringValues();
+        int l = sv.size();
+        List<Double> fv = new ArrayList<Double>(l);
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val == null)
+                fv.add(null);
+            else
+                fv.add(new Double(StringUtil.atod(val)));
+        }
+        v.setStringValues(null);
+        v.setFloatValues(fv);
+        v.setScalarType("float");
+    }
+    
+    /**
+       Map premapped types in a ContextItem
+    */
+    public static void map(ContextItem ci) {
+        if (ci==null)
+            return;
+        map(ci.getProperty());
+        map(ci.getValue());
+        Term u = ci.getUnits();
+        if (u != null) {
+            map(u);
+        }
+    }
+
+    /**
+       Map premapped types in a DimensionContextItem
+    */
+    public static void map(DimensionContextItem dci) {
+        if (dci==null)
+            return;
+        map(dci.getProperty());
+        Values v = dci.getValues();
+        map(v);
+        Term u = dci.getUnits();
+        if (u != null) {
+            map(u);
+            String ref = u.getOtermRef();
+            if ((ref != null) &&
+                (ref.indexOf(":") > -1))
+                makeFloatValues(v);
+        }
+    }
+
+    /**
+       Map premapped types in a DimensionContext
+    */
+    public static void map(DimensionContext dc) {
+        if (dc==null)
+            return;
+        for (DimensionContextItem dci : dc.getItems())
+            map(dci);
+    }
+    
+    /**
+       Map premapped types in NDArray
+    */
+    public static void map(NDArray nda) {
+        map(nda.getDataType());
+        for (ContextItem ci : nda.getArrayContext())
+            map(ci);
+        for (DimensionContext dc : nda.getDimensionsContext())
+            map(dc);
+        map(nda.getValueType());
+        map(nda.getValueUnits());
+        makeFloatValues(nda.getValues());
+    }
     
     /**
        Imports a generic object from CSV file.
@@ -529,6 +714,12 @@ public class GenericsUtilImpl {
 
         // parse it into the object
         NDArray nda = parseCSV(filePath);
+
+        // pre-map, for debugging
+        if ((params.getObjectName().length()==2) &&
+            (params.getObjectName().length()==2)) {
+            map(nda);
+        }
 
         // convert to other object types if necessary
         String objectType = params.getObjectType();
