@@ -388,15 +388,15 @@ public class GenericsUtilImpl {
     /**
        turn a NDArray into a Matrix2D
     */
-    public static Matrix2D makeMatrix2D(NDarray nda) throws Exception {
-        int nDimensions = nda.getDimensionNumber();
+    public static Matrix2D makeMatrix2D(NDArray nda) throws Exception {
+        int nDimensions = (int)nda.getDimensionNumber().longValue();
         if (nDimensions!=2)
             throw new Exception("Can't make a 2D Matrix out of a "+nDimensions+"-Dimensional Array");
         
         Matrix2D rv = new Matrix2D()
             .withName(nda.getName())
             .withDescription(nda.getDescription())
-            .withDataType(nda.getDataType)
+            .withDataType(nda.getDataType())
             .withMatrixContext(nda.getArrayContext())
             .withValueType(nda.getValueType())
             .withValueUnits(nda.getValueUnits());
@@ -406,32 +406,109 @@ public class GenericsUtilImpl {
         rv.setYContext(dContexts.get(1));
 
         // map values in row major order
-        Values oldV = new nda.getValues();
+        Values oldV = nda.getValues();
         Values2D newV = new Values2D()
             .withScalarType(oldV.getScalarType());
         Long[] dLengths = new Long[nDimensions];
         for (int i=0; i<nDimensions; i++)
             dLengths[i] = dContexts.get(i).getDimensionSize();
         long[] indices = new long[dLengths.length];
-        newV.setStringValues(new ArrayList<List<Long>>(dLengths[0].longValue()));
+        newV.setStringValues(new ArrayList<List<String>>((int)dLengths[0].longValue()));
         for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++)
             newV.getStringValues().add(Arrays.asList(new String[(int)dLengths[1].longValue()]));
         for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
             for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
-                index = 0L;
+                long index = 0L;
                 for (int i=0; i<dLengths.length; i++) {
                     long k = 1L;
                     for (int j=i+1; j<dLengths.length; j++)
                         k *= dLengths[j].longValue();
                     index += indices[i] * k;
                 }
-                String val = oldV.get((int)index);
+                String val = oldV.getStringValues().get((int)index);
                 newV.getStringValues().get((int)indices[0]).set((int)indices[1],val);
             }
         }
         rv.setValues(newV);
         return rv;
     }
+
+    /**
+       turn a NDArray into a Matrix3D
+    */
+    public static Matrix3D makeMatrix3D(NDArray nda) throws Exception {
+        int nDimensions = (int)nda.getDimensionNumber().longValue();
+        if (nDimensions!=3)
+            throw new Exception("Can't make a 3D Matrix out of a "+nDimensions+"-Dimensional Array");
+        
+        Matrix3D rv = new Matrix3D()
+            .withName(nda.getName())
+            .withDescription(nda.getDescription())
+            .withDataType(nda.getDataType())
+            .withMatrixContext(nda.getArrayContext())
+            .withValueType(nda.getValueType())
+            .withValueUnits(nda.getValueUnits());
+
+        List<DimensionContext> dContexts = nda.getDimensionsContext();
+        rv.setXContext(dContexts.get(0));
+        rv.setYContext(dContexts.get(1));
+        rv.setZContext(dContexts.get(2));
+
+        // map values in row major order
+        Values oldV = nda.getValues();
+        Values3D newV = new Values3D()
+            .withScalarType(oldV.getScalarType());
+        Long[] dLengths = new Long[nDimensions];
+        for (int i=0; i<nDimensions; i++)
+            dLengths[i] = dContexts.get(i).getDimensionSize();
+        long[] indices = new long[dLengths.length];
+        newV.setStringValues(new ArrayList<List<List<String>>>((int)dLengths[0].longValue()));
+        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+            List<List<String>> lls = new ArrayList<List<String>>((int)dLengths[1].longValue());
+            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++)
+                lls.add(Arrays.asList(new String[(int)dLengths[2].longValue()]));
+            newV.getStringValues().add(lls);
+        }
+        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                for (indices[2]=0; indices[2]<dLengths[2].longValue(); indices[2]++) {
+                    long index = 0L;
+                    for (int i=0; i<dLengths.length; i++) {
+                        long k = 1L;
+                        for (int j=i+1; j<dLengths.length; j++)
+                            k *= dLengths[j].longValue();
+                        index += indices[i] * k;
+                    }
+                    String val = oldV.getStringValues().get((int)index);
+                    newV.getStringValues().get((int)indices[0]).get((int)indices[1]).set((int)indices[2],val);
+                }
+            }
+        }
+        rv.setValues(newV);        
+        return rv;
+    }    
+    
+
+    /**
+       turn a NDArray into an Array
+    */
+    public static Array makeArray(NDArray nda) throws Exception {
+        int nDimensions = (int)nda.getDimensionNumber().longValue();
+        if (nDimensions!=1)
+            throw new Exception("Can't make a 1-Dimensional Array out of a "+nDimensions+"-Dimensional Array");
+        
+        Array rv = new Array()
+            .withName(nda.getName())
+            .withDescription(nda.getDescription())
+            .withDataType(nda.getDataType())
+            .withArrayContext(nda.getArrayContext())
+            .withValueType(nda.getValueType())
+            .withValueUnits(nda.getValueUnits())
+            .withXContext(nda.getDimensionsContext().get(0))
+            .withValues(nda.getValues());
+        
+        return rv;
+    }    
     
     /**
        Imports a generic object from CSV file.
