@@ -716,10 +716,9 @@ public class GenericsUtilImpl {
         NDArray nda = parseCSV(filePath);
 
         // pre-map, for debugging
-        if ((params.getObjectName().length()==2) &&
-            (params.getObjectName().length()==2)) {
+        boolean DEBUG = true;
+        if (DEBUG)
             map(nda);
-        }
 
         // convert to other object types if necessary
         String objectType = params.getObjectType();

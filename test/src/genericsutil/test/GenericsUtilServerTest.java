@@ -307,12 +307,16 @@ public class GenericsUtilServerTest {
     */
     @Test
     public void testImportMapped() throws Exception {
-        ImportCSVParams params = new ImportCSVParams()
+        ImportCSVParams params = null;
+        ImportCSVResult rv = null;
+
+        /*
+        params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed.csv"))
             .withObjectName("m1")
             .withObjectType("KBaseGenerics.Matrix2D")
             .withWorkspaceName("psnovichkov:1480537596117");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_2.csv"))
@@ -321,37 +325,38 @@ public class GenericsUtilServerTest {
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
+        */
         params = new ImportCSVParams()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed.csv"))
-            .withObjectName("m3")
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed_small.csv"))
+            .withObjectName("Shewanella_fitness_2D")
             .withObjectType("KBaseGenerics.Matrix2D")
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         params = new ImportCSVParams()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed.csv"))
-            .withObjectName("m4")
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed_small.csv"))
+            .withObjectName("Shewanella_fitness_ND")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         params = new ImportCSVParams()
-            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed_2.csv"))
-            .withObjectName("m5")
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_typed_small_2.csv"))
+            .withObjectName("Shewanella_fitness_1_condition")
             .withObjectType("KBaseGenerics.Array")
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_typed.csv"))
-            .withObjectName("m6")
+            .withObjectName("Taxonomy_one_sample")
             .withObjectType("KBaseGenerics.Array")
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell_typed.csv"))
-            .withObjectName("m7")
+            .withObjectName("Taxonomy_multiple_samples")
             .withObjectType("KBaseGenerics.Matrix2D")
             .withWorkspaceName("psnovichkov:1480537596117");
         rv = impl.importCsv(params, token, (RpcContext)null);
