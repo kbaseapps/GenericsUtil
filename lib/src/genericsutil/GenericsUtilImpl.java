@@ -384,6 +384,54 @@ public class GenericsUtilImpl {
 
         return nda;
     }
+
+    /**
+       turn a NDArray into a Matrix2D
+    */
+    public static Matrix2D makeMatrix2D(NDarray nda) throws Exception {
+        int nDimensions = nda.getDimensionNumber();
+        if (nDimensions!=2)
+            throw new Exception("Can't make a 2D Matrix out of a "+nDimensions+"-Dimensional Array");
+        
+        Matrix2D rv = new Matrix2D()
+            .withName(nda.getName())
+            .withDescription(nda.getDescription())
+            .withDataType(nda.getDataType)
+            .withMatrixContext(nda.getArrayContext())
+            .withValueType(nda.getValueType())
+            .withValueUnits(nda.getValueUnits());
+
+        List<DimensionContext> dContexts = nda.getDimensionsContext();
+        rv.setXContext(dContexts.get(0));
+        rv.setYContext(dContexts.get(1));
+
+        // map values in row major order
+        Values oldV = new nda.getValues();
+        Values2D newV = new Values2D()
+            .withScalarType(oldV.getScalarType());
+        Long[] dLengths = new Long[nDimensions];
+        for (int i=0; i<nDimensions; i++)
+            dLengths[i] = dContexts.get(i).getDimensionSize();
+        long[] indices = new long[dLengths.length];
+        newV.setStringValues(new ArrayList<List<Long>>(dLengths[0].longValue()));
+        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++)
+            newV.getStringValues().add(Arrays.asList(new String[(int)dLengths[1].longValue()]));
+        for (indices[0]=0; indices[0]<dLengths[0].longValue(); indices[0]++) {
+            for (indices[1]=0; indices[1]<dLengths[1].longValue(); indices[1]++) {
+                index = 0L;
+                for (int i=0; i<dLengths.length; i++) {
+                    long k = 1L;
+                    for (int j=i+1; j<dLengths.length; j++)
+                        k *= dLengths[j].longValue();
+                    index += indices[i] * k;
+                }
+                String val = oldV.get((int)index);
+                newV.getStringValues().get((int)indices[0]).set((int)indices[1],val);
+            }
+        }
+        rv.setValues(newV);
+        return rv;
+    }
     
     /**
        Imports a generic object from CSV file.
@@ -405,18 +453,28 @@ public class GenericsUtilImpl {
         // parse it into the object
         NDArray nda = parseCSV(filePath);
 
+        // convert to other object types if necessary
+        String objectType = params.getObjectType();
+        Object o = nda;
+        if (objectType.equals("KBaseGenerics.Matrix2D"))
+            o = makeMatrix2D(nda);
+        else if (objectType.equals("KBaseGenerics.Matrix3D"))
+            o = makeMatrix3D(nda);
+        else if (objectType.equals("KBaseGenerics.Array"))
+            o = makeArray(nda);
+
         // save in workspace
-        String ndaRef = saveObject(wc,
-                                   params.getWorkspaceName(),
-                                   params.getObjectName(),
-                                   params.getObjectType(),
-                                   nda,
-                                   makeProvenance(params.getObjectType()+" imported from CSV file",
-                                                  methodName,
-                                                  methodParams));
+        String objectRef = saveObject(wc,
+                                      params.getWorkspaceName(),
+                                      params.getObjectName(),
+                                      params.getObjectType(),
+                                      o,
+                                      makeProvenance(params.getObjectType()+" imported from CSV file",
+                                                     methodName,
+                                                     methodParams));
 
         ImportCSVResult rv = new ImportCSVResult()
-            .withObjectRef(ndaRef);
+            .withObjectRef(objectRef);
 
         // clean up tmp file if we used one
         if (params.getFile().getPath()==null) {
