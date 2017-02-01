@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "oterm_refs",
     "int_values",
     "float_values",
+    "boolean_values",
     "string_values"
 })
 public class Values {
@@ -41,6 +42,8 @@ public class Values {
     private List<Long> intValues;
     @JsonProperty("float_values")
     private List<Double> floatValues;
+    @JsonProperty("boolean_values")
+    private List<Long> booleanValues;
     @JsonProperty("string_values")
     private List<String> stringValues;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
@@ -120,6 +123,21 @@ public class Values {
         return this;
     }
 
+    @JsonProperty("boolean_values")
+    public List<Long> getBooleanValues() {
+        return booleanValues;
+    }
+
+    @JsonProperty("boolean_values")
+    public void setBooleanValues(List<Long> booleanValues) {
+        this.booleanValues = booleanValues;
+    }
+
+    public Values withBooleanValues(List<Long> booleanValues) {
+        this.booleanValues = booleanValues;
+        return this;
+    }
+
     @JsonProperty("string_values")
     public List<String> getStringValues() {
         return stringValues;
@@ -147,7 +165,7 @@ public class Values {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((("Values"+" [scalarType=")+ scalarType)+", objectRefs=")+ objectRefs)+", otermRefs=")+ otermRefs)+", intValues=")+ intValues)+", floatValues=")+ floatValues)+", stringValues=")+ stringValues)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("Values"+" [scalarType=")+ scalarType)+", objectRefs=")+ objectRefs)+", otermRefs=")+ otermRefs)+", intValues=")+ intValues)+", floatValues=")+ floatValues)+", booleanValues=")+ booleanValues)+", stringValues=")+ stringValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -13,46 +13,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: Array</p>
- * 
+ * <p>Original spec-file type: TypedValues</p>
+ * <pre>
+ * @optional value_units value_context
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "name",
-    "description",
-    "data_type",
-    "array_context",
-    "x_context",
     "value_type",
     "value_units",
+    "value_context",
     "values"
 })
-public class Array {
+public class TypedValues {
 
-    @JsonProperty("name")
-    private String name;
-    @JsonProperty("description")
-    private String description;
-    /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
-     * 
-     */
-    @JsonProperty("data_type")
-    private Term dataType;
-    @JsonProperty("array_context")
-    private List<ContextItem> arrayContext;
-    /**
-     * <p>Original spec-file type: DimensionContext</p>
-     * 
-     * 
-     */
-    @JsonProperty("x_context")
-    private DimensionContext xContext;
     /**
      * <p>Original spec-file type: Term</p>
      * <pre>
@@ -71,6 +47,8 @@ public class Array {
      */
     @JsonProperty("value_units")
     private Term valueUnits;
+    @JsonProperty("value_context")
+    private List<TypedValue> valueContext;
     /**
      * <p>Original spec-file type: Values</p>
      * <pre>
@@ -81,105 +59,6 @@ public class Array {
     @JsonProperty("values")
     private Values values;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("name")
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Array withName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    @JsonProperty("description")
-    public String getDescription() {
-        return description;
-    }
-
-    @JsonProperty("description")
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Array withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
-     * 
-     */
-    @JsonProperty("data_type")
-    public Term getDataType() {
-        return dataType;
-    }
-
-    /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
-     * 
-     */
-    @JsonProperty("data_type")
-    public void setDataType(Term dataType) {
-        this.dataType = dataType;
-    }
-
-    public Array withDataType(Term dataType) {
-        this.dataType = dataType;
-        return this;
-    }
-
-    @JsonProperty("array_context")
-    public List<ContextItem> getArrayContext() {
-        return arrayContext;
-    }
-
-    @JsonProperty("array_context")
-    public void setArrayContext(List<ContextItem> arrayContext) {
-        this.arrayContext = arrayContext;
-    }
-
-    public Array withArrayContext(List<ContextItem> arrayContext) {
-        this.arrayContext = arrayContext;
-        return this;
-    }
-
-    /**
-     * <p>Original spec-file type: DimensionContext</p>
-     * 
-     * 
-     */
-    @JsonProperty("x_context")
-    public DimensionContext getXContext() {
-        return xContext;
-    }
-
-    /**
-     * <p>Original spec-file type: DimensionContext</p>
-     * 
-     * 
-     */
-    @JsonProperty("x_context")
-    public void setXContext(DimensionContext xContext) {
-        this.xContext = xContext;
-    }
-
-    public Array withXContext(DimensionContext xContext) {
-        this.xContext = xContext;
-        return this;
-    }
 
     /**
      * <p>Original spec-file type: Term</p>
@@ -205,7 +84,7 @@ public class Array {
         this.valueType = valueType;
     }
 
-    public Array withValueType(Term valueType) {
+    public TypedValues withValueType(Term valueType) {
         this.valueType = valueType;
         return this;
     }
@@ -234,8 +113,23 @@ public class Array {
         this.valueUnits = valueUnits;
     }
 
-    public Array withValueUnits(Term valueUnits) {
+    public TypedValues withValueUnits(Term valueUnits) {
         this.valueUnits = valueUnits;
+        return this;
+    }
+
+    @JsonProperty("value_context")
+    public List<TypedValue> getValueContext() {
+        return valueContext;
+    }
+
+    @JsonProperty("value_context")
+    public void setValueContext(List<TypedValue> valueContext) {
+        this.valueContext = valueContext;
+    }
+
+    public TypedValues withValueContext(List<TypedValue> valueContext) {
+        this.valueContext = valueContext;
         return this;
     }
 
@@ -263,7 +157,7 @@ public class Array {
         this.values = values;
     }
 
-    public Array withValues(Values values) {
+    public TypedValues withValues(Values values) {
         this.values = values;
         return this;
     }
@@ -280,7 +174,7 @@ public class Array {
 
     @Override
     public String toString() {
-        return ((((((((((((((((((("Array"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", arrayContext=")+ arrayContext)+", xContext=")+ xContext)+", valueType=")+ valueType)+", valueUnits=")+ valueUnits)+", values=")+ values)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("TypedValues"+" [valueType=")+ valueType)+", valueUnits=")+ valueUnits)+", valueContext=")+ valueContext)+", values=")+ values)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

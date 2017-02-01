@@ -14,6 +14,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * <p>Original spec-file type: Value</p>
  * <pre>
+ * scalar_type can be one of:
+ *     object_ref
+ *     oterm_ref
+ *     int
+ *     float
+ *     boolean
+ *     string
  * @optional object_ref oterm_ref int_value float_value string_value
  * </pre>
  * 
@@ -26,6 +33,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "oterm_ref",
     "int_value",
     "float_value",
+    "boolean_value",
     "string_value"
 })
 public class Value {
@@ -40,6 +48,8 @@ public class Value {
     private Long intValue;
     @JsonProperty("float_value")
     private Double floatValue;
+    @JsonProperty("boolean_value")
+    private Long booleanValue;
     @JsonProperty("string_value")
     private String stringValue;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
@@ -119,6 +129,21 @@ public class Value {
         return this;
     }
 
+    @JsonProperty("boolean_value")
+    public Long getBooleanValue() {
+        return booleanValue;
+    }
+
+    @JsonProperty("boolean_value")
+    public void setBooleanValue(Long booleanValue) {
+        this.booleanValue = booleanValue;
+    }
+
+    public Value withBooleanValue(Long booleanValue) {
+        this.booleanValue = booleanValue;
+        return this;
+    }
+
     @JsonProperty("string_value")
     public String getStringValue() {
         return stringValue;
@@ -146,7 +171,7 @@ public class Value {
 
     @Override
     public String toString() {
-        return ((((((((((((((("Value"+" [scalarType=")+ scalarType)+", objectRef=")+ objectRef)+", otermRef=")+ otermRef)+", intValue=")+ intValue)+", floatValue=")+ floatValue)+", stringValue=")+ stringValue)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("Value"+" [scalarType=")+ scalarType)+", objectRef=")+ objectRef)+", otermRef=")+ otermRef)+", intValue=")+ intValue)+", floatValue=")+ floatValue)+", booleanValue=")+ booleanValue)+", stringValue=")+ stringValue)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

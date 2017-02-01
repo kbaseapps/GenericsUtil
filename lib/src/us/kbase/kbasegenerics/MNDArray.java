@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: NDArray</p>
+ * <p>Original spec-file type: M_NDArray</p>
  * 
  * 
  */
@@ -27,34 +27,30 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "dim_context",
     "typed_values"
 })
-public class NDArray {
+public class MNDArray {
 
     @JsonProperty("name")
     private String name;
     @JsonProperty("description")
     private String description;
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    private Term dataType;
+    private MTerm dataType;
     @JsonProperty("n_dimensions")
     private Long nDimensions;
     @JsonProperty("dim_context")
-    private List<DimensionContext> dimContext;
+    private List<MDimensionContext> dimContext;
     /**
-     * <p>Original spec-file type: TypedValues</p>
-     * <pre>
-     * @optional value_units value_context
-     * </pre>
+     * <p>Original spec-file type: M_TypedValues</p>
+     * 
      * 
      */
     @JsonProperty("typed_values")
-    private TypedValues typedValues;
+    private MTypedValues typedValues;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("name")
@@ -67,7 +63,7 @@ public class NDArray {
         this.name = name;
     }
 
-    public NDArray withName(String name) {
+    public MNDArray withName(String name) {
         this.name = name;
         return this;
     }
@@ -82,36 +78,32 @@ public class NDArray {
         this.description = description;
     }
 
-    public NDArray withDescription(String description) {
+    public MNDArray withDescription(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    public Term getDataType() {
+    public MTerm getDataType() {
         return dataType;
     }
 
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    public void setDataType(Term dataType) {
+    public void setDataType(MTerm dataType) {
         this.dataType = dataType;
     }
 
-    public NDArray withDataType(Term dataType) {
+    public MNDArray withDataType(MTerm dataType) {
         this.dataType = dataType;
         return this;
     }
@@ -126,51 +118,47 @@ public class NDArray {
         this.nDimensions = nDimensions;
     }
 
-    public NDArray withNDimensions(Long nDimensions) {
+    public MNDArray withNDimensions(Long nDimensions) {
         this.nDimensions = nDimensions;
         return this;
     }
 
     @JsonProperty("dim_context")
-    public List<DimensionContext> getDimContext() {
+    public List<MDimensionContext> getDimContext() {
         return dimContext;
     }
 
     @JsonProperty("dim_context")
-    public void setDimContext(List<DimensionContext> dimContext) {
+    public void setDimContext(List<MDimensionContext> dimContext) {
         this.dimContext = dimContext;
     }
 
-    public NDArray withDimContext(List<DimensionContext> dimContext) {
+    public MNDArray withDimContext(List<MDimensionContext> dimContext) {
         this.dimContext = dimContext;
         return this;
     }
 
     /**
-     * <p>Original spec-file type: TypedValues</p>
-     * <pre>
-     * @optional value_units value_context
-     * </pre>
+     * <p>Original spec-file type: M_TypedValues</p>
+     * 
      * 
      */
     @JsonProperty("typed_values")
-    public TypedValues getTypedValues() {
+    public MTypedValues getTypedValues() {
         return typedValues;
     }
 
     /**
-     * <p>Original spec-file type: TypedValues</p>
-     * <pre>
-     * @optional value_units value_context
-     * </pre>
+     * <p>Original spec-file type: M_TypedValues</p>
+     * 
      * 
      */
     @JsonProperty("typed_values")
-    public void setTypedValues(TypedValues typedValues) {
+    public void setTypedValues(MTypedValues typedValues) {
         this.typedValues = typedValues;
     }
 
-    public NDArray withTypedValues(TypedValues typedValues) {
+    public MNDArray withTypedValues(MTypedValues typedValues) {
         this.typedValues = typedValues;
         return this;
     }
@@ -187,7 +175,7 @@ public class NDArray {
 
     @Override
     public String toString() {
-        return ((((((((((((((("NDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((("MNDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

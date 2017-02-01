@@ -12,20 +12,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ContextItem</p>
+ * <p>Original spec-file type: TypedValue</p>
  * <pre>
- * @optional units
+ * @optional value_units
  * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "property",
-    "units",
+    "value_type",
+    "value_units",
     "value"
 })
-public class ContextItem {
+public class TypedValue {
 
     /**
      * <p>Original spec-file type: Term</p>
@@ -34,8 +34,8 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("property")
-    private Term property;
+    @JsonProperty("value_type")
+    private Term valueType;
     /**
      * <p>Original spec-file type: Term</p>
      * <pre>
@@ -43,11 +43,18 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("units")
-    private Term units;
+    @JsonProperty("value_units")
+    private Term valueUnits;
     /**
      * <p>Original spec-file type: Value</p>
      * <pre>
+     * scalar_type can be one of:
+     *     object_ref
+     *     oterm_ref
+     *     int
+     *     float
+     *     boolean
+     *     string
      * @optional object_ref oterm_ref int_value float_value string_value
      * </pre>
      * 
@@ -63,9 +70,9 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("property")
-    public Term getProperty() {
-        return property;
+    @JsonProperty("value_type")
+    public Term getValueType() {
+        return valueType;
     }
 
     /**
@@ -75,13 +82,13 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("property")
-    public void setProperty(Term property) {
-        this.property = property;
+    @JsonProperty("value_type")
+    public void setValueType(Term valueType) {
+        this.valueType = valueType;
     }
 
-    public ContextItem withProperty(Term property) {
-        this.property = property;
+    public TypedValue withValueType(Term valueType) {
+        this.valueType = valueType;
         return this;
     }
 
@@ -92,9 +99,9 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("units")
-    public Term getUnits() {
-        return units;
+    @JsonProperty("value_units")
+    public Term getValueUnits() {
+        return valueUnits;
     }
 
     /**
@@ -104,19 +111,26 @@ public class ContextItem {
      * </pre>
      * 
      */
-    @JsonProperty("units")
-    public void setUnits(Term units) {
-        this.units = units;
+    @JsonProperty("value_units")
+    public void setValueUnits(Term valueUnits) {
+        this.valueUnits = valueUnits;
     }
 
-    public ContextItem withUnits(Term units) {
-        this.units = units;
+    public TypedValue withValueUnits(Term valueUnits) {
+        this.valueUnits = valueUnits;
         return this;
     }
 
     /**
      * <p>Original spec-file type: Value</p>
      * <pre>
+     * scalar_type can be one of:
+     *     object_ref
+     *     oterm_ref
+     *     int
+     *     float
+     *     boolean
+     *     string
      * @optional object_ref oterm_ref int_value float_value string_value
      * </pre>
      * 
@@ -129,6 +143,13 @@ public class ContextItem {
     /**
      * <p>Original spec-file type: Value</p>
      * <pre>
+     * scalar_type can be one of:
+     *     object_ref
+     *     oterm_ref
+     *     int
+     *     float
+     *     boolean
+     *     string
      * @optional object_ref oterm_ref int_value float_value string_value
      * </pre>
      * 
@@ -138,7 +159,7 @@ public class ContextItem {
         this.value = value;
     }
 
-    public ContextItem withValue(Value value) {
+    public TypedValue withValue(Value value) {
         this.value = value;
         return this;
     }
@@ -155,7 +176,7 @@ public class ContextItem {
 
     @Override
     public String toString() {
-        return ((((((((("ContextItem"+" [property=")+ property)+", units=")+ units)+", value=")+ value)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("TypedValue"+" [valueType=")+ valueType)+", valueUnits=")+ valueUnits)+", value=")+ value)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

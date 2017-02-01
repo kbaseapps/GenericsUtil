@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: DimensionContext</p>
+ * <p>Original spec-file type: M_DimensionContext</p>
  * 
  * 
  */
@@ -24,48 +24,42 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "size",
     "typed_values"
 })
-public class DimensionContext {
+public class MDimensionContext {
 
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    private Term dataType;
+    private MTerm dataType;
     @JsonProperty("size")
     private Long size;
     @JsonProperty("typed_values")
-    private List<TypedValues> typedValues;
+    private List<MTypedValues> typedValues;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    public Term getDataType() {
+    public MTerm getDataType() {
         return dataType;
     }
 
     /**
-     * <p>Original spec-file type: Term</p>
-     * <pre>
-     * @optional oterm_ref oterm_name
-     * </pre>
+     * <p>Original spec-file type: M_Term</p>
+     * 
      * 
      */
     @JsonProperty("data_type")
-    public void setDataType(Term dataType) {
+    public void setDataType(MTerm dataType) {
         this.dataType = dataType;
     }
 
-    public DimensionContext withDataType(Term dataType) {
+    public MDimensionContext withDataType(MTerm dataType) {
         this.dataType = dataType;
         return this;
     }
@@ -80,22 +74,22 @@ public class DimensionContext {
         this.size = size;
     }
 
-    public DimensionContext withSize(Long size) {
+    public MDimensionContext withSize(Long size) {
         this.size = size;
         return this;
     }
 
     @JsonProperty("typed_values")
-    public List<TypedValues> getTypedValues() {
+    public List<MTypedValues> getTypedValues() {
         return typedValues;
     }
 
     @JsonProperty("typed_values")
-    public void setTypedValues(List<TypedValues> typedValues) {
+    public void setTypedValues(List<MTypedValues> typedValues) {
         this.typedValues = typedValues;
     }
 
-    public DimensionContext withTypedValues(List<TypedValues> typedValues) {
+    public MDimensionContext withTypedValues(List<MTypedValues> typedValues) {
         this.typedValues = typedValues;
         return this;
     }
@@ -112,7 +106,7 @@ public class DimensionContext {
 
     @Override
     public String toString() {
-        return ((((((((("DimensionContext"+" [dataType=")+ dataType)+", size=")+ size)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("MDimensionContext"+" [dataType=")+ dataType)+", size=")+ size)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
