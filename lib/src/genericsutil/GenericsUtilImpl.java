@@ -223,14 +223,19 @@ public class GenericsUtilImpl {
                 List<TypedValue> vc = new ArrayList<TypedValue>();
                 // make user specify type for now;
                 // it should be auto-detected!
-                if ((f.length % 2) != 0) 
-                    throw new Exception("Error in typed values list '"+description+"'; need even number of terms: item, [context type, context, ]* [, units]");
-                int nContext = (f.length-2)/2;
+                int nContext = 0;
+                if ((f.length % 2) == 0)
+                    nContext = (f.length-2)/2;
+                else
+                    nContext = (f.length-1)/2;
                 for (int i=0; i<nContext; i++)
-                    vc.add(makeTV(joinString(f,i*2+1,i*2+2)));
+                    vc.add(makeTV(joinString(f,i*2+1,i*2+3)));
                 rv.setValueContext(vc);
+                if ((f.length % 2) == 0)
+                    rv.setValueUnits(makeTerm(f[f.length-1]));
             }
-            rv.setValueUnits(makeTerm(f[f.length-1]));
+            else
+                rv.setValueUnits(makeTerm(f[f.length-1]));
         }
         else {
             rv.setValueType(makeTerm(f[0]));
@@ -326,7 +331,12 @@ public class GenericsUtilImpl {
                 curValues = new Values()
                     .withScalarType("string")
                     .withStringValues(Arrays.asList(new String[(int)dLength]));
-                TypedValues tvs = makeTVS(joinString(f,2));
+                dc.setDataType(makeTerm(f[2]));
+                TypedValues tvs = null;
+                if (f.length > 3)
+                    tvs = makeTVS(joinString(f,3));
+                else
+                    tvs = makeTVS(f[2]);
                 tvs.setValues(curValues);
                 List<TypedValues> tvsl = dc.getTypedValues();
                 if (tvsl==null)

@@ -1,13 +1,12 @@
 name, N2E2_nitrate_growth
 description, N2E2 growth data on nitrate
-type, growth data
+type, microbial growth
 values, optical density, dimensionless unit
 meta, temperature, 30, degree Celcius
-meta, reading type, absorbance endpoint
 meta, wavelength, 590, angstrom
 meta, date, 2014-03-11
 meta, time, 12:30
-meta, strain, N2E2
+meta, strain name, N2E2
 size, 8, 5
 dmeta, 1, time series, time since inoculation, hour
 1, 0
@@ -18,7 +17,7 @@ dmeta, 1, time series, time since inoculation, hour
 6, 52
 7, 69
 8, 75
-dmeta, 2, nitrate, concentration, mM
+dmeta, 2, condition, concentration, molecule, nitrate, mM
 1, 0.01
 2, 0.10
 3, 1.0

@@ -14,7 +14,7 @@ module KBaseGenerics{
         boolean
         string
 
-    @optional object_ref oterm_ref int_value float_value string_value
+    @optional object_ref oterm_ref int_value float_value string_value boolean_value
     */
     typedef structure{
         data_type   scalar_type;
@@ -28,7 +28,7 @@ module KBaseGenerics{
     } Value;
 
     /*
-    @optional object_refs oterm_refs int_values float_values string_values
+    @optional object_refs oterm_refs int_values float_values string_values boolean_values
     */
     typedef structure{
         data_type   scalar_type;

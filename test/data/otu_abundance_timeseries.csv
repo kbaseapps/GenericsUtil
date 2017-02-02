@@ -1,17 +1,17 @@
 name, OTU_abundance_timeseries
 description, Phyla of OTUs found in multiple wells by 16S survey over time
-type, taxonomic data
-values, relative abundance, dimensionless unit
+type, taxonomic abundance
+values, abundance, context, relative, dimensionless unit
 meta, date, 2009
 size, 2, 3, 17
 dmeta, 1, condition
 1, EVO pre-injection
 2, Day 16 after EVO
-dmeta, 2, well
+dmeta, 2, well, well
 1, FW215
 2, GP01
 3, GP03
-dmeta, 3, phyla
+dmeta, 3, taxon
 1, Deferribacteres
 2, Spirochaetes
 3, Gemmatimonadetes

@@ -1,13 +1,12 @@
 name, N2E2_carbon_sources_nitrate_growth
 description, N2E2 in UGA
-type, growth data
+type, microbial growth
 values, optical density, dimensionless unit
 meta, temperature, 30, degree Celcius
-meta, reading type, absorbance endpoint
 meta, wavelength, 590, angstrom
 meta, date, 2014-03-11
 meta, time, 12:30
-meta, strain, N2E2
+meta, strain name, N2E2
 size, 8, 10
 dmeta, 1, time series, time since inoculation, hour
 1, 0
@@ -18,25 +17,25 @@ dmeta, 1, time series, time since inoculation, hour
 6, 52
 7, 69
 8, 75
-dmeta, 2, nitrate, concentration, mM
+dmeta, 2, condition, concentration, molecule, nitrate, mM
 2, 20
 4, 20
 6, 20
 8, 20
 10, 20
-dmeta, 2, fumarate, concentration, mM
+dmeta, 2, condition, concentration, molecule, fumarate, mM
 1, 10
 2, 10
-dmeta, 2, lactate, concentration, mM
+dmeta, 2, condition, concentration, molecule, lactate, mM
 3, 10
 4, 10
-dmeta, 2, pyruvate, concentration, mM
+dmeta, 2, condition, concentration, molecule, pyruvate, mM
 5, 10
 6, 10
-dmeta, 2, sucrose, concentration, mM
+dmeta, 2, condition, concentration, molecule, sucrose, mM
 7, 10
 8, 10
-dmeta, 2, succinate, concentration, mM
+dmeta, 2, condition, concentration, molecule, succinate, mM
 9, 10
 10, 10
 data
