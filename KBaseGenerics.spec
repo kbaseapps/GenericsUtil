@@ -77,21 +77,28 @@ module KBaseGenerics{
         list<TypedValues> typed_values;
     } DimensionContext;
 
+    /*
+    @optional array_context
+    */
     typedef structure{
         string name;
         string description;
         Term data_type;
+        list<TypedValue> array_context;
 
         int n_dimensions;
         list<DimensionContext> dim_context;
         TypedValues typed_values;
     } NDArray;
 
-
+    /*
+    @optional array_context
+    */
     typedef structure{
         string name;
         string description;
         Term data_type;
+        list<TypedValue> array_context;
 
         int n_dimensions;
         list<DimensionContext> dim_context;
@@ -103,7 +110,7 @@ module KBaseGenerics{
     // Types used for mapping
     //-----------------
     */
-    
+
     typedef structure{
         string ontology_id;
         string oterm_id;
@@ -146,6 +153,8 @@ module KBaseGenerics{
         string name;
         string description;
         M_Term data_type;
+        list<M_TypedValue> array_context;
+        
 
         int n_dimensions;
         list<M_DimensionContext> dim_context;

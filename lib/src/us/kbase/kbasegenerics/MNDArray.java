@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "description",
     "data_type",
+    "array_context",
     "n_dimensions",
     "dim_context",
     "typed_values"
@@ -40,6 +41,8 @@ public class MNDArray {
      */
     @JsonProperty("data_type")
     private MTerm dataType;
+    @JsonProperty("array_context")
+    private List<MTypedValue> arrayContext;
     @JsonProperty("n_dimensions")
     private Long nDimensions;
     @JsonProperty("dim_context")
@@ -105,6 +108,21 @@ public class MNDArray {
 
     public MNDArray withDataType(MTerm dataType) {
         this.dataType = dataType;
+        return this;
+    }
+
+    @JsonProperty("array_context")
+    public List<MTypedValue> getArrayContext() {
+        return arrayContext;
+    }
+
+    @JsonProperty("array_context")
+    public void setArrayContext(List<MTypedValue> arrayContext) {
+        this.arrayContext = arrayContext;
+    }
+
+    public MNDArray withArrayContext(List<MTypedValue> arrayContext) {
+        this.arrayContext = arrayContext;
         return this;
     }
 
@@ -175,7 +193,7 @@ public class MNDArray {
 
     @Override
     public String toString() {
-        return ((((((((((((((("MNDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("MNDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", arrayContext=")+ arrayContext)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

@@ -14,7 +14,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: HNDArray</p>
- * 
+ * <pre>
+ * @optional array_context
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "name",
     "description",
     "data_type",
+    "array_context",
     "n_dimensions",
     "dim_context",
     "typed_values"
@@ -42,6 +45,8 @@ public class HNDArray {
      */
     @JsonProperty("data_type")
     private Term dataType;
+    @JsonProperty("array_context")
+    private List<TypedValue> arrayContext;
     @JsonProperty("n_dimensions")
     private Long nDimensions;
     @JsonProperty("dim_context")
@@ -109,6 +114,21 @@ public class HNDArray {
         return this;
     }
 
+    @JsonProperty("array_context")
+    public List<TypedValue> getArrayContext() {
+        return arrayContext;
+    }
+
+    @JsonProperty("array_context")
+    public void setArrayContext(List<TypedValue> arrayContext) {
+        this.arrayContext = arrayContext;
+    }
+
+    public HNDArray withArrayContext(List<TypedValue> arrayContext) {
+        this.arrayContext = arrayContext;
+        return this;
+    }
+
     @JsonProperty("n_dimensions")
     public Long getNDimensions() {
         return nDimensions;
@@ -166,7 +186,7 @@ public class HNDArray {
 
     @Override
     public String toString() {
-        return ((((((((((((((("HNDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((("HNDArray"+" [name=")+ name)+", description=")+ description)+", dataType=")+ dataType)+", arrayContext=")+ arrayContext)+", nDimensions=")+ nDimensions)+", dimContext=")+ dimContext)+", typedValues=")+ typedValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
