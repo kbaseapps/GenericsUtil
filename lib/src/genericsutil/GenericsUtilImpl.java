@@ -83,7 +83,7 @@ public class GenericsUtilImpl {
                                     String name,
                                     String objectType,
                                     Object o,
-                                    HashMap<String,String> metadata,
+                                    Map<String,String> metadata,
                                     List<ProvenanceAction> provenance) throws Exception {
         // we may want to calculate some workspace metadata on the
         // matrix when saving it, or create search indices here.
@@ -200,7 +200,7 @@ public class GenericsUtilImpl {
     public static TypedValue makeTV(String description) throws Exception {
         String[] f = splitTrim(description);
         TypedValue rv = new TypedValue()
-            .withValueTYpe(makeTerm(f[0]))
+            .withValueType(makeTerm(f[0]))
             .withValue(makeValue(f[1]));
         if (f.length == 3)
             rv.setValueUnits(makeTerm(f[2]));
@@ -224,7 +224,7 @@ public class GenericsUtilImpl {
                 // make user specify type for now;
                 // it should be auto-detected!
                 if ((f.length % 2) != 0) 
-                    throw new Exception("Error in typed values list '"+description"'; need even number of terms: item, [context type, context, ]* [, units]");
+                    throw new Exception("Error in typed values list '"+description+"'; need even number of terms: item, [context type, context, ]* [, units]");
                 int nContext = (f.length-2)/2;
                 for (int i=0; i<nContext; i++)
                     vc.add(makeTV(joinString(f,i*2+1,i*2+2)));
@@ -274,7 +274,6 @@ public class GenericsUtilImpl {
         int inDimension = 0;
         Long[] dLengths = null;
         List<DimensionContext> dContexts = null;
-        TypedValues curTypedValues = null;
         Values curValues = null;
         while ((buffer = infile.readLine()) != null) {
             String[] f = splitTrim(buffer);
@@ -294,8 +293,7 @@ public class GenericsUtilImpl {
             else if (f[0].equals("values")) {
                 if (f.length < 3)
                     throw new Exception("Bad format for values; need at least 3 columns; got: "+buffer);
-                curTypedValues = makeTypedValues(joinString(f,1));
-                nda.setTypedValues(curTypedValues);
+                nda.setTypedValues(makeTVS(joinString(f,1)));
             }
             else if (f[0].equals("meta")) {
                 TypedValue tv = makeTV(joinString(f,1));
@@ -315,7 +313,7 @@ public class GenericsUtilImpl {
                 for (int i=0; i<nDimensions; i++) {
                     dLengths[i] = new Long(StringUtil.atol(f[i+1]));
                     dContexts.add(new DimensionContext()
-                                  .withDimensionSize(dLengths[i]));
+                                  .withSize(dLengths[i]));
                 }
                 nda.setDimContext(dContexts);
             }
@@ -330,11 +328,11 @@ public class GenericsUtilImpl {
                     .withStringValues(Arrays.asList(new String[(int)dLength]));
                 TypedValues tvs = makeTVS(joinString(f,2));
                 tvs.setValues(curValues);
-                List<TypedValues> tvss = dc.getItems();
-                if (tvss==null)
-                    tvss = new ArrayList<TypedValues>();
-                tvss.add(tvs);
-                dc.setItems(tvss);
+                List<TypedValues> tvsl = dc.getTypedValues();
+                if (tvsl==null)
+                    tvsl = new ArrayList<TypedValues>();
+                tvsl.add(tvs);
+                dc.setTypedValues(tvsl);
             }
             else if (f[0].equals("data")) {
                 if (f.length > 1)
@@ -346,7 +344,7 @@ public class GenericsUtilImpl {
                 curValues = new Values()
                     .withScalarType("string")
                     .withStringValues(Arrays.asList(new String[(int)dLength]));
-                nda.setValues(curValues);
+                nda.getTypedValues().setValues(curValues);
             }
             else {
                 // must be numeric value greater than 0
@@ -487,9 +485,9 @@ public class GenericsUtilImpl {
     public static void map(TypedValue tv) {
         if (tv==null)
             return;
-        map(tv.getProperty());
+        map(tv.getValueType());
         map(tv.getValue());
-        Term u = tv.getUnits();
+        Term u = tv.getValueUnits();
         if (u != null) {
             map(u);
         }
@@ -570,7 +568,7 @@ public class GenericsUtilImpl {
         Object o = nda;
         Map<String,String> metadata = new HashMap<String,String>();
         metadata.put("mapped","false");
-        metadata.put("n_dimensions", Integer.toString(nda.getNDimensions()));
+        metadata.put("n_dimensions", nda.getNDimensions().toString());
 
         // save in workspace
         String objectRef = saveObject(wc,
