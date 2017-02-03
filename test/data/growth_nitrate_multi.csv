@@ -2,7 +2,7 @@ name, N2E2_carbon_sources_nitrate_growth
 description, N2E2 in UGA
 type, microbial growth
 values, optical density, dimensionless unit
-meta, temperature, 30, degree Celcius
+meta, temperature, 30, degree Celsius
 meta, wavelength, 590, angstrom
 meta, date, 2014-03-11
 meta, time, 12:30

@@ -7,7 +7,7 @@ size, 2, 3, 17
 dmeta, 1, condition
 1, EVO pre-injection
 2, Day 16 after EVO
-dmeta, 2, well, well
+dmeta, 2, well
 1, FW215
 2, GP01
 3, GP03
