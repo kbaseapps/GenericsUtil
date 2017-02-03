@@ -27,7 +27,7 @@
 	    "default_values" : [ "" ],
 	    "field_type" : "text",
 	    "text_options" : {
-		"valid_ws_types" : [ "KBaseGenerics.NDArray", "KBaseGenerics.Array", "KBaseGenerics.Matrix2D", "KBaseGenerics.Matrix3D", "KBaseGenerics.Matrix2DFloatWithReplicates", "KBaseGenerics.Matrix2DFloatWithStat" ],
+		"valid_ws_types" : [ "KBaseGenerics.NDArray", "KBaseGenerics.HNDArray" ],
 		"is_output_name" : true
 	    }
 	},
@@ -42,27 +42,11 @@
 		"options": [
 		    {
 			"value": "KBaseGenerics.NDArray",
-			"display": "N-Dimensional Array (can hold all other generic types)"
+			"display": "N-Dimensional Array"
 		    },
 		    {
-			"value": "KBaseGenerics.Array",
-			"display": "1-Dimensional Array"
-		    },
-		    {
-			"value": "KBaseGenerics.Matrix2D",
-			"display": "2-Dimensional Matrix"
-		    },
-		    {
-			"value": "KBaseGenerics.Matrix3D",
-			"display": "3-Dimensional Matrix"
-		    },
-		    {
-			"value": "KBaseGenerics.Matrix2DFloatWithReplicates",
-			"display": "2-Dimensional Matrix of Floating point data, with Replicates"
-		    },
-		    {
-			"value": "KBaseGenerics.Matrix2DFloatWithStat",
-			"display": "2-Dimensional Matrix of Floating point data, with Statistics"
+			"value": "KBaseGenerics.HNDArray",
+			"display": "Heterogeneous N-Dimensional Array"
 		    }
 		],
 		"is_output_name" : true
