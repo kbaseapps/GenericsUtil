@@ -4,7 +4,7 @@
 name     : UPLOAD CSV FILE
 subtitle : none
 tooltip  : |
-    Import a Generic Array (possibly multi-dimensional) in CSV format.
+    Import a multidimensional generic data matrix in CSV format.
 
 screenshots :
     []
@@ -33,9 +33,9 @@ parameters :
         ui-name : |
             CSV file
         short-hint : |
-            File with a generic array in CSV format.
+            File with a generic matrix in CSV format.
         long-hint  : |
-            File with a generic (possibly multi-dimensional) array in CSV format.
+            File with a multidimensional generic data matrix in CSV format.
 
     object_name :
         ui-name : |

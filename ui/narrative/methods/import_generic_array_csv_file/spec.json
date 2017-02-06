@@ -42,11 +42,11 @@
 		"options": [
 		    {
 			"value": "KBaseGenerics.NDArray",
-			"display": "N-Dimensional Array"
+			"display": "Homogenous data"
 		    },
 		    {
 			"value": "KBaseGenerics.HNDArray",
-			"display": "Heterogeneous N-Dimensional Array"
+			"display": "Heterogenous (in one dimension) data"
 		    }
 		],
 		"is_output_name" : true

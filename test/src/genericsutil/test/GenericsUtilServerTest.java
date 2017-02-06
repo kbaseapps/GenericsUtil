@@ -89,7 +89,7 @@ public class GenericsUtilServerTest {
     public void testImportGrowth() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_multi.csv"))
-            .withObjectName("nitrate_growth_nda")
+            .withObjectName("nitrate_growth")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -104,7 +104,7 @@ public class GenericsUtilServerTest {
     public void testImportGrowth2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_simple.csv"))
-            .withObjectName("nitrate_growth_simple_nda")
+            .withObjectName("nitrate_growth_simple")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -119,7 +119,7 @@ public class GenericsUtilServerTest {
     public void testImportFitness() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_jw710_random.csv"))
-            .withObjectName("fitness_jw710_nda")
+            .withObjectName("fitness_jw710")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -134,7 +134,7 @@ public class GenericsUtilServerTest {
     public void testImportFitness2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_jw710_random_small.csv"))
-            .withObjectName("fitness_jw710_small_nda")
+            .withObjectName("fitness_jw710_small")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -149,7 +149,7 @@ public class GenericsUtilServerTest {
     public void testImportFitness3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_multi_random.csv"))
-            .withObjectName("fitness_multiple_dvh_strains_nda")
+            .withObjectName("fitness_multiple_dvh_strains")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -164,7 +164,7 @@ public class GenericsUtilServerTest {
     public void testImportEA() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_single.csv"))
-            .withObjectName("enzyme_activity_dvh_nda")
+            .withObjectName("enzyme_activity_dvh")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -179,7 +179,7 @@ public class GenericsUtilServerTest {
     public void testImportEA2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
-            .withObjectName("enzyme_activity_dvh_replicates_nda")
+            .withObjectName("enzyme_activity_dvh_replicates")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -194,7 +194,7 @@ public class GenericsUtilServerTest {
     public void testImportEA3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_statistics.csv"))
-            .withObjectName("enzyme_activity_dvh_stats_nda")
+            .withObjectName("enzyme_activity_dvh_stats")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -209,7 +209,7 @@ public class GenericsUtilServerTest {
     public void testImportTax() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
-            .withObjectName("taxonomic_abundance_simple_nda")
+            .withObjectName("taxonomic_abundance_simple")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -224,7 +224,7 @@ public class GenericsUtilServerTest {
     public void testImportTax2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))
-            .withObjectName("taxonomic_abundance_multiwell_nda")
+            .withObjectName("taxonomic_abundance_multiwell")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -239,12 +239,54 @@ public class GenericsUtilServerTest {
     public void testImportTax3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_timeseries.csv"))
-            .withObjectName("taxonomic_abundance_timeseries_nda")
+            .withObjectName("taxonomic_abundance_timeseries")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import time series taxonomic data test finished");
+    }
+
+    /**
+       import some bad data
+    */
+    @Test(expected=Exception.class)
+    public void testBad1() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad1.csv"))
+            .withObjectName("bad_growth_data_1")
+            .withObjectType("KBaseGenerics.NDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.fail("Should have thrown exception");
+    }
+    
+    /**
+       import some bad data, 2
+    */
+    @Test(expected=Exception.class)
+    public void testBad2() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad2.csv"))
+            .withObjectName("bad_growth_data_2")
+            .withObjectType("KBaseGenerics.NDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.fail("Should have thrown exception");
+    }
+    
+    /**
+       import some bad data, 3
+    */
+    @Test(expected=Exception.class)
+    public void testBad3() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad3.csv"))
+            .withObjectName("bad_growth_data_3")
+            .withObjectType("KBaseGenerics.NDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.fail("Should have thrown exception");
     }
 
     /**

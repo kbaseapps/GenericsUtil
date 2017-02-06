@@ -1,0 +1,47 @@
+name, Shewanella growth data
+description, Shewanella growth on sugars
+type, growth data (EO:0000002)
+values, optical density (KO:0000033), dimensionless unit (UO:0000186)
+meta, date (KO:0000004), 2014-03-11
+meta, time (KO:0000005), 12:30
+meta, strain (KO:0000003), Shewanella oneidensis MR-1 (14853/18/1)
+size, 8, 3
+dmeta, 1, time since inoculation (KO:0000034), hour (UO:0000032)
+1, 0
+2, 6
+3, 22
+4, 30
+5, 45
+6, 52
+7, 69
+8, 75
+dmeta, 2, carbon source (KO:0000036)
+1, fructose (CHEBI:28757)
+2, maltose (CHEBI:17306)
+3, glucose (CHEBI:17234)
+data
+1, 1, 0.0118
+1, 2, 0.01
+1, 3, 0.0114
+2, 1, 0.0088
+2, 2, 0.0083
+2, 3, 0.0079
+3, 1, 0.027
+3, 2, 0.0735
+3, 3, 0.0188
+4, 1, 0.0306
+4, 2, 0.1014
+4, 3, 0.0259
+5, 1, 0.0251
+5, 2, 0.1316
+5, 3, 0.0249
+6, 1, 0.0308
+6, 2, 0.1616
+6, 3, 0.0288
+7, 1, 0.0265
+7, 2, 0.168
+7, 3, 0.0282
+8, 1, 0.0272
+8, 2, 0.1668
+8, 3, 0.0282
+8, 4, 0.1282

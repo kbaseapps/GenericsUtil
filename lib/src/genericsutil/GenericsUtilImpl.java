@@ -284,17 +284,15 @@ public class GenericsUtilImpl {
             String[] f = splitTrim(buffer);
             if ((f==null) || (f.length < 1))
                 continue;
-            if (f[0].equals("name")) {
+            if (f[0].equals("name"))
                 nda.setName(joinString(f,1));
-            }
             else if (f[0].equals("description")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for description; need at least 2 columns; got: "+buffer);
                 nda.setDescription(joinString(f,1));
             }
-            else if (f[0].equals("type")) {
+            else if (f[0].equals("type"))
                 nda.setDataType(makeTerm(joinString(f,1)));
-            }
             else if (f[0].equals("values")) {
                 if (f.length < 3)
                     throw new Exception("Bad format for values; need at least 3 columns; got: "+buffer);
@@ -362,6 +360,11 @@ public class GenericsUtilImpl {
                 String val = null;
                 if (index <= 0L)
                     throw new Exception("Bad format; was expecting comma-separated index (or indices) starting with 1; got: "+buffer);
+                if ((inDimension <= dLengths.length) &&
+                    (index > dLengths[inDimension-1].longValue()))
+                    throw new Exception("Bad format; index '"+index+"' is greater than the dimension length ("+dLengths[inDimension-1].longValue()+") for dimension "+(inDimension)+" in line: "+buffer);
+
+                // handle multi-dimensional data
                 if ((inDimension > dLengths.length) &&
                     (dLengths.length > 1)) {
                     // multidimensional data
@@ -372,10 +375,14 @@ public class GenericsUtilImpl {
                     // get all the dimensions
                     long[] indices = new long[dLengths.length];
                     indices[0] = index;
-                    for (int i=1; i<dLengths.length; i++) {
+                    for (int i=1; i<dLengths.length; i++)
                         indices[i] = StringUtil.atol(f[i]);
+                    // check they're not too large or small
+                    for (int i=0; i<dLengths.length; i++) {
                         if (indices[i] <= 0L)
-                            throw new Exception("Bad format; was expecting comma-separated index (or indices) starting with 1; got: "+buffer);
+                            throw new Exception("Bad format; all indices should start at 1; bad line is: "+buffer);
+                        if (indices[i] > dLengths[i].longValue())
+                            throw new Exception("Bad format; index '"+indices[i]+"' is greater than the dimension length ("+dLengths[i].longValue()+") for dimension "+(i+1)+" in line: "+buffer);
                     }
                     // use row major order to find real index:
                     index = 0L;
@@ -388,7 +395,7 @@ public class GenericsUtilImpl {
                 }
                 else {
                     if (f.length < 2) {
-                        throw new Exception("Bad format; was expecting 2 columns instead of "+(f.length)+": "+buffer);
+                        throw new Exception("Bad format; was expecting 2 columns instead of "+(f.length)+" in line: "+buffer);
                     }
                     val = joinString(f,1);
 
@@ -576,9 +583,20 @@ public class GenericsUtilImpl {
         // save as other type if necessary (not implemented)
         String objectType = params.getObjectType();
         Object o = nda;
+
+        // make metadata
         Map<String,String> metadata = new HashMap<String,String>();
         metadata.put("mapped","false");
         metadata.put("n_dimensions", nda.getNDimensions().toString());
+        String typeDescriptor = nda.getDataType().getTermName();
+        typeDescriptor += " <"+nda.getTypedValues().getValueType().getTermName()+"> (";
+        for (DimensionContext dc : nda.getDimContext()) {
+            if (!typeDescriptor.endsWith("("))
+                typeDescriptor += " x ";
+            typeDescriptor += dc.getDataType().getTermName();
+        }
+        typeDescriptor += ")";
+        metadata.put("data_type",typeDescriptor);
 
         // save in workspace
         String objectRef = saveObject(wc,
