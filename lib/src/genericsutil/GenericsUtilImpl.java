@@ -665,7 +665,8 @@ public class GenericsUtilImpl {
         metadata.put("n_dimensions", hnda.getNDimensions().toString());
         String typeDescriptor = hnda.getDataType().getTermName();
         if (nda != null)
-            typeDescriptor += ", "+nda.getTypedValues().getValueType().getTermName()+" (";
+            typeDescriptor += ", "+nda.getTypedValues().getValueType().getTermName();
+        typeDescriptor += " (";
         for (DimensionContext dc : hnda.getDimContext()) {
             if (!typeDescriptor.endsWith("("))
                 typeDescriptor += " x ";
