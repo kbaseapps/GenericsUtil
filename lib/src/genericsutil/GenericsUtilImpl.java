@@ -335,7 +335,13 @@ public class GenericsUtilImpl {
                 curValues = new Values()
                     .withScalarType("string")
                     .withStringValues(Arrays.asList(new String[(int)dLength]));
-                dc.setDataType(makeTerm(f[2]));
+                // set data type for entire dimension if not already set
+                // by another dmeta record
+                if (dc.getDataType()==null)
+                    dc.setDataType(makeTerm(f[2]));
+
+                // set values type; could be the same as the data type
+                // if uploader doesn't specify a different type
                 TypedValues tvs = null;
                 if (f.length > 3)
                     tvs = makeTVS(joinString(f,3));
