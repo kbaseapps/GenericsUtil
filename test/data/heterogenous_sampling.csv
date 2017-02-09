@@ -5,8 +5,8 @@ meta, ENIGMA campaign, 100 well survey
 meta, ENIGMA PI, Terry Hazen
 meta, comment, "After field parameters were measured, we collected samples for groundwater and then filtered samples."
 meta, comment, Time of Collection = time field parameters were measured. 
-size, 8, 3
-hdmeta, 1, environmental parameter
+size, 10, 3
+dmeta, 1, parameter
 1, temperature, degree Celsius
 2, concentration, chemical, oxygen, state, dissolved, mg/L
 3, conductivity, μS/cm
@@ -50,7 +50,7 @@ dmeta, 2, date
 1, 2012-07-25
 2, 2012-07-25
 3, 2012-07-26
-Temperature (°C),DO (mg/L),Conductivity (μS/cm),Redox (mV),pH,Time Measured,Instrument,Sulfide (mg/L),Ferrous Iron (mg/L),Instrument/Method
+data
 1, 1, 22.60
 2, 1, 0.45
 3, 1, 205.00

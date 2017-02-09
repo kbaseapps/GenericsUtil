@@ -248,6 +248,21 @@ public class GenericsUtilServerTest {
     }
 
     /**
+       import some environmental parameters data
+    */
+    @Test
+    public void testImportEP() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/heterogenous_sampling.csv"))
+            .withObjectName("heterogenous_sampling")
+            .withObjectType("KBaseGenerics.HNDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import heterogenous environmental parameters data test finished");
+    }
+    
+    /**
        import some bad data
     */
     @Test(expected=Exception.class)

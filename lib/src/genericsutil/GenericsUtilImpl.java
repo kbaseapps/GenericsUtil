@@ -268,49 +268,55 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Makes a NDArray object from CSV file.
+       Makes a HNDArray object from CSV file.
+       Reads NDArrays also, modeling them as an HNDArray with
+       a single value in the heterogeneous dimension
     */
-    public static NDArray parseCSV(String filePath) throws Exception {
-        // read CSV file into NDArray object
-        NDArray nda = new NDArray();
-            
+    public static HNDArray parseCSV(String filePath) throws Exception {
+        // read CSV file into HNDArray object
+        HNDArray hnda = new HNDArray();
+        boolean isHeterogeneous = true; // assume HNDA unless we see
+        // a "values" annotation
+        
         BufferedReader infile = IO.openReader(filePath);
         String buffer = null;
         int inDimension = 0;
         Long[] dLengths = null;
         List<DimensionContext> dContexts = null;
         Values curValues = null;
+        boolean setupHets = false;
         while ((buffer = infile.readLine()) != null) {
             String[] f = splitTrim(buffer);
             if ((f==null) || (f.length < 1))
                 continue;
             if (f[0].equals("name"))
-                nda.setName(joinString(f,1));
+                hnda.setName(joinString(f,1));
             else if (f[0].equals("description")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for description; need at least 2 columns; got: "+buffer);
-                nda.setDescription(joinString(f,1));
+                hnda.setDescription(joinString(f,1));
             }
             else if (f[0].equals("type"))
-                nda.setDataType(makeTerm(joinString(f,1)));
+                hnda.setDataType(makeTerm(joinString(f,1)));
             else if (f[0].equals("values")) {
-                if (f.length < 3)
-                    throw new Exception("Bad format for values; need at least 3 columns; got: "+buffer);
-                nda.setTypedValues(makeTVS(joinString(f,1)));
+                if (f.length < 2)
+                    throw new Exception("Bad format for values; need at least 2 columns; got: "+buffer);
+                isHeterogeneous = false;
+                hnda.setTypedValues(Arrays.asList(makeTVS(joinString(f,1))));
             }
             else if (f[0].equals("meta")) {
                 TypedValue tv = makeTV(joinString(f,1));
-                List<TypedValue> tvl = nda.getArrayContext();
+                List<TypedValue> tvl = hnda.getArrayContext();
                 if (tvl==null)
                     tvl = new ArrayList<TypedValue>();
                 tvl.add(tv);
-                nda.setArrayContext(tvl);
+                hnda.setArrayContext(tvl);
             }
             else if (f[0].equals("size")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for size; need at least 2 columns; got: "+buffer);
                 int nDimensions = f.length - 1;
-                nda.setNDimensions(new Long((long)nDimensions));
+                hnda.setNDimensions(new Long((long)nDimensions));
                 dLengths = new Long[nDimensions];
                 dContexts = new ArrayList<DimensionContext>(nDimensions);
                 for (int i=0; i<nDimensions; i++) {
@@ -318,7 +324,7 @@ public class GenericsUtilImpl {
                     dContexts.add(new DimensionContext()
                                   .withSize(dLengths[i]));
                 }
-                nda.setDimContext(dContexts);
+                hnda.setDimContext(dContexts);
             }
             else if (f[0].equals("dmeta")) {
                 if (f.length < 3)
@@ -341,21 +347,44 @@ public class GenericsUtilImpl {
                     tvsl = new ArrayList<TypedValues>();
                 tvsl.add(tvs);
                 dc.setTypedValues(tvsl);
+
+                // if this is first set of dimension metadata,
+                // we need to set up array of heterogenous value types
+                if ((inDimension == 1) &&
+                    (isHeterogeneous) &&
+                    (hnda.getTypedValues()==null)) {
+                    tvsl = Arrays.asList(new TypedValues[(int)dLength]);
+                    hnda.setTypedValues(tvsl);
+                    setupHets = true;
+                }
+                else
+                    setupHets = false;
             }
             else if (f[0].equals("data")) {
                 if (f.length > 1)
                     throw new Exception("Bad format for data; need only 1 column; got: "+buffer);
                 inDimension = dLengths.length+1;
+                int firstHomogeneousDimension = 0;
+                int nTVS = 1;
+                if (isHeterogeneous) {
+                    firstHomogeneousDimension = 1;
+                    nTVS = (int)(dLengths[0].longValue());
+                }
+                // length of each data values array
+                // is product of all homogeneous dimensions
                 long dLength = 1L;
-                for (int i=0; i<dLengths.length; i++)
+                for (int i=firstHomogeneousDimension; i<dLengths.length; i++)
                     dLength *= dLengths[i];
-                curValues = new Values()
-                    .withScalarType("string")
-                    .withStringValues(Arrays.asList(new String[(int)dLength]));
-                nda.getTypedValues().setValues(curValues);
+                for (int i=0; i<nTVS; i++) {
+                    curValues = new Values()
+                        .withScalarType("string")
+                        .withStringValues(Arrays.asList(new String[(int)dLength]));
+                    hnda.getTypedValues().get(i).setValues(curValues);
+                }
             }
             else {
-                // must be numeric value greater than 0
+                // first index must be numeric value valid for current
+                // dimension (i.e., between 1 and the dimension length)
                 long index = StringUtil.atol(f[0]);
                 String val = null;
                 if (index <= 0L)
@@ -384,16 +413,22 @@ public class GenericsUtilImpl {
                         if (indices[i] > dLengths[i].longValue())
                             throw new Exception("Bad format; index '"+indices[i]+"' is greater than the dimension length ("+dLengths[i].longValue()+") for dimension "+(i+1)+" in line: "+buffer);
                     }
+                    // if heterogenous data, set curValues to correct set
+                    int firstHomogeneousDimension = 0;
+                    if (isHeterogeneous) {
+                        firstHomogeneousDimension = 1;
+                        curValues = hnda.getTypedValues().get((int)(indices[0])-1).getValues();
+                    }
                     // use row major order to find real index:
                     index = 0L;
-                    for (int i=0; i<dLengths.length; i++) {
+                    for (int i=firstHomogeneousDimension; i<dLengths.length; i++) {
                         long k = 1L;
                         for (int j=i+1; j<dLengths.length; j++)
                             k *= dLengths[j].longValue();
                         index += (indices[i]-1) * k;
                     }
                 }
-                else {
+                else { // single-dimensional data
                     if (f.length < 2) {
                         throw new Exception("Bad format; was expecting 2 columns instead of "+(f.length)+" in line: "+buffer);
                     }
@@ -401,6 +436,12 @@ public class GenericsUtilImpl {
 
                     // convert from 1-based to 0-based indexing
                     index--;
+                }
+
+                if (setupHets) {
+                    // treat each row like a "values" line
+                    TypedValues tvs = makeTVS(val);
+                    hnda.getTypedValues().set((int)index, tvs);
                 }
 
                 // store the value in the string data array
@@ -411,7 +452,7 @@ public class GenericsUtilImpl {
         }
         infile.close();
 
-        return nda;
+        return hnda;
     }
 
     /**
@@ -554,6 +595,35 @@ public class GenericsUtilImpl {
             map(dc);
         map(nda.getTypedValues());
     }
+
+    /**
+       Map premapped types in HNDArray
+    */
+    public static void map(HNDArray hnda) {
+        map(hnda.getDataType());
+        for (DimensionContext dc : hnda.getDimContext())
+            map(dc);
+        for (TypedValues tv : hnda.getTypedValues())
+            map(tv);
+    }
+
+    /**
+       Convert a HNDArray to a NDArray
+    */
+    public static NDArray makeNDArray(HNDArray hnda) throws Exception {
+        int numHet = hnda.getTypedValues().size();
+        if (numHet > 1)
+            throw new Exception("Data are not in a homogeneous array; did you forget a 'values' line when importing?");
+        NDArray rv = new NDArray()
+            .withName(hnda.getName())
+            .withDescription(hnda.getDescription())
+            .withDataType(hnda.getDataType())
+            .withArrayContext(hnda.getArrayContext())
+            .withNDimensions(hnda.getNDimensions())
+            .withDimContext(hnda.getDimContext())
+            .withTypedValues(hnda.getTypedValues().get(0));
+        return rv;
+    }
     
     /**
        Imports a generic object from CSV file.
@@ -573,24 +643,30 @@ public class GenericsUtilImpl {
         String filePath = setupFile(params.getFile(), shockURL, token);
 
         // parse it into the object
-        NDArray nda = parseCSV(filePath);
+        HNDArray hnda = parseCSV(filePath);
 
         // pre-map, for debugging
         boolean DEBUG = false;
         if (DEBUG)
-            map(nda);
+            map(hnda);
 
-        // save as other type if necessary (not implemented)
+        // save as other type if necessary
         String objectType = params.getObjectType();
-        Object o = nda;
+        Object o = hnda;
+        NDArray nda = null;
+        if (objectType.equals("KBaseGenerics.NDArray")) {
+            nda = makeNDArray(hnda);
+            o = nda;
+        }
 
         // make metadata
         Map<String,String> metadata = new HashMap<String,String>();
         metadata.put("mapped","false");
-        metadata.put("n_dimensions", nda.getNDimensions().toString());
-        String typeDescriptor = nda.getDataType().getTermName();
-        typeDescriptor += " <"+nda.getTypedValues().getValueType().getTermName()+"> (";
-        for (DimensionContext dc : nda.getDimContext()) {
+        metadata.put("n_dimensions", hnda.getNDimensions().toString());
+        String typeDescriptor = hnda.getDataType().getTermName();
+        if (nda != null)
+            typeDescriptor += ", "+nda.getTypedValues().getValueType().getTermName()+" (";
+        for (DimensionContext dc : hnda.getDimContext()) {
             if (!typeDescriptor.endsWith("("))
                 typeDescriptor += " x ";
             typeDescriptor += dc.getDataType().getTermName();
