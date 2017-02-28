@@ -23,6 +23,8 @@ import org.strbio.io.*;
 import org.strbio.util.*;
 import com.fasterxml.jackson.databind.*;
 
+import com.opencsv.*;
+
 /**
    This class implements methods (currently just importing)
    required to deal with KBase Generics
@@ -145,14 +147,33 @@ public class GenericsUtilImpl {
     }
 
     /**
+       helper function to quote a string, if contains commas
+    */
+    public static String maybeQuote(String s) {
+        if (s.indexOf(",")>-1)
+            return "\""+s+"\"";
+        return s;
+    }
+
+    /**
+       helper function to unquote a string
+    */
+    public static String unquote(String s) {
+        if ((s.startsWith("\"")) &&
+            (s.endsWith("\"")))
+            return s.substring(1,s.length()-1);
+        return s;
+    }
+
+    /**
        helper function to re-assemble part of a CSV line.  Like
        substring, includes all fields from firstField to lastField-1,
        separated by ", "
     */
     public static String joinString(String [] f, int firstField, int lastField) {
-        String rv = f[firstField].trim();
+        String rv = maybeQuote(f[firstField].trim());
         for (int i=firstField+1; i<lastField; i++)
-            rv += ", "+f[i].trim();
+            rv += ", "+maybeQuote(f[i].trim());
         return rv;
     }
 
@@ -184,14 +205,14 @@ public class GenericsUtilImpl {
     }
 
     /**
-       splits on commas, then trims parts.  This should be replaced
-       with a "real" CSV parser, like OpenCSV.
+       splits on commas, then trims parts.
     */
-    public static String[] splitTrim(String x) {
-        String[] f = x.split(",");
-        for (int i=0; i<f.length; i++)
-            f[i] = f[i].trim();
-        return f;
+    public static String[] splitTrim(String x) throws Exception {
+        CSVParser parser = new CSVParser();
+        String[] rv = parser.parseLine(x);
+        for (int i=0; i<rv.length; i++)
+            rv[i] = rv[i].trim();
+        return rv;
     }
     
     /**
@@ -290,14 +311,14 @@ public class GenericsUtilImpl {
             if ((f==null) || (f.length < 1))
                 continue;
             if (f[0].equals("name"))
-                hnda.setName(joinString(f,1));
+                hnda.setName(f[1]);
             else if (f[0].equals("description")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for description; need at least 2 columns; got: "+buffer);
-                hnda.setDescription(joinString(f,1));
+                hnda.setDescription(f[1]);
             }
             else if (f[0].equals("type"))
-                hnda.setDataType(makeTerm(joinString(f,1)));
+                hnda.setDataType(makeTerm(f[1]));
             else if (f[0].equals("values")) {
                 if (f.length < 2)
                     throw new Exception("Bad format for values; need at least 2 columns; got: "+buffer);
@@ -346,7 +367,7 @@ public class GenericsUtilImpl {
                 if (f.length > 3)
                     tvs = makeTVS(joinString(f,3));
                 else
-                    tvs = makeTVS(f[2]);
+                    tvs = makeTVS(maybeQuote(f[2]));
                 tvs.setValues(curValues);
                 List<TypedValues> tvsl = dc.getTypedValues();
                 if (tvsl==null)
@@ -453,7 +474,7 @@ public class GenericsUtilImpl {
                 // store the value in the string data array
                 // see not above about converting to the correct
                 // type at mapping time
-                curValues.getStringValues().set((int)index,val);
+                curValues.getStringValues().set((int)index,unquote(val));
             }
         }
         infile.close();
