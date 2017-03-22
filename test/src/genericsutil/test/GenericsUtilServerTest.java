@@ -89,6 +89,21 @@ public class GenericsUtilServerTest {
     }
 
     /**
+       import some pre-mapped growth data
+    */
+    @Test
+    public void testImportGrowthPreMapped() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/20160823-MT123_c_source2_generic.csv"))
+            .withObjectName("20160823-MT123_c_source2")
+            .withObjectType("KBaseGenerics.NDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import Premapped Growth test finished");
+    }
+
+    /**
        import some growth data
     */
     // @Test
@@ -313,7 +328,7 @@ public class GenericsUtilServerTest {
     /**
        import some ontology dictionaries
     */
-    @Test
+    // @Test
     public void testImportDictionaries() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         File f = new File("/kb/module/test/data/data_type_ontology.json");

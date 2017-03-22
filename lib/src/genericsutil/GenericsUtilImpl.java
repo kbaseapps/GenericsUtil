@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.util.*;
+import java.util.regex.*;
 import java.util.zip.*;
 import java.net.URL;
 
@@ -147,7 +148,7 @@ public class GenericsUtilImpl {
     }
 
     /**
-       helper function to quote a string, if contains commas
+       helper function to quote a string, but only if contains commas
     */
     public static String maybeQuote(String s) {
         if (s.indexOf(",")>-1)
@@ -483,69 +484,6 @@ public class GenericsUtilImpl {
     }
 
     /**
-       update a pre-mapped term with a mapping (in parentheses)
-    */
-    public static void map(Term t) {
-        if (t==null)
-            return;
-        String name = t.getTermName();
-        if (name.endsWith(")")) {
-            int pos = name.indexOf(" (");
-            String ref = name.substring(pos+2,name.length()-1);
-            name = name.substring(0,pos);
-            t.setTermName(name);
-            t.setOtermRef(ref);
-            t.setOtermName(name);
-        }
-    }
-
-    /**
-       update a pre-mapped value with a reference.
-    */
-    public static void map(Value v) {
-        if (v==null)
-            return;
-        String sv = v.getStringValue();
-        if (sv.endsWith(")")) {
-            int pos = sv.indexOf(" (");
-            String ref = sv.substring(pos+2,sv.length()-1);
-            sv = sv.substring(0,pos);
-            v.setStringValue(sv);
-            if (ref.indexOf(":")>-1) {
-                v.setOtermRef(ref);
-                v.setScalarType("oterm_ref");
-            }
-            else {
-                v.setObjectRef(ref);
-                v.setScalarType("object_ref");
-            }
-        }
-    }
-
-    /**
-       update pre-mapped values with a reference.
-    */
-    public static void map(Values v) {
-        if (v==null)
-            return;
-        List<String> svs = v.getStringValues();
-        if (svs.get(0).endsWith(")")) {
-            int l = svs.size();
-            List<String> refs = new ArrayList<String>(l);
-            for (int i=0; i<l; i++) {
-                String sv = svs.get(i);
-                int pos = sv.indexOf(" (");
-                String ref = sv.substring(pos+2,sv.length()-1);
-                sv = sv.substring(0,pos);
-                svs.set(i,sv);
-                refs.add(ref);
-            }
-            v.setOtermRefs(refs);
-            v.setScalarType("oterm_ref");
-        }
-    }
-    
-    /**
        update a Values object from String to Float
     */
     public static void makeFloatValues(Values v) {
@@ -563,75 +501,242 @@ public class GenericsUtilImpl {
         v.setFloatValues(fv);
         v.setScalarType("float");
     }
+
+    /**
+       update a Values object from String to Boolean
+    */
+    public static void makeBooleanValues(Values v) {
+        List<String> sv = v.getStringValues();
+        int l = sv.size();
+        List<Long> bv = new ArrayList<Long>(l);
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val == null)
+                bv.add(null);
+            else
+                bv.add(new Long(StringUtil.atol(val)));
+        }
+        v.setStringValues(null);
+        v.setBooleanValues(bv);
+        v.setScalarType("boolean");
+    }
     
     /**
-       Map premapped types in a TypedValue
+       update a Values object from String to Int
     */
-    public static void map(TypedValue tv) {
-        if (tv==null)
-            return;
-        map(tv.getValueType());
-        map(tv.getValue());
-        Term u = tv.getValueUnits();
-        if (u != null) {
-            map(u);
+    public static void makeIntValues(Values v) {
+        List<String> sv = v.getStringValues();
+        int l = sv.size();
+        List<Long> iv = new ArrayList<Long>(l);
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val == null)
+                iv.add(null);
+            else
+                iv.add(new Long(StringUtil.atol(val)));
         }
+        v.setStringValues(null);
+        v.setIntValues(iv);
+        v.setScalarType("int");
     }
 
     /**
-       Map premapped types in a TypedValues
+       update a Values object from String to another type, based
+       on a reference term
     */
-    public static void map(TypedValues tvs) {
-        if (tvs==null)
-            return;
-        map(tvs.getValueType());
-        List<TypedValue> vc = tvs.getValueContext();
-        if (vc != null) {
-            for (TypedValue tv : vc)
-                map(tv);
+    public static void transformValues(String ref, Values v) {
+        List<String> sv = v.getStringValues();
+        boolean allNumeric = true;
+        boolean allBoolean = true;
+        boolean allInt = true;
+        int l = sv.size();
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val != null) {
+                allNumeric &= Pattern.matches("^-?[0-9]*\\.?[0-9]+$",val);
+                allInt &= Pattern.matches("^-?[0-9]+$",val);
+                allBoolean &= Pattern.matches("^[01]$",val);
+            }
         }
-        Values v = tvs.getValues();
-        map(v);
-        Term u = tvs.getValueUnits();
-        if (u != null) {
-            map(u);
-            String ref = u.getOtermRef();
-            if ((ref != null) &&
-                (ref.indexOf(":") > -1))
+        if (allBoolean)
+            makeBooleanValues(v);
+        else if (allNumeric) {
+            // kludge: should get this from ontology service
+            if (allInt && (ref.equals("ME:0000005")))
+                makeIntValues(v);
+            else
                 makeFloatValues(v);
         }
     }
+    
+    /**
+       update a pre-mapped term with a mapping (in angle brackets).
+       Returns true if it mapped.
+    */
+    public static boolean map(Term t) {
+        boolean rv = false;
+        if (t==null)
+            return rv;
+        String name = t.getTermName();
+        if (name.endsWith(">")) {
+            int pos = name.lastIndexOf(" <");
+            String ref = name.substring(pos+2,name.length()-1);
+            name = name.substring(0,pos);
+            t.setTermName(name);
+            t.setOtermRef(ref);
+            t.setOtermName(name);
+            rv = true;
+        }
+        return rv;
+    }
 
     /**
-       Map premapped types in a DimensionContext
+       update a pre-mapped value with a reference.  Returns true if it mapped.
     */
-    public static void map(DimensionContext dc) {
-        if (dc==null)
-            return;
-        map(dc.getDataType());
-        for (TypedValues tvs : dc.getTypedValues())
-            map(tvs);
+    public static boolean map(Value v) {
+        boolean rv = false;
+        if (v==null)
+            return rv;
+        String sv = v.getStringValue();
+        if (sv.endsWith(">")) {
+            int pos = sv.lastIndexOf(" <");
+            String ref = sv.substring(pos+2,sv.length()-1);
+            sv = sv.substring(0,pos);
+            v.setStringValue(sv);
+            if (ref.indexOf(":")>-1) {
+                v.setOtermRef(ref);
+                v.setScalarType("oterm_ref");
+            }
+            else {
+                v.setObjectRef(ref);
+                v.setScalarType("object_ref");
+            }
+            rv = true;
+        }
+        return rv;
+    }
+
+    /**
+       update pre-mapped values with a reference.  Returns true if it mapped.
+    */
+    public static boolean map(Values v) throws Exception {
+        boolean rv = false;
+        if (v==null)
+            return rv;
+        List<String> svs = v.getStringValues();
+        if (svs.get(0).endsWith(">")) {
+            int l = svs.size();
+            List<String> refs = new ArrayList<String>(l);
+            for (int i=0; i<l; i++) {
+                String sv = svs.get(i);
+                int pos = sv.lastIndexOf(" <");
+                if (pos==-1)
+                    throw new Exception("error mapping value '"+sv+"': either all or no values must be mapped in the file");
+                String ref = sv.substring(pos+2,sv.length()-1);
+                sv = sv.substring(0,pos);
+                svs.set(i,sv);
+                refs.add(ref);
+            }
+            if (svs.get(0).indexOf(":")>-1) {
+                v.setOtermRefs(refs);
+                v.setScalarType("oterm_ref");
+            }
+            else {
+                v.setObjectRefs(refs);
+                v.setScalarType("object_ref");
+            }
+            rv = true;
+        }
+        return rv;
     }
     
     /**
-       Map premapped types in NDArray
+       Map premapped types in a TypedValue.  Returns true if any mapped.
     */
-    public static void map(NDArray nda) {
-        map(nda.getDataType());
-        for (DimensionContext dc : nda.getDimContext())
-            map(dc);
-        map(nda.getTypedValues());
+    public static boolean map(TypedValue tv) {
+        boolean rv = false;
+        if (tv==null)
+            return rv;
+        rv |= map(tv.getValueType());
+        rv |= map(tv.getValue());
+        Term u = tv.getValueUnits();
+        if (u != null)
+            rv |= map(u);
+        return rv;
     }
 
     /**
-       Map premapped types in HNDArray
+       Map premapped types in a TypedValues.  Returns true if any mapped.
     */
-    public static void map(HNDArray hnda) {
-        map(hnda.getDataType());
+    public static boolean map(TypedValues tvs) throws Exception {
+        boolean rv = false;
+        if (tvs==null)
+            return rv;
+        Term t = tvs.getValueType();
+        rv |= map(t);
+        List<TypedValue> vc = tvs.getValueContext();
+        if (vc != null) {
+            for (TypedValue tv : vc)
+                rv |= map(tv);
+        }
+        Values v = tvs.getValues();
+        rv |= map(v);
+        rv |= map(tvs.getValueUnits());
+        if (t != null) {
+            String ref = t.getOtermRef();
+            if ((ref != null) &&
+                (ref.indexOf(":") > -1))
+                transformValues(ref, v);
+        }
+        return rv;
+    }
+
+    /**
+       Map premapped types in a DimensionContext.  Returns true if any mapped.
+    */
+    public static boolean map(DimensionContext dc) throws Exception {
+        boolean rv = false;
+        if (dc==null)
+            return rv;
+        rv |= map(dc.getDataType());
+        for (TypedValues tvs : dc.getTypedValues())
+            rv |= map(tvs);
+        return rv;
+    }
+    
+    /**
+       Map premapped types in NDArray.  Returns true if any mapped.
+    */
+    public static boolean map(NDArray nda) throws Exception {
+        boolean rv = false;
+        rv |= map(nda.getDataType());
+        for (DimensionContext dc : nda.getDimContext())
+            rv |= map(dc);
+        List<TypedValue> arrayContext = nda.getArrayContext();
+        if (arrayContext != null) {
+            for (TypedValue tv : arrayContext)
+                rv |= map(tv);
+        }
+        rv |= map(nda.getTypedValues());
+        return rv;
+    }
+
+    /**
+       Map premapped types in HNDArray.  Returns true if any mapped.
+    */
+    public static boolean map(HNDArray hnda) throws Exception {
+        boolean rv = false;
+        rv |= map(hnda.getDataType());
         for (DimensionContext dc : hnda.getDimContext())
-            map(dc);
+            rv |= map(dc);
+        List<TypedValue> arrayContext = hnda.getArrayContext();
+        if (arrayContext != null) {
+            for (TypedValue tv : arrayContext)
+                rv |= map(tv);
+        }
         for (TypedValues tv : hnda.getTypedValues())
-            map(tv);
+            rv |= map(tv);
+        return rv;
     }
 
     /**
@@ -672,10 +777,8 @@ public class GenericsUtilImpl {
         // parse it into the object
         HNDArray hnda = parseCSV(filePath);
 
-        // pre-map, for debugging
-        boolean DEBUG = false;
-        if (DEBUG)
-            map(hnda);
+        // map any pre-mapped values
+        boolean mapped = map(hnda);
 
         // save as other type if necessary
         String objectType = params.getObjectType();
@@ -688,7 +791,10 @@ public class GenericsUtilImpl {
 
         // make metadata
         Map<String,String> metadata = new HashMap<String,String>();
-        metadata.put("mapped","false");
+        if (mapped)
+            metadata.put("mapped","true");
+        else
+            metadata.put("mapped","false");
         metadata.put("n_dimensions", hnda.getNDimensions().toString());
         String typeDescriptor = hnda.getDataType().getTermName();
         if (nda != null)
