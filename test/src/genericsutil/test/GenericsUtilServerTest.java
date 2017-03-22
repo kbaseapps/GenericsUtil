@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.*;
+
 import junit.framework.Assert;
 
 import org.ini4j.Ini;
@@ -29,6 +31,7 @@ import us.kbase.workspace.ProvenanceAction;
 import us.kbase.workspace.SaveObjectsParams;
 import us.kbase.workspace.WorkspaceClient;
 import us.kbase.workspace.WorkspaceIdentity;
+import us.kbase.kbaseontology.OntologyDictionary;
 
 import us.kbase.common.service.RpcContext;
 
@@ -88,7 +91,7 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    @Test
+    // @Test
     public void testImportGrowth() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_multi.csv"))
@@ -103,7 +106,7 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    @Test
+    // @Test
     public void testImportGrowth2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_simple.csv"))
@@ -133,7 +136,7 @@ public class GenericsUtilServerTest {
     /**
        import some small fitness data
     */
-    @Test
+    // @Test
     public void testImportFitness2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_jw710_random_small.csv"))
@@ -163,7 +166,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data
     */
-    @Test
+    // @Test
     public void testImportEA() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_single.csv"))
@@ -178,7 +181,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, replicates
     */
-    @Test
+    // @Test
     public void testImportEA2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
@@ -193,7 +196,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, statistics
     */
-    @Test
+    // @Test
     public void testImportEA3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_statistics.csv"))
@@ -208,7 +211,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    @Test
+    // @Test
     public void testImportTax() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
@@ -223,7 +226,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    @Test
+    // @Test
     public void testImportTax2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))
@@ -238,7 +241,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    @Test
+    // @Test
     public void testImportTax3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_timeseries.csv"))
@@ -253,7 +256,7 @@ public class GenericsUtilServerTest {
     /**
        import some environmental parameters data
     */
-    @Test
+    // @Test
     public void testImportEP() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/heterogenous_sampling.csv"))
@@ -307,6 +310,33 @@ public class GenericsUtilServerTest {
         Assert.fail("Should have thrown exception");
     }
 
+    /**
+       import some ontology dictionaries
+    */
+    @Test
+    public void testImportDictionaries() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        File f = new File("/kb/module/test/data/data_type_ontology.json");
+        OntologyDictionary od = mapper.readValue(f, OntologyDictionary.class);
+        ObjectSaveData data = new ObjectSaveData()
+            .withType("KBaseOntology.OntologyDictionary")
+            .withData(new UObject(od))
+            .withName("data_type_ontology");
+        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
+
+        f = new File("/kb/module/test/data/context_measurement_ontology.json");
+        od = mapper.readValue(f, OntologyDictionary.class);
+        data.setData(new UObject(od));
+        data.setName("context_measurement_ontology");
+        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
+
+        f = new File("/kb/module/test/data/enigma_specific_ontology.json");
+        od = mapper.readValue(f, OntologyDictionary.class);
+        data.setData(new UObject(od));
+        data.setName("enigma_specific_ontology");
+        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
+    }
+    
     /**
        import some pre-typemapped data
     */

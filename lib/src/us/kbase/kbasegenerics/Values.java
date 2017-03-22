@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * <p>Original spec-file type: Values</p>
  * <pre>
- * @optional object_refs oterm_refs int_values float_values string_values
+ * @optional object_refs oterm_refs int_values float_values string_values boolean_values
  * </pre>
  * 
  */

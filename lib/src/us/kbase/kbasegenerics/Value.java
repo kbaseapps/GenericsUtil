@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *     float
  *     boolean
  *     string
- * @optional object_ref oterm_ref int_value float_value string_value
+ * @optional object_ref oterm_ref int_value float_value string_value boolean_value
  * </pre>
  * 
  */

@@ -1,0 +1,381 @@
+{
+    "format_version": "1.2",
+    "namespace_id_rule": [
+        "* DA:$sequence(7,0,9999999)$"
+    ],
+    "ontology": "da",
+    "saved_by": "jmc",
+    "term_hash": {
+        "DA:0000000": {
+            "def": [
+                "\"Root of all ontological terms.\" []"
+            ],
+            "id": "DA:0000000",
+            "name": "term",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000001": {
+            "def": [
+                "\"Assay.\" []"
+            ],
+            "id": "DA:0000001",
+            "is_a": [
+                "DA:0000000"
+            ],
+            "name": "assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000002": {
+            "def": [
+                "\"Small Molecule Assay.\" []"
+            ],
+            "id": "DA:0000002",
+            "is_a": [
+                "DA:0000001"
+            ],
+            "name": "small molecule assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000003": {
+            "def": [
+                "\"Environmental Measurement.\" []"
+            ],
+            "id": "DA:0000003",
+            "is_a": [
+                "DA:0000002"
+            ],
+            "name": "environmental measurement",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000004": {
+            "def": [
+                "\"Chemical Measurement.\" []"
+            ],
+            "id": "DA:0000004",
+            "is_a": [
+                "DA:0000002"
+            ],
+            "name": "chemical measurement",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000005": {
+            "def": [
+                "\"Metabolite Assay.\" []"
+            ],
+            "id": "DA:0000005",
+            "is_a": [
+                "DA:0000002"
+            ],
+            "name": "metabolite assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000006": {
+            "def": [
+                "\"Reaction Yield.\" []"
+            ],
+            "id": "DA:0000006",
+            "is_a": [
+                "DA:0000002"
+            ],
+            "name": "reaction yield",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000007": {
+            "def": [
+                "\"Gene / Protein Assay.\" []"
+            ],
+            "id": "DA:0000007",
+            "is_a": [
+                "DA:0000001"
+            ],
+            "name": "gene / protein assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000008": {
+            "def": [
+                "\"Gene Fitness.\" []"
+            ],
+            "id": "DA:0000008",
+            "is_a": [
+                "DA:0000007"
+            ],
+            "name": "gene fitness",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000009": {
+            "def": [
+                "\"Gene Knockout Fitness.\" []"
+            ],
+            "id": "DA:0000009",
+            "is_a": [
+                "DA:0000008"
+            ],
+            "name": "gene knockout fitness",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000010": {
+            "def": [
+                "\"Gene Upregulation Fitness.\" []"
+            ],
+            "id": "DA:0000010",
+            "is_a": [
+                "DA:0000008"
+            ],
+            "name": "gene upregulation fitness",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000011": {
+            "def": [
+                "\"Fitness Correlation.\" []"
+            ],
+            "id": "DA:0000011",
+            "is_a": [
+                "DA:0000008"
+            ],
+            "name": "fitness correlation",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000012": {
+            "def": [
+                "\"Genetic Interaction.\" []"
+            ],
+            "id": "DA:0000012",
+            "is_a": [
+                "DA:0000008"
+            ],
+            "name": "genetic interaction",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000013": {
+            "def": [
+                "\"Gene Expression.\" []"
+            ],
+            "id": "DA:0000013",
+            "is_a": [
+                "DA:0000007"
+            ],
+            "name": "gene expression",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000014": {
+            "def": [
+                "\"Enzyme Activity.\" []"
+            ],
+            "id": "DA:0000014",
+            "is_a": [
+                "DA:0000007"
+            ],
+            "name": "enzyme activity",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000015": {
+            "def": [
+                "\"Protein Interaction.\" []"
+            ],
+            "id": "DA:0000015",
+            "is_a": [
+                "DA:0000007"
+            ],
+            "name": "protein interaction",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000016": {
+            "def": [
+                "\"Protein Function.\" []"
+            ],
+            "id": "DA:0000016",
+            "is_a": [
+                "DA:0000007"
+            ],
+            "name": "protein function",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000017": {
+            "def": [
+                "\"Microbial Assay.\" []"
+            ],
+            "id": "DA:0000017",
+            "is_a": [
+                "DA:0000001"
+            ],
+            "name": "microbial assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000018": {
+            "def": [
+                "\"Microbial Growth.\" []"
+            ],
+            "id": "DA:0000018",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial growth",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000019": {
+            "def": [
+                "\"Microbial Mobility.\" []"
+            ],
+            "id": "DA:0000019",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial mobility",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000020": {
+            "def": [
+                "\"Microbial Thermodynamics.\" []"
+            ],
+            "id": "DA:0000020",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial thermodynamics",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000021": {
+            "def": [
+                "\"Microbial Corrosion.\" []"
+            ],
+            "id": "DA:0000021",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial corrosion",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000022": {
+            "def": [
+                "\"Microbial Evolution.\" []"
+            ],
+            "id": "DA:0000022",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial evolution",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000023": {
+            "def": [
+                "\"Microbial Solute Permeability.\" []"
+            ],
+            "id": "DA:0000023",
+            "is_a": [
+                "DA:0000017"
+            ],
+            "name": "microbial solute permeability",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000024": {
+            "def": [
+                "\"Microbial Community Assay.\" []"
+            ],
+            "id": "DA:0000024",
+            "is_a": [
+                "DA:0000001"
+            ],
+            "name": "microbial community assay",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000025": {
+            "def": [
+                "\"Metagenomic Gene Abundance.\" []"
+            ],
+            "id": "DA:0000025",
+            "is_a": [
+                "DA:0000024"
+            ],
+            "name": "metagenomic gene abundance",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000026": {
+            "def": [
+                "\"Taxonomic Abundance.\" []"
+            ],
+            "id": "DA:0000026",
+            "is_a": [
+                "DA:0000024"
+            ],
+            "name": "taxonomic abundance",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000027": {
+            "def": [
+                "\"Association.\" []"
+            ],
+            "id": "DA:0000027",
+            "is_a": [
+                "DA:0000000"
+            ],
+            "name": "association",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000028": {
+            "def": [
+                "\"Set <x>.\" []"
+            ],
+            "id": "DA:0000028",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "set <x>",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000029": {
+            "def": [
+                "\"Cluster <x>.\" []"
+            ],
+            "id": "DA:0000029",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "cluster <x>",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000030": {
+            "def": [
+                "\"Group <x>.\" []"
+            ],
+            "id": "DA:0000030",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "group <x>",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000031": {
+            "def": [
+                "\"Bicluster <x,y>.\" []"
+            ],
+            "id": "DA:0000031",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "bicluster <x,y>",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000032": {
+            "def": [
+                "\"Map <x,y>.\" []"
+            ],
+            "id": "DA:0000032",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "map <x,y>",
+            "namespace": "datatype.ontology"
+        },
+        "DA:0000033": {
+            "def": [
+                "\"Correlation <x,y>.\" []"
+            ],
+            "id": "DA:0000033",
+            "is_a": [
+                "DA:0000027"
+            ],
+            "name": "correlation <x,y>",
+            "namespace": "datatype.ontology"
+        }
+    }
+}

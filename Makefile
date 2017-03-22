@@ -26,6 +26,9 @@ compile-java-typespec-data:
 	gen_java_types -S KBaseGenerics.spec -s lib/src/
 	rm lib/src/us/kbase/kbasegenerics/KBaseGenericsClient.java
 	rm lib/src/us/kbase/kbasegenerics/KBaseGenericsServer.java
+	gen_java_types -S KBaseOntology.spec -s lib/src/
+	rm lib/src/us/kbase/kbaseontology/KBaseOntologyClient.java
+	rm lib/src/us/kbase/kbaseontology/KBaseOntologyServer.java
 
 compile:
 	kb-sdk compile $(SPEC_FILE) \
