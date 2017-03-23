@@ -568,6 +568,65 @@ public class GenericsUtilImpl {
                 makeFloatValues(v);
         }
     }
+
+    /**
+       update a Value object from String to Float
+    */
+    public static void makeFloatValue(Value v) {
+        String sv = v.getStringValue();
+        if (sv == null)
+            v.setFloatValue(null);
+        else
+            v.setFloatValue(new Double(StringUtil.atod(sv)));
+        v.setStringValue(null);
+        v.setScalarType("float");
+    }
+
+    /**
+       update a Value object from String to Boolean
+    */
+    public static void makeBooleanValue(Value v) {
+        String sv = v.getStringValue();
+        if (sv == null)
+            v.setBooleanValue(null);
+        else
+            v.setBooleanValue(new Long(StringUtil.atol(sv)));
+        v.setStringValue(null);
+        v.setScalarType("boolean");
+    }
+    
+    /**
+       update a Value object from String to Int
+    */
+    public static void makeIntValue(Value v) {
+        String sv = v.getStringValue();
+        if (sv == null)
+            v.setIntValue(null);
+        else
+            v.setIntValue(new Long(StringUtil.atol(sv)));
+        v.setStringValue(null);
+        v.setScalarType("int");
+    }
+
+    /**
+       update a Value object from String to another type, based
+       on a reference term
+    */
+    public static void transformValue(String ref, Value v) {
+        String sv = v.getStringValue();
+        boolean isNumeric = Pattern.matches("^-?[0-9]*\\.?[0-9]+$",sv);
+        boolean isBoolean = Pattern.matches("^[01]$",sv);
+        boolean isInt = Pattern.matches("^-?[0-9]+$",sv);
+        if (isBoolean)
+            makeBooleanValue(v);
+        else if (isNumeric) {
+            // kludge: should get this from ontology service
+            if (isInt && (ref.equals("ME:0000005")))
+                makeIntValue(v);
+            else
+                makeFloatValue(v);
+        }
+    }
     
     /**
        update a pre-mapped term with a mapping (in angle brackets).
@@ -637,7 +696,7 @@ public class GenericsUtilImpl {
                 svs.set(i,sv);
                 refs.add(ref);
             }
-            if (svs.get(0).indexOf(":")>-1) {
+            if (refs.get(0).indexOf(":")>-1) {
                 v.setOtermRefs(refs);
                 v.setScalarType("oterm_ref");
             }
@@ -657,11 +716,17 @@ public class GenericsUtilImpl {
         boolean rv = false;
         if (tv==null)
             return rv;
-        rv |= map(tv.getValueType());
-        rv |= map(tv.getValue());
-        Term u = tv.getValueUnits();
-        if (u != null)
-            rv |= map(u);
+        Term t = tv.getValueType();
+        rv |= map(t);
+        Value v = tv.getValue();
+        rv |= map(v);
+        rv |= map(tv.getValueUnits());
+        if (t != null) {
+            String ref = t.getOtermRef();
+            if ((ref != null) &&
+                (ref.indexOf(":") > -1))
+                transformValue(ref, v);
+        }
         return rv;
     }
 
@@ -778,6 +843,17 @@ public class GenericsUtilImpl {
         HNDArray hnda = parseCSV(filePath);
 
         // map any pre-mapped values
+        /*
+        SdkOntologyClient oc = new SdkOntologyClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
+        oc.setAuthAllowedForHttp(true);
+        List<String> publicOntologies = oc.listPublicOntologies();
+        System.out.println("Public ontologies:");
+        if (publicOntologies==null)
+            System.out.println("NONE");
+        else
+            for (String ontology : publicOntologies)
+                System.out.println("  "+ontology);
+        */
         boolean mapped = map(hnda);
 
         // save as other type if necessary
