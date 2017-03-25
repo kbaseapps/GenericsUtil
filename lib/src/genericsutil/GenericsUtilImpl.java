@@ -17,7 +17,6 @@ import us.kbase.common.utils.CorrectProcess;
 import us.kbase.workspace.ObjectData;
 
 import kbasereport.*;
-import sdkontology.*;
 import us.kbase.kbasegenerics.*;
 
 import org.strbio.IO;
