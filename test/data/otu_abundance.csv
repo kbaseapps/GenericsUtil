@@ -1,12 +1,12 @@
 name, OTU_abundance_FW215
 description, Phyla of OTUs found in FW215 by 16S survey
-type, taxonomic abundance
-values, abundance, context, relative, dimensionless unit
-meta, well, FW215
-meta, date, 2009
-meta, condition, EVO pre-injection
+type, taxonomic abundance <DA:0000026>
+values, abundance, context, relative, dimensionless unit <UO:0000186>
+meta, well <ME:0000096>, FW215
+meta, date <ME:0000009>, 2009
+meta, condition <ME:0000006>, EVO pre-injection
 size, 17
-dmeta, 1, taxon
+dmeta, 1, taxon <ME:0000044>
 1, Deferribacteres
 2, Spirochaetes
 3, Gemmatimonadetes

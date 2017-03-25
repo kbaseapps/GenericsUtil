@@ -121,11 +121,11 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    // @Test
+    @Test
     public void testImportGrowth2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_simple.csv"))
-            .withObjectName("nitrate_growth_simple")
+            .withObjectName("nitrate_growth")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -196,7 +196,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, replicates
     */
-    // @Test
+    @Test
     public void testImportEA2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
@@ -226,11 +226,11 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    // @Test
+    @Test    
     public void testImportTax() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
-            .withObjectName("taxonomic_abundance_simple")
+            .withObjectName("taxonomic_abundance")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
         ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
@@ -241,7 +241,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    // @Test
+    @Test
     public void testImportTax2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))

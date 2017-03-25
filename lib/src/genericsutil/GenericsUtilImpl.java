@@ -17,6 +17,7 @@ import us.kbase.common.utils.CorrectProcess;
 import us.kbase.workspace.ObjectData;
 
 import kbasereport.*;
+import sdkontology.*;
 import us.kbase.kbasegenerics.*;
 
 import org.strbio.IO;
@@ -846,7 +847,7 @@ public class GenericsUtilImpl {
         /*
         SdkOntologyClient oc = new SdkOntologyClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
         oc.setAuthAllowedForHttp(true);
-        List<String> publicOntologies = oc.listPublicOntologies();
+        List<String> publicOntologies = oc.lsitPublicOntologies();
         System.out.println("Public ontologies:");
         if (publicOntologies==null)
             System.out.println("NONE");
@@ -854,6 +855,7 @@ public class GenericsUtilImpl {
             for (String ontology : publicOntologies)
                 System.out.println("  "+ontology);
         */
+        
         boolean mapped = map(hnda);
 
         // save as other type if necessary
@@ -874,15 +876,22 @@ public class GenericsUtilImpl {
         metadata.put("n_dimensions", hnda.getNDimensions().toString());
         String typeDescriptor = hnda.getDataType().getTermName();
         if (nda != null)
-            typeDescriptor += ", "+nda.getTypedValues().getValueType().getTermName();
-        typeDescriptor += " (";
+            metadata.put("scalar_type",nda.getTypedValues().getValues().getScalarType());
+        
+        typeDescriptor += " < ";
+        String dimensionSize = "< ";
         for (DimensionContext dc : hnda.getDimContext()) {
-            if (!typeDescriptor.endsWith("("))
-                typeDescriptor += " x ";
+            if (!typeDescriptor.endsWith(" < ")) {
+                typeDescriptor += ", ";
+                dimensionSize += ", ";
+            }
             typeDescriptor += dc.getDataType().getTermName();
+            dimensionSize += dc.getSize();
         }
-        typeDescriptor += ")";
+        typeDescriptor += " >";
+        dimensionSize += " >";
         metadata.put("data_type",typeDescriptor);
+        metadata.put("dimension_size",dimensionSize);
 
         // save in workspace
         String objectRef = saveObject(wc,

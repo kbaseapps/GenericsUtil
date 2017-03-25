@@ -1,14 +1,14 @@
 name, FDH_specific_activity
 description, FDH specific activity in multiple media
-type, enzyme activity
-values, specific activity, micromol/min/mg protein
-meta, strain name, Desulfovibrio vulgaris Hildenborough
+type, enzyme activity <DA:0000014>
+values, specific activity <ME:0000035>, micromol/min/mg protein <UO:0000119>
+meta, strain name <ME:0000042>, Desulfovibrio vulgaris Hildenborough
 size, 3, 4
-dmeta, 1, replicate series
+dmeta, 1, replicate series <ME:0000005>
 1, 1
 2, 2
 3, 3
-dmeta, 2, media name
+dmeta, 2, media name <ME:0000046>
 1, lactate-sulfate + W
 2, lactate-sulfate + W + Mo
 3, lactate-sulfate + Mo
