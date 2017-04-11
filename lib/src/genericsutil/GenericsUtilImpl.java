@@ -14,7 +14,6 @@ import us.kbase.workspace.*;
 import us.kbase.shock.client.*;
 
 import us.kbase.common.utils.CorrectProcess;
-import us.kbase.workspace.ObjectData;
 
 import kbasereport.*;
 import sdkontologyjmc.*;
@@ -33,6 +32,63 @@ import com.opencsv.*;
 */
 public class GenericsUtilImpl {
     protected static java.io.File tempDir = new java.io.File("/kb/module/work/tmp/");
+
+    /**
+       class encapsulating all data we've received from the
+       Ontology service
+    */
+    public static class OntologyData {
+        /**
+           ontology service client
+        */
+        public SdkOntologyJmcClient oc;
+
+        /**
+           map of ontology namespace to dictionary reference
+        */
+        public HashMap<String,String> namespaceMap;
+
+        /**
+           init service with public data and data in current workspace.
+           If wc or ws is null, uses public data only.
+        */
+        public OntologyData(AuthToken token, WorkspaceClient wc, String ws) throws Exception {
+            oc = new SdkOntologyJmcClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
+            oc.setAuthAllowedForHttp(true);
+
+            // start with public ontologies
+            List<String> ontologies = oc.listPublicOntologies();
+            System.out.println("Public ontologies:");
+            if (ontologies==null)
+                System.out.println("  NONE");
+            else
+                for (String ontology : ontologies)
+                    System.out.println("  "+ontology);
+
+            // add private ontologies from user's workspace
+            if ((wc!=null) && (ws!=null)) {
+                List<String> privateOntologies = getRefsFromObjectInfo(wc.listObjects(new ListObjectsParams().withWorkspaces(Arrays.asList(ws)).withType("KBaseOntology.OntologyDictionary")));
+                System.out.println("Private ontologies:");
+                if (privateOntologies==null)
+                    System.out.println("  NONE");
+                else
+                    for (String ontology : privateOntologies)
+                        System.out.println("  "+ontology);
+                ontologies.addAll(privateOntologies);
+            }
+
+            // map namespace of each ontology to the object ref
+            namespaceMap = new HashMap<String,String>();
+            OntologyOverviewOut ooo = oc.ontologyOverview(new OntologyOverviewParams().withOntologyDictionaryRef(ontologies));
+            for (OverViewInfo oi : ooo.getDictionariesMeta()) {
+                // namespace is stored in "ontology" not "namespace"
+                // confusing--may be backwards?
+                String namespace = oi.getOntology();
+                String ref = oi.getDictionaryRef();
+                namespaceMap.put(namespace,ref);
+            }
+        }
+    }
 
     /**
        creates a workspace client; if token is null, client can
@@ -77,6 +133,20 @@ public class GenericsUtilImpl {
     */
     private static String getRefFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
         return info.getE7() + "/" + info.getE1() + "/" + info.getE5();
+    }
+
+    /**
+       Helper function to get refs when listing objects
+    */
+    public static ArrayList<String> getRefsFromObjectInfo(List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>> info) {
+        if (info==null)
+            return null;
+        
+        ArrayList<String> rv = new ArrayList<String>();
+        for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> tuple : info) {
+            rv.add(getRefFromObjectInfo(tuple));
+        }
+        return rv;
     }
 
     /**
@@ -633,7 +703,7 @@ public class GenericsUtilImpl {
        update a pre-mapped term with a mapping (in angle brackets).
        Returns true if it mapped.
     */
-    public static boolean map(Term t) {
+    public static boolean map(Term t, OntologyData od) {
         boolean rv = false;
         if (t==null)
             return rv;
@@ -653,7 +723,7 @@ public class GenericsUtilImpl {
     /**
        update a pre-mapped value with a reference.  Returns true if it mapped.
     */
-    public static boolean map(Value v) {
+    public static boolean map(Value v, OntologyData od) {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -679,7 +749,7 @@ public class GenericsUtilImpl {
     /**
        update pre-mapped values with a reference.  Returns true if it mapped.
     */
-    public static boolean map(Values v) throws Exception {
+    public static boolean map(Values v, OntologyData od) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -713,15 +783,15 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValue.  Returns true if any mapped.
     */
-    public static boolean map(TypedValue tv) {
+    public static boolean map(TypedValue tv, OntologyData od) {
         boolean rv = false;
         if (tv==null)
             return rv;
         Term t = tv.getValueType();
-        rv |= map(t);
+        rv |= map(t,od);
         Value v = tv.getValue();
-        rv |= map(v);
-        rv |= map(tv.getValueUnits());
+        rv |= map(v,od);
+        rv |= map(tv.getValueUnits(),od);
         if (t != null) {
             String ref = t.getOtermRef();
             if ((ref != null) &&
@@ -734,20 +804,20 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValues.  Returns true if any mapped.
     */
-    public static boolean map(TypedValues tvs) throws Exception {
+    public static boolean map(TypedValues tvs, OntologyData od) throws Exception {
         boolean rv = false;
         if (tvs==null)
             return rv;
         Term t = tvs.getValueType();
-        rv |= map(t);
+        rv |= map(t,od);
         List<TypedValue> vc = tvs.getValueContext();
         if (vc != null) {
             for (TypedValue tv : vc)
-                rv |= map(tv);
+                rv |= map(tv,od);
         }
         Values v = tvs.getValues();
-        rv |= map(v);
-        rv |= map(tvs.getValueUnits());
+        rv |= map(v,od);
+        rv |= map(tvs.getValueUnits(),od);
         if (t != null) {
             String ref = t.getOtermRef();
             if ((ref != null) &&
@@ -760,48 +830,48 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a DimensionContext.  Returns true if any mapped.
     */
-    public static boolean map(DimensionContext dc) throws Exception {
+    public static boolean map(DimensionContext dc, OntologyData od) throws Exception {
         boolean rv = false;
         if (dc==null)
             return rv;
-        rv |= map(dc.getDataType());
+        rv |= map(dc.getDataType(),od);
         for (TypedValues tvs : dc.getTypedValues())
-            rv |= map(tvs);
+            rv |= map(tvs,od);
         return rv;
     }
     
     /**
        Map premapped types in NDArray.  Returns true if any mapped.
     */
-    public static boolean map(NDArray nda) throws Exception {
+    public static boolean map(NDArray nda, OntologyData od) throws Exception {
         boolean rv = false;
-        rv |= map(nda.getDataType());
+        rv |= map(nda.getDataType(),od);
         for (DimensionContext dc : nda.getDimContext())
-            rv |= map(dc);
+            rv |= map(dc,od);
         List<TypedValue> arrayContext = nda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv);
+                rv |= map(tv,od);
         }
-        rv |= map(nda.getTypedValues());
+        rv |= map(nda.getTypedValues(),od);
         return rv;
     }
 
     /**
        Map premapped types in HNDArray.  Returns true if any mapped.
     */
-    public static boolean map(HNDArray hnda) throws Exception {
+    public static boolean map(HNDArray hnda, OntologyData od) throws Exception {
         boolean rv = false;
-        rv |= map(hnda.getDataType());
+        rv |= map(hnda.getDataType(),od);
         for (DimensionContext dc : hnda.getDimContext())
-            rv |= map(dc);
+            rv |= map(dc,od);
         List<TypedValue> arrayContext = hnda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv);
+                rv |= map(tv,od);
         }
         for (TypedValues tv : hnda.getTypedValues())
-            rv |= map(tv);
+            rv |= map(tv,od);
         return rv;
     }
 
@@ -844,17 +914,8 @@ public class GenericsUtilImpl {
         HNDArray hnda = parseCSV(filePath);
 
         // map any pre-mapped values
-        SdkOntologyJmcClient oc = new SdkOntologyJmcClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
-        oc.setAuthAllowedForHttp(true);
-        List<String> publicOntologies = oc.listPublicOntologies();
-        System.out.println("Public ontologies:");
-        if (publicOntologies==null)
-            System.out.println("NONE");
-        else
-            for (String ontology : publicOntologies)
-                System.out.println("  "+ontology);
-        
-        boolean mapped = map(hnda);
+        OntologyData od = new OntologyData(token, wc, params.getWorkspaceName());
+        boolean mapped = map(hnda,od);
 
         // save as other type if necessary
         String objectType = params.getObjectType();
