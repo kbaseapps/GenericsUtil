@@ -17,6 +17,7 @@ import us.kbase.common.utils.CorrectProcess;
 import us.kbase.workspace.ObjectData;
 
 import kbasereport.*;
+import sdkontologyjmc.*;
 import us.kbase.kbasegenerics.*;
 
 import org.strbio.IO;
@@ -843,17 +844,15 @@ public class GenericsUtilImpl {
         HNDArray hnda = parseCSV(filePath);
 
         // map any pre-mapped values
-        /*
-        SdkOntologyClient oc = new SdkOntologyClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
+        SdkOntologyJmcClient oc = new SdkOntologyJmcClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
         oc.setAuthAllowedForHttp(true);
-        List<String> publicOntologies = oc.lsitPublicOntologies();
+        List<String> publicOntologies = oc.listPublicOntologies();
         System.out.println("Public ontologies:");
         if (publicOntologies==null)
             System.out.println("NONE");
         else
             for (String ontology : publicOntologies)
                 System.out.println("  "+ontology);
-        */
         
         boolean mapped = map(hnda);
 
