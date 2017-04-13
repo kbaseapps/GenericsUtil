@@ -345,6 +345,56 @@ public class SdkOntologyJmcClient {
     }
 
     /**
+     * <p>Original spec-file function name: list_ontologies</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link sdkontologyjmc.ListOntologiesParams ListOntologiesParams}
+     * @return   instance of original type "ontologies" &rarr; list of String
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    protected String _listOntologiesSubmit(ListOntologiesParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        if (this.serviceVersion != null) {
+            if (jsonRpcContext == null || jsonRpcContext.length == 0 || jsonRpcContext[0] == null)
+                jsonRpcContext = new RpcContext[] {new RpcContext()};
+            jsonRpcContext[0].getAdditionalProperties().put("service_ver", this.serviceVersion);
+        }
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<String>> retType = new TypeReference<List<String>>() {};
+        List<String> res = caller.jsonrpcCall("sdk_ontology_jmc._list_ontologies_submit", args, retType, true, true, jsonRpcContext);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: list_ontologies</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link sdkontologyjmc.ListOntologiesParams ListOntologiesParams}
+     * @return   instance of original type "ontologies" &rarr; list of String
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public List<String> listOntologies(ListOntologiesParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        String jobId = _listOntologiesSubmit(params, jsonRpcContext);
+        TypeReference<List<JobState<List<List<String>>>>> retType = new TypeReference<List<JobState<List<List<String>>>>>() {};
+        long asyncJobCheckTimeMs = this.asyncJobCheckTimeMs;
+        while (true) {
+            if (Thread.currentThread().isInterrupted())
+                throw new JsonClientException("Thread was interrupted");
+            try { 
+                Thread.sleep(asyncJobCheckTimeMs);
+            } catch(Exception ex) {
+                throw new JsonClientException("Thread was interrupted", ex);
+            }
+            asyncJobCheckTimeMs = Math.min(asyncJobCheckTimeMs * this.asyncJobCheckTimeScalePercent / 100, this.asyncJobCheckMaxTimeMs);
+            JobState<List<List<String>>> res = _checkJob(jobId, retType);
+            if (res.getFinished() != 0L)
+                return res.getResult().get(0);
+        }
+    }
+
+    /**
      * <p>Original spec-file function name: list_public_translations</p>
      * <pre>
      * </pre>

@@ -2,6 +2,7 @@
 package sdkontologyjmc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -12,33 +13,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: GetOntologyTermsOut</p>
- * 
+ * <p>Original spec-file type: ListOntologiesParams</p>
+ * <pre>
+ * List all ontologies in one or more workspaces
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "term_info"
+    "workspace_names"
 })
-public class GetOntologyTermsOut {
+public class ListOntologiesParams {
 
-    @JsonProperty("term_info")
-    private Map<String, TermInfo> termInfo;
+    @JsonProperty("workspace_names")
+    private List<String> workspaceNames;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
-    @JsonProperty("term_info")
-    public Map<String, TermInfo> getTermInfo() {
-        return termInfo;
+    @JsonProperty("workspace_names")
+    public List<String> getWorkspaceNames() {
+        return workspaceNames;
     }
 
-    @JsonProperty("term_info")
-    public void setTermInfo(Map<String, TermInfo> termInfo) {
-        this.termInfo = termInfo;
+    @JsonProperty("workspace_names")
+    public void setWorkspaceNames(List<String> workspaceNames) {
+        this.workspaceNames = workspaceNames;
     }
 
-    public GetOntologyTermsOut withTermInfo(Map<String, TermInfo> termInfo) {
-        this.termInfo = termInfo;
+    public ListOntologiesParams withWorkspaceNames(List<String> workspaceNames) {
+        this.workspaceNames = workspaceNames;
         return this;
     }
 
@@ -54,7 +57,7 @@ public class GetOntologyTermsOut {
 
     @Override
     public java.lang.String toString() {
-        return ((((("GetOntologyTermsOut"+" [termInfo=")+ termInfo)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ListOntologiesParams"+" [workspaceNames=")+ workspaceNames)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

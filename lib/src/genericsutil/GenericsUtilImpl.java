@@ -44,15 +44,26 @@ public class GenericsUtilImpl {
         public SdkOntologyJmcClient oc;
 
         /**
-           map of ontology namespace to dictionary reference
+           map of ontology prefix to dictionary reference
         */
-        public HashMap<String,String> namespaceMap;
+        public HashMap<String,String> prefixMap;
 
         /**
-           init service with public data and data in current workspace.
-           If wc or ws is null, uses public data only.
+           map of term names to ontology references.  Also maps
+           prefixes to the word "mapped" if already mapped.
         */
-        public OntologyData(AuthToken token, WorkspaceClient wc, String ws) throws Exception {
+        public HashMap<String,String> termToRef;
+
+        /**
+           map of ontology references to term names
+        */
+        public HashMap<String,String> refToTerm;
+        
+        /**
+           init service with public data and data in current workspace.
+           If ws is null, uses public data only.
+        */
+        public OntologyData(AuthToken token, String ws) throws Exception {
             oc = new SdkOntologyJmcClient(new URL(System.getenv("SDK_CALLBACK_URL")),token);
             oc.setAuthAllowedForHttp(true);
 
@@ -66,8 +77,8 @@ public class GenericsUtilImpl {
                     System.out.println("  "+ontology);
 
             // add private ontologies from user's workspace
-            if ((wc!=null) && (ws!=null)) {
-                List<String> privateOntologies = getRefsFromObjectInfo(wc.listObjects(new ListObjectsParams().withWorkspaces(Arrays.asList(ws)).withType("KBaseOntology.OntologyDictionary")));
+            if (ws!=null) {
+                List<String> privateOntologies = oc.listOntologies(new ListOntologiesParams().withWorkspaceNames(Arrays.asList(ws)));
                 System.out.println("Private ontologies:");
                 if (privateOntologies==null)
                     System.out.println("  NONE");
@@ -77,16 +88,69 @@ public class GenericsUtilImpl {
                 ontologies.addAll(privateOntologies);
             }
 
-            // map namespace of each ontology to the object ref
-            namespaceMap = new HashMap<String,String>();
+            // map prefix of each ontology to the object ref
+            prefixMap = new HashMap<String,String>();
             OntologyOverviewOut ooo = oc.ontologyOverview(new OntologyOverviewParams().withOntologyDictionaryRef(ontologies));
             for (OverViewInfo oi : ooo.getDictionariesMeta()) {
-                // namespace is stored in "ontology" not "namespace"
-                // confusing--may be backwards?
-                String namespace = oi.getOntology();
+                String prefix = oi.getOntology().toLowerCase();
                 String ref = oi.getDictionaryRef();
-                namespaceMap.put(namespace,ref);
+                Long nTerms = oi.getNumberOfTerms();
+                prefixMap.put(prefix,ref);
+                System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
             }
+
+            // initialize term maps
+            termToRef = new HashMap<String,String>();
+            refToTerm = new HashMap<String,String>();
+        }
+
+        /**
+           Map all terms in a dictionary, to avoid expensive calls
+           to map individual terms.
+        */
+        public void mapPrefix(String prefix) throws Exception {
+            System.out.println("mapping dictionary "+prefix);
+            String rv = refToTerm.get(prefix);
+            if (rv==null) {
+                String dictRef = prefixMap.get(prefix);
+                if (dictRef==null)
+                    throw new IllegalArgumentException("No ontology dictionary available for prefix '"+prefix);
+                OntologyTermsOut oto = oc.listOntologyTerms(new ListOntologyTermsParams().withOntologyDictionaryRef(dictRef));
+                List<String> terms = oto.getTermId();
+                GetOntologyTermsOut out = oc.getOntologyTerms(new GetOntologyTermsParams().withOntologyDictionaryRef(dictRef).withTermIds(terms));
+                if (out==null)
+                    throw new IllegalArgumentException("Couldn't map ontologies (error 1) in dictionary "+dictRef);
+                Map<String,TermInfo> termInfoMap = out.getTermInfo();
+                if (termInfoMap==null)
+                    throw new IllegalArgumentException("Couldn't map ontologies (error 2) in dictionary "+dictRef);
+                for (String ref : termInfoMap.keySet()) {
+                    TermInfo termInfo = termInfoMap.get(ref);
+                    if ((termInfo != null) && (termInfo.getName() != null)) {
+                        rv = termInfo.getName();
+                        refToTerm.put(ref,rv);
+                        termToRef.put(rv,ref);
+                    }
+                }
+                refToTerm.put(prefix,"mapped");
+            }
+        }
+
+        /**
+           Return a term for a reference.  Throws exception if unmappable.
+        */
+        public String getTerm(String ref) throws Exception {
+            String rv = refToTerm.get(ref);
+            if (rv==null) {
+                int pos = ref.indexOf(":");
+                if (pos==-1)
+                    throw new IllegalArgumentException("Invalid ontology reference '"+ref+"'; should be formatted as 'prefix:number'");
+                String prefix = ref.substring(0,pos).toLowerCase();
+                mapPrefix(prefix);
+            }
+            rv = refToTerm.get(ref);
+            if (rv==null)
+                throw new IllegalArgumentException("Couldn't map ontology reference '"+ref+"'");
+            return rv;
         }
     }
 
@@ -703,7 +767,7 @@ public class GenericsUtilImpl {
        update a pre-mapped term with a mapping (in angle brackets).
        Returns true if it mapped.
     */
-    public static boolean map(Term t, OntologyData od) {
+    public static boolean map(Term t, OntologyData od) throws Exception {
         boolean rv = false;
         if (t==null)
             return rv;
@@ -714,7 +778,10 @@ public class GenericsUtilImpl {
             name = name.substring(0,pos);
             t.setTermName(name);
             t.setOtermRef(ref);
-            t.setOtermName(name);
+            String dictName = od.getTerm(ref);
+            if (!name.equals(dictName))
+                System.out.println("mapping "+name+" to "+dictName);
+            t.setOtermName(dictName);
             rv = true;
         }
         return rv;
@@ -723,7 +790,7 @@ public class GenericsUtilImpl {
     /**
        update a pre-mapped value with a reference.  Returns true if it mapped.
     */
-    public static boolean map(Value v, OntologyData od) {
+    public static boolean map(Value v, OntologyData od) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -736,6 +803,9 @@ public class GenericsUtilImpl {
             if (ref.indexOf(":")>-1) {
                 v.setOtermRef(ref);
                 v.setScalarType("oterm_ref");
+                String dictName = od.getTerm(ref);
+                if (!sv.equals(dictName))
+                    System.out.println("mapping "+sv+" to "+dictName);
             }
             else {
                 v.setObjectRef(ref);
@@ -766,6 +836,9 @@ public class GenericsUtilImpl {
                 sv = sv.substring(0,pos);
                 svs.set(i,sv);
                 refs.add(ref);
+                String dictName = od.getTerm(ref);
+                if (!sv.equals(dictName))
+                    System.out.println("mapping "+sv+" to "+dictName);
             }
             if (refs.get(0).indexOf(":")>-1) {
                 v.setOtermRefs(refs);
@@ -783,7 +856,7 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValue.  Returns true if any mapped.
     */
-    public static boolean map(TypedValue tv, OntologyData od) {
+    public static boolean map(TypedValue tv, OntologyData od) throws Exception {
         boolean rv = false;
         if (tv==null)
             return rv;
@@ -914,7 +987,7 @@ public class GenericsUtilImpl {
         HNDArray hnda = parseCSV(filePath);
 
         // map any pre-mapped values
-        OntologyData od = new OntologyData(token, wc, params.getWorkspaceName());
+        OntologyData od = new OntologyData(token, params.getWorkspaceName());
         boolean mapped = map(hnda,od);
 
         // save as other type if necessary

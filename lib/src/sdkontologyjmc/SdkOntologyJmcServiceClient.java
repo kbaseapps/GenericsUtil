@@ -254,6 +254,23 @@ public class SdkOntologyJmcServiceClient {
     }
 
     /**
+     * <p>Original spec-file function name: list_ontologies</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link sdkontologyjmc.ListOntologiesParams ListOntologiesParams}
+     * @return   instance of original type "ontologies" &rarr; list of String
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public List<String> listOntologies(ListOntologiesParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<List<String>>> retType = new TypeReference<List<List<String>>>() {};
+        List<List<String>> res = caller.jsonrpcCall("sdk_ontology_jmc.list_ontologies", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
      * <p>Original spec-file function name: list_public_translations</p>
      * <pre>
      * </pre>

@@ -2,6 +2,7 @@
 package sdkontologyjmc;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -24,80 +25,83 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "data_version",
     "format_version",
     "number_of_terms",
-    "dictionary_ref"
+    "dictionary_ref",
+    "namespace_id_rule"
 })
 public class OverViewInfo {
 
     @JsonProperty("ontology")
-    private String ontology;
+    private java.lang.String ontology;
     @JsonProperty("namespace")
-    private String namespace;
+    private java.lang.String namespace;
     @JsonProperty("data_version")
-    private String dataVersion;
+    private java.lang.String dataVersion;
     @JsonProperty("format_version")
-    private String formatVersion;
+    private java.lang.String formatVersion;
     @JsonProperty("number_of_terms")
     private Long numberOfTerms;
     @JsonProperty("dictionary_ref")
-    private String dictionaryRef;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private java.lang.String dictionaryRef;
+    @JsonProperty("namespace_id_rule")
+    private List<String> namespaceIdRule;
+    private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("ontology")
-    public String getOntology() {
+    public java.lang.String getOntology() {
         return ontology;
     }
 
     @JsonProperty("ontology")
-    public void setOntology(String ontology) {
+    public void setOntology(java.lang.String ontology) {
         this.ontology = ontology;
     }
 
-    public OverViewInfo withOntology(String ontology) {
+    public OverViewInfo withOntology(java.lang.String ontology) {
         this.ontology = ontology;
         return this;
     }
 
     @JsonProperty("namespace")
-    public String getNamespace() {
+    public java.lang.String getNamespace() {
         return namespace;
     }
 
     @JsonProperty("namespace")
-    public void setNamespace(String namespace) {
+    public void setNamespace(java.lang.String namespace) {
         this.namespace = namespace;
     }
 
-    public OverViewInfo withNamespace(String namespace) {
+    public OverViewInfo withNamespace(java.lang.String namespace) {
         this.namespace = namespace;
         return this;
     }
 
     @JsonProperty("data_version")
-    public String getDataVersion() {
+    public java.lang.String getDataVersion() {
         return dataVersion;
     }
 
     @JsonProperty("data_version")
-    public void setDataVersion(String dataVersion) {
+    public void setDataVersion(java.lang.String dataVersion) {
         this.dataVersion = dataVersion;
     }
 
-    public OverViewInfo withDataVersion(String dataVersion) {
+    public OverViewInfo withDataVersion(java.lang.String dataVersion) {
         this.dataVersion = dataVersion;
         return this;
     }
 
     @JsonProperty("format_version")
-    public String getFormatVersion() {
+    public java.lang.String getFormatVersion() {
         return formatVersion;
     }
 
     @JsonProperty("format_version")
-    public void setFormatVersion(String formatVersion) {
+    public void setFormatVersion(java.lang.String formatVersion) {
         this.formatVersion = formatVersion;
     }
 
-    public OverViewInfo withFormatVersion(String formatVersion) {
+    public OverViewInfo withFormatVersion(java.lang.String formatVersion) {
         this.formatVersion = formatVersion;
         return this;
     }
@@ -118,33 +122,48 @@ public class OverViewInfo {
     }
 
     @JsonProperty("dictionary_ref")
-    public String getDictionaryRef() {
+    public java.lang.String getDictionaryRef() {
         return dictionaryRef;
     }
 
     @JsonProperty("dictionary_ref")
-    public void setDictionaryRef(String dictionaryRef) {
+    public void setDictionaryRef(java.lang.String dictionaryRef) {
         this.dictionaryRef = dictionaryRef;
     }
 
-    public OverViewInfo withDictionaryRef(String dictionaryRef) {
+    public OverViewInfo withDictionaryRef(java.lang.String dictionaryRef) {
         this.dictionaryRef = dictionaryRef;
         return this;
     }
 
+    @JsonProperty("namespace_id_rule")
+    public List<String> getNamespaceIdRule() {
+        return namespaceIdRule;
+    }
+
+    @JsonProperty("namespace_id_rule")
+    public void setNamespaceIdRule(List<String> namespaceIdRule) {
+        this.namespaceIdRule = namespaceIdRule;
+    }
+
+    public OverViewInfo withNamespaceIdRule(List<String> namespaceIdRule) {
+        this.namespaceIdRule = namespaceIdRule;
+        return this;
+    }
+
     @JsonAnyGetter
-    public Map<String, Object> getAdditionalProperties() {
+    public Map<java.lang.String, Object> getAdditionalProperties() {
         return this.additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperties(String name, Object value) {
+    public void setAdditionalProperties(java.lang.String name, Object value) {
         this.additionalProperties.put(name, value);
     }
 
     @Override
-    public String toString() {
-        return ((((((((((((((("OverViewInfo"+" [ontology=")+ ontology)+", namespace=")+ namespace)+", dataVersion=")+ dataVersion)+", formatVersion=")+ formatVersion)+", numberOfTerms=")+ numberOfTerms)+", dictionaryRef=")+ dictionaryRef)+", additionalProperties=")+ additionalProperties)+"]");
+    public java.lang.String toString() {
+        return ((((((((((((((((("OverViewInfo"+" [ontology=")+ ontology)+", namespace=")+ namespace)+", dataVersion=")+ dataVersion)+", formatVersion=")+ formatVersion)+", numberOfTerms=")+ numberOfTerms)+", dictionaryRef=")+ dictionaryRef)+", namespaceIdRule=")+ namespaceIdRule)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
