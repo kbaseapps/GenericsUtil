@@ -58,7 +58,12 @@ public class GenericsUtilImpl {
            map of ontology references to term names
         */
         public HashMap<String,String> refToTerm;
-        
+
+        /**
+           list of references to map
+        */
+        public HashSet<String> unmappedRefs;
+            
         /**
            init service with public data and data in current workspace.
            If ws is null, uses public data only.
@@ -92,47 +97,94 @@ public class GenericsUtilImpl {
             prefixMap = new HashMap<String,String>();
             OntologyOverviewOut ooo = oc.ontologyOverview(new OntologyOverviewParams().withOntologyDictionaryRef(ontologies));
             for (OverViewInfo oi : ooo.getDictionariesMeta()) {
-                String prefix = oi.getOntology().toLowerCase();
+                String prefix = oi.getOntology().toUpperCase();
                 String ref = oi.getDictionaryRef();
                 Long nTerms = oi.getNumberOfTerms();
-                prefixMap.put(prefix,ref);
-                System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
+                List<String> idRules = oi.getNamespaceIdRule();
+                if (prefix != null) {
+                    prefixMap.put(prefix,ref);
+                    System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
+                }
+                if (idRules != null) {
+                    for (String rule : idRules) {
+                        int pos1 = rule.indexOf(" ");
+                        int pos2 = rule.indexOf(":");
+                        if (pos1 > pos2)
+                            pos1 = -1;
+                        if (pos2 > 0) {
+                            prefix = rule.substring(pos1+1,pos2);
+                            prefixMap.put(prefix,ref);
+                            System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
+                        }
+                    }
+                }
             }
 
             // initialize term maps
             termToRef = new HashMap<String,String>();
             refToTerm = new HashMap<String,String>();
+            unmappedRefs = new HashSet<String>();
         }
 
         /**
-           Map all terms in a dictionary, to avoid expensive calls
+           Map a list of references in a dictionary, to avoid expensive calls
            to map individual terms.
         */
-        public void mapPrefix(String prefix) throws Exception {
-            System.out.println("mapping dictionary "+prefix);
-            String rv = refToTerm.get(prefix);
-            if (rv==null) {
-                String dictRef = prefixMap.get(prefix);
-                if (dictRef==null)
-                    throw new IllegalArgumentException("No ontology dictionary available for prefix '"+prefix);
-                OntologyTermsOut oto = oc.listOntologyTerms(new ListOntologyTermsParams().withOntologyDictionaryRef(dictRef));
-                List<String> terms = oto.getTermId();
-                GetOntologyTermsOut out = oc.getOntologyTerms(new GetOntologyTermsParams().withOntologyDictionaryRef(dictRef).withTermIds(terms));
-                if (out==null)
-                    throw new IllegalArgumentException("Couldn't map ontologies (error 1) in dictionary "+dictRef);
-                Map<String,TermInfo> termInfoMap = out.getTermInfo();
-                if (termInfoMap==null)
-                    throw new IllegalArgumentException("Couldn't map ontologies (error 2) in dictionary "+dictRef);
-                for (String ref : termInfoMap.keySet()) {
-                    TermInfo termInfo = termInfoMap.get(ref);
-                    if ((termInfo != null) && (termInfo.getName() != null)) {
-                        rv = termInfo.getName();
-                        refToTerm.put(ref,rv);
-                        termToRef.put(rv,ref);
-                    }
+        public void mapRefs(String prefix, List<String> refs) throws Exception {
+            System.out.println("mapping refs for prefix "+prefix);
+            String dictRef = prefixMap.get(prefix);
+            if (dictRef==null)
+                throw new IllegalArgumentException("No ontology dictionary available for prefix '"+prefix+"'");
+            GetOntologyTermsOut out = oc.getOntologyTerms(new GetOntologyTermsParams().withOntologyDictionaryRef(dictRef).withTermIds(refs));
+            // System.err.println("debug1: "+dictRef);
+            // System.err.println("debug2: "+refs.toString());
+            // System.err.println("debug3: "+out.toString());
+            if (out==null)
+                throw new IllegalArgumentException("Couldn't map ontologies (error 1) in dictionary "+dictRef);
+            Map<String,TermInfo> termInfoMap = out.getTermInfo();
+            if (termInfoMap==null)
+                throw new IllegalArgumentException("Couldn't map ontologies (error 2) in dictionary "+dictRef);
+            for (String ref : termInfoMap.keySet()) {
+                TermInfo termInfo = termInfoMap.get(ref);
+                if ((termInfo != null) && (termInfo.getName() != null)) {
+                    String term = termInfo.getName();
+                    refToTerm.put(ref,term);
+                    termToRef.put(term,ref);
                 }
-                refToTerm.put(prefix,"mapped");
             }
+        }
+
+        /**
+           Map all unmapped references.  Throws exception if any
+           can't be mapped.  Clears list of any mapped references.
+        */
+        public void mapRefs() throws Exception {
+            System.out.println("mapping all unmapped references");
+            HashSet<String> prefixes = new HashSet<String>();
+            for (String ref : unmappedRefs) {
+                int pos = ref.indexOf(":");
+                if (pos==-1)
+                    throw new IllegalArgumentException("Invalid format for reference '"+ref+"'; should be in format prefix:number");
+                prefixes.add(ref.substring(0,pos));
+            }
+            for (String prefix : prefixes) {
+                ArrayList<String> refs = new ArrayList<String>();
+                for (String ref : unmappedRefs) {
+                    if (ref.startsWith(prefix+":"))
+                        refs.add(ref);
+                }
+                mapRefs(prefix,refs);
+                unmappedRefs.removeAll(refs);
+            }
+        }
+
+        /**
+           Add a reference to the list of references to map,
+           if not already mapped.
+        */
+        public void addRef(String ref) {
+            if (refToTerm.get(ref)==null)
+                unmappedRefs.add(ref);
         }
 
         /**
@@ -140,14 +192,6 @@ public class GenericsUtilImpl {
         */
         public String getTerm(String ref) throws Exception {
             String rv = refToTerm.get(ref);
-            if (rv==null) {
-                int pos = ref.indexOf(":");
-                if (pos==-1)
-                    throw new IllegalArgumentException("Invalid ontology reference '"+ref+"'; should be formatted as 'prefix:number'");
-                String prefix = ref.substring(0,pos).toLowerCase();
-                mapPrefix(prefix);
-            }
-            rv = refToTerm.get(ref);
             if (rv==null)
                 throw new IllegalArgumentException("Couldn't map ontology reference '"+ref+"'");
             return rv;
@@ -766,8 +810,11 @@ public class GenericsUtilImpl {
     /**
        update a pre-mapped term with a mapping (in angle brackets).
        Returns true if it mapped.
+
+       In step 1, just gathers any terms to be mapped.
+       In step 2, maps them.
     */
-    public static boolean map(Term t, OntologyData od) throws Exception {
+    public static boolean map(Term t, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (t==null)
             return rv;
@@ -775,13 +822,18 @@ public class GenericsUtilImpl {
         if (name.endsWith(">")) {
             int pos = name.lastIndexOf(" <");
             String ref = name.substring(pos+2,name.length()-1);
-            name = name.substring(0,pos);
-            t.setTermName(name);
-            t.setOtermRef(ref);
-            String dictName = od.getTerm(ref);
-            if (!name.equals(dictName))
-                System.out.println("mapping "+name+" to "+dictName);
-            t.setOtermName(dictName);
+            if (step==1) {
+                od.addRef(ref);
+            }
+            else {
+                name = name.substring(0,pos);
+                t.setTermName(name);
+                t.setOtermRef(ref);
+                String dictName = od.getTerm(ref);
+                if (!name.toLowerCase().equals(dictName.toLowerCase()))
+                    System.out.println("mapping "+name+" to "+dictName);
+                t.setOtermName(dictName);
+            }
             rv = true;
         }
         return rv;
@@ -789,8 +841,10 @@ public class GenericsUtilImpl {
 
     /**
        update a pre-mapped value with a reference.  Returns true if it mapped.
+       In step 1, just gathers any terms to be mapped.
+       In step 2, maps them.
     */
-    public static boolean map(Value v, OntologyData od) throws Exception {
+    public static boolean map(Value v, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -798,18 +852,24 @@ public class GenericsUtilImpl {
         if (sv.endsWith(">")) {
             int pos = sv.lastIndexOf(" <");
             String ref = sv.substring(pos+2,sv.length()-1);
-            sv = sv.substring(0,pos);
-            v.setStringValue(sv);
-            if (ref.indexOf(":")>-1) {
-                v.setOtermRef(ref);
-                v.setScalarType("oterm_ref");
-                String dictName = od.getTerm(ref);
-                if (!sv.equals(dictName))
-                    System.out.println("mapping "+sv+" to "+dictName);
+            if (step==1) {
+                if (ref.indexOf(":")>-1)
+                    od.addRef(ref);
             }
             else {
-                v.setObjectRef(ref);
-                v.setScalarType("object_ref");
+                sv = sv.substring(0,pos);
+                v.setStringValue(sv);
+                if (ref.indexOf(":")>-1) {
+                    v.setOtermRef(ref);
+                    v.setScalarType("oterm_ref");
+                    String dictName = od.getTerm(ref);
+                    if (!sv.toLowerCase().equals(dictName.toLowerCase()))
+                        System.out.println("mapping "+sv+" to "+dictName);
+                }
+                else {
+                    v.setObjectRef(ref);
+                    v.setScalarType("object_ref");
+                }
             }
             rv = true;
         }
@@ -819,7 +879,7 @@ public class GenericsUtilImpl {
     /**
        update pre-mapped values with a reference.  Returns true if it mapped.
     */
-    public static boolean map(Values v, OntologyData od) throws Exception {
+    public static boolean map(Values v, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -833,20 +893,28 @@ public class GenericsUtilImpl {
                 if (pos==-1)
                     throw new Exception("error mapping value '"+sv+"': either all or no values must be mapped in the file");
                 String ref = sv.substring(pos+2,sv.length()-1);
-                sv = sv.substring(0,pos);
-                svs.set(i,sv);
-                refs.add(ref);
-                String dictName = od.getTerm(ref);
-                if (!sv.equals(dictName))
-                    System.out.println("mapping "+sv+" to "+dictName);
+                if (step==1) {
+                    if (ref.indexOf(":")>-1)
+                        od.addRef(ref);
+                }
+                else {
+                    sv = sv.substring(0,pos);
+                    svs.set(i,sv);
+                    refs.add(ref);
+                    String dictName = od.getTerm(ref);
+                    if (!sv.toLowerCase().equals(dictName.toLowerCase()))
+                        System.out.println("mapping "+sv+" to "+dictName);
+                }
             }
-            if (refs.get(0).indexOf(":")>-1) {
-                v.setOtermRefs(refs);
-                v.setScalarType("oterm_ref");
-            }
-            else {
-                v.setObjectRefs(refs);
-                v.setScalarType("object_ref");
+            if (step > 1) {
+                if (refs.get(0).indexOf(":")>-1) {
+                    v.setOtermRefs(refs);
+                    v.setScalarType("oterm_ref");
+                }
+                else {
+                    v.setObjectRefs(refs);
+                    v.setScalarType("object_ref");
+                }
             }
             rv = true;
         }
@@ -856,18 +924,19 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValue.  Returns true if any mapped.
     */
-    public static boolean map(TypedValue tv, OntologyData od) throws Exception {
+    public static boolean map(TypedValue tv, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (tv==null)
             return rv;
         Term t = tv.getValueType();
-        rv |= map(t,od);
+        rv |= map(t,od,step);
         Value v = tv.getValue();
-        rv |= map(v,od);
-        rv |= map(tv.getValueUnits(),od);
+        rv |= map(v,od,step);
+        rv |= map(tv.getValueUnits(),od,step);
         if (t != null) {
             String ref = t.getOtermRef();
             if ((ref != null) &&
+                (step > 1) &&
                 (ref.indexOf(":") > -1))
                 transformValue(ref, v);
         }
@@ -877,23 +946,24 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValues.  Returns true if any mapped.
     */
-    public static boolean map(TypedValues tvs, OntologyData od) throws Exception {
+    public static boolean map(TypedValues tvs, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (tvs==null)
             return rv;
         Term t = tvs.getValueType();
-        rv |= map(t,od);
+        rv |= map(t,od,step);
         List<TypedValue> vc = tvs.getValueContext();
         if (vc != null) {
             for (TypedValue tv : vc)
-                rv |= map(tv,od);
+                rv |= map(tv,od,step);
         }
         Values v = tvs.getValues();
-        rv |= map(v,od);
-        rv |= map(tvs.getValueUnits(),od);
+        rv |= map(v,od,step);
+        rv |= map(tvs.getValueUnits(),od,step);
         if (t != null) {
             String ref = t.getOtermRef();
             if ((ref != null) &&
+                (step > 1) &&
                 (ref.indexOf(":") > -1))
                 transformValues(ref, v);
         }
@@ -903,48 +973,48 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a DimensionContext.  Returns true if any mapped.
     */
-    public static boolean map(DimensionContext dc, OntologyData od) throws Exception {
+    public static boolean map(DimensionContext dc, OntologyData od, int step) throws Exception {
         boolean rv = false;
         if (dc==null)
             return rv;
-        rv |= map(dc.getDataType(),od);
+        rv |= map(dc.getDataType(),od,step);
         for (TypedValues tvs : dc.getTypedValues())
-            rv |= map(tvs,od);
+            rv |= map(tvs,od,step);
         return rv;
     }
     
     /**
        Map premapped types in NDArray.  Returns true if any mapped.
     */
-    public static boolean map(NDArray nda, OntologyData od) throws Exception {
+    public static boolean map(NDArray nda, OntologyData od, int step) throws Exception {
         boolean rv = false;
-        rv |= map(nda.getDataType(),od);
+        rv |= map(nda.getDataType(),od,step);
         for (DimensionContext dc : nda.getDimContext())
-            rv |= map(dc,od);
+            rv |= map(dc,od,step);
         List<TypedValue> arrayContext = nda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv,od);
+                rv |= map(tv,od,step);
         }
-        rv |= map(nda.getTypedValues(),od);
+        rv |= map(nda.getTypedValues(),od,step);
         return rv;
     }
 
     /**
        Map premapped types in HNDArray.  Returns true if any mapped.
     */
-    public static boolean map(HNDArray hnda, OntologyData od) throws Exception {
+    public static boolean map(HNDArray hnda, OntologyData od, int step) throws Exception {
         boolean rv = false;
-        rv |= map(hnda.getDataType(),od);
+        rv |= map(hnda.getDataType(),od,step);
         for (DimensionContext dc : hnda.getDimContext())
-            rv |= map(dc,od);
+            rv |= map(dc,od,step);
         List<TypedValue> arrayContext = hnda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv,od);
+                rv |= map(tv,od,step);
         }
         for (TypedValues tv : hnda.getTypedValues())
-            rv |= map(tv,od);
+            rv |= map(tv,od,step);
         return rv;
     }
 
@@ -988,7 +1058,11 @@ public class GenericsUtilImpl {
 
         // map any pre-mapped values
         OntologyData od = new OntologyData(token, params.getWorkspaceName());
-        boolean mapped = map(hnda,od);
+        boolean mapped = map(hnda,od,1);
+        if (mapped) {
+            od.mapRefs();
+            mapped = map(hnda,od,2);
+        }
 
         // save as other type if necessary
         String objectType = params.getObjectType();
