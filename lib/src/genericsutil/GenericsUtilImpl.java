@@ -116,8 +116,8 @@ public class GenericsUtilImpl {
                 else
                     for (String ontology : privateOntologies)
                         System.out.println("  "+ontology);
-                ontologies.addAll(privateOntologies);
                 */
+                ontologies.addAll(privateOntologies);
             }
 
             // map prefix of each ontology to the object ref
@@ -166,9 +166,9 @@ public class GenericsUtilImpl {
             String dictRef = prefixMap.get(prefix);
             if (dictRef==null)
                 throw new IllegalArgumentException("No ontology dictionary available for prefix '"+prefix+"'");
+            System.err.println("debug1: "+dictRef);
+            System.err.println("debug2: "+refs.toString());
             GetOntologyTermsOut out = oc.getOntologyTerms(new GetOntologyTermsParams().withOntologyDictionaryRef(dictRef).withTermIds(refs));
-            // System.err.println("debug1: "+dictRef);
-            // System.err.println("debug2: "+refs.toString());
             // System.err.println("debug3: "+out.toString());
             if (out==null)
                 throw new IllegalArgumentException("Couldn't map ontologies (error 1) in dictionary "+dictRef);
