@@ -33,6 +33,10 @@ import com.opencsv.*;
 public class GenericsUtilImpl {
     protected static java.io.File tempDir = new java.io.File("/kb/module/work/tmp/");
 
+    protected static WorkspaceClient wc = null;
+
+    protected static OntologyData od = null;
+
     /**
        class encapsulating all data we've received from the
        Ontology service
@@ -49,21 +53,40 @@ public class GenericsUtilImpl {
         public HashMap<String,String> prefixMap;
 
         /**
-           map of term names to ontology references.  Also maps
-           prefixes to the word "mapped" if already mapped.
-        */
-        public HashMap<String,String> termToRef;
-
-        /**
            map of ontology references to term names
         */
         public HashMap<String,String> refToTerm;
 
         /**
+           map of ontology references to data types
+        */
+        public HashMap<String,String> refToDataType;
+
+        /**
+           map of ontology references to object refs
+        */
+        public HashMap<String,String> refToObjectType;
+        
+        /**
+           map of ontology references to oterm refs
+        */
+        public HashMap<String,String> refToOtermType;
+
+        /**
+           map of ontology references to synonyms
+        */
+        public HashMap<String,List<String>> refToSynonyms;
+
+        /**
+           map of ontology references to (direct, is_a) parents
+        */
+        public HashMap<String,List<String>> refToParents;
+        
+        /**
            list of references to map
         */
         public HashSet<String> unmappedRefs;
-            
+
         /**
            init service with public data and data in current workspace.
            If ws is null, uses public data only.
@@ -74,16 +97,19 @@ public class GenericsUtilImpl {
 
             // start with public ontologies
             List<String> ontologies = oc.listPublicOntologies();
+            /*
             System.out.println("Public ontologies:");
             if (ontologies==null)
                 System.out.println("  NONE");
             else
                 for (String ontology : ontologies)
                     System.out.println("  "+ontology);
+            */
 
             // add private ontologies from user's workspace
             if (ws!=null) {
                 List<String> privateOntologies = oc.listOntologies(new ListOntologiesParams().withWorkspaceNames(Arrays.asList(ws)));
+                /*
                 System.out.println("Private ontologies:");
                 if (privateOntologies==null)
                     System.out.println("  NONE");
@@ -91,6 +117,7 @@ public class GenericsUtilImpl {
                     for (String ontology : privateOntologies)
                         System.out.println("  "+ontology);
                 ontologies.addAll(privateOntologies);
+                */
             }
 
             // map prefix of each ontology to the object ref
@@ -121,8 +148,12 @@ public class GenericsUtilImpl {
             }
 
             // initialize term maps
-            termToRef = new HashMap<String,String>();
             refToTerm = new HashMap<String,String>();
+            refToDataType = new HashMap<String,String>();
+            refToObjectType = new HashMap<String,String>();
+            refToOtermType = new HashMap<String,String>();
+            refToParents = new HashMap<String,List<String>>();
+            refToSynonyms = new HashMap<String,List<String>>();
             unmappedRefs = new HashSet<String>();
         }
 
@@ -149,7 +180,31 @@ public class GenericsUtilImpl {
                 if ((termInfo != null) && (termInfo.getName() != null)) {
                     String term = termInfo.getName();
                     refToTerm.put(ref,term);
-                    termToRef.put(term,ref);
+                    List<String> synonyms = termInfo.getSynonym();
+                    if (synonyms != null)
+                        refToSynonyms.put(ref,synonyms);
+                    List<String> parents = termInfo.getIsA();
+                    if (parents != null) {
+                        refToParents.put(ref,parents);
+                        for (String parent : parents)
+                            addRef(parent);
+                    }
+                    List<String> xrefs = termInfo.getXref();
+                    if (xrefs != null) {
+                        for (String xref : xrefs) {
+                            if (xref.startsWith("Ref: "))
+                                refToObjectType.put(ref,xref.substring(5));
+                            else if (xref.startsWith("ORef: "))
+                                refToOtermType.put(ref,xref.substring(6));
+                        }
+                    }
+                    List<String> pvs = termInfo.getPropertyValue();
+                    if (pvs != null) {
+                        for (String pv : pvs) {
+                            if (pv.startsWith("data_type "))
+                                refToDataType.put(ref,pv.substring(10));
+                        }
+                    }
                 }
             }
         }
@@ -176,6 +231,8 @@ public class GenericsUtilImpl {
                 mapRefs(prefix,refs);
                 unmappedRefs.removeAll(refs);
             }
+            if (unmappedRefs.size() > 0)
+                mapRefs();
         }
 
         /**
@@ -195,6 +252,51 @@ public class GenericsUtilImpl {
             if (rv==null)
                 throw new IllegalArgumentException("Couldn't map ontology reference '"+ref+"'");
             return rv;
+        }
+
+        /**
+           Return a data type for a reference, or null if not found
+        */
+        public String getDataType(String ref) {
+            return refToDataType.get(ref);
+        }
+
+        /**
+           Return a object ref type for a reference, or null if not found
+        */
+        public String getObjectType(String ref) {
+            return refToObjectType.get(ref);
+        }
+
+        /**
+           Return a oterm ref type for a reference, or null if not found
+        */
+        public String getOtermType(String ref) {
+            return refToOtermType.get(ref);
+        }
+        
+        /**
+           Checks whether a term matches a reference, or its synonyms,
+           or its parents.  Case insensitive.
+        */
+        public boolean matches(String ref, String term) throws Exception {
+            term = term.toLowerCase();
+            String match = refToTerm.get(ref);
+            if (match.toLowerCase().equals(term))
+                return true;
+            List<String> synonyms = refToSynonyms.get(ref);
+            if (synonyms != null) {
+                for (String synonym : synonyms)
+                    if (synonym.toLowerCase().equals(term))
+                        return true;
+            }
+            List<String> parents = refToParents.get(ref);
+            if (parents != null) {
+                for (String parent : parents)
+                    if (matches(parent, term))
+                        return true;
+            }
+            return false;
         }
     }
 
@@ -237,12 +339,19 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Helper function to get reference when saving an object
+       Helper function to get reference when listing/saving an object
     */
     private static String getRefFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
         return info.getE7() + "/" + info.getE1() + "/" + info.getE5();
     }
 
+    /**
+       Helper function to get type when listing/saving an object
+    */
+    private static String getTypeFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
+        return info.getE3();
+    }
+    
     /**
        Helper function to get refs when listing objects
     */
@@ -258,10 +367,23 @@ public class GenericsUtilImpl {
     }
 
     /**
+       Helper function to get types when listing objects
+    */
+    public static ArrayList<String> getTypesFromObjectInfo(List<Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>>> info) {
+        if (info==null)
+            return null;
+        
+        ArrayList<String> rv = new ArrayList<String>();
+        for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> tuple : info) {
+            rv.add(getTypeFromObjectInfo(tuple));
+        }
+        return rv;
+    }
+    
+    /**
        Save NDArray object to workspace, returning reference.
     */
-    public static String saveObject(WorkspaceClient wc,
-                                    String ws,
+    public static String saveObject(String ws,
                                     String name,
                                     String objectType,
                                     Object o,
@@ -421,9 +543,9 @@ public class GenericsUtilImpl {
         if (f.length > 1) {
             rv.setValueType(makeTerm(f[0]));
             if (f.length > 2) {
+                // make user specify details for now;
+                // units and context should be auto-detected!
                 List<TypedValue> vc = new ArrayList<TypedValue>();
-                // make user specify type for now;
-                // it should be auto-detected!
                 int nContext = 0;
                 if ((f.length % 2) == 0)
                     nContext = (f.length-2)/2;
@@ -720,14 +842,87 @@ public class GenericsUtilImpl {
     }
 
     /**
+       check object references to be sure they're real and readable
+    */
+    public static void checkObjects(List<String> objectRefs, String objectType) throws Exception {
+        // parse out object type
+        int pos1 = objectType.indexOf(".");
+        if (pos1 == -1)
+            throw new IllegalArgumentException("Object type "+objectType+" not parseable");
+        int pos2 = objectType.indexOf(".", pos1+1);
+        if (pos2 > pos1)
+            return;  // should we check subobject?
+        List<ObjectSpecification> objects = new ArrayList<ObjectSpecification>();
+        for (String objectRef : objectRefs) {
+            if (objectRef != null)
+                objects.add(new ObjectSpecification().withRef(objectRef));
+        }
+        GetObjectInfo3Results goir = wc.getObjectInfo3(new GetObjectInfo3Params().withObjects(objects));
+        for (String oType : getTypesFromObjectInfo(goir.getInfos())) {
+            if (!oType.startsWith(objectType))
+                throw new Exception("Object type "+oType+" not compatible with type "+objectType);
+        }
+    }
+
+    /**
+       update a Values object from String to ObjectRef, check refs
+    */
+    public static void makeObjectRefValues(Values v, String objectType) throws Exception {
+        if (v.getScalarType().equals("object_ref"))
+            return; // already pre-mapped
+
+        List<String> sv = v.getStringValues();
+        int l = sv.size();
+        List<String> ov = new ArrayList<String>(l);
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val == null)
+                ov.add(null);
+            else
+                ov.add(val);
+        }
+        checkObjects(ov, objectType);
+        v.setStringValues(null);
+        v.setObjectRefs(ov);
+        v.setScalarType("object_ref");
+    }
+
+    /**
+       update a Values object from String to OtermRef, add refs to
+       be checked later
+    */
+    public static void makeOtermRefValues(Values v) throws Exception {
+        if (v.getScalarType().equals("oterm_ref"))
+            return; // already pre-mapped
+
+        List<String> sv = v.getStringValues();
+        int l = sv.size();
+        List<String> ov = new ArrayList<String>(l);
+        for (int i=0; i<l; i++) {
+            String val = sv.get(i);
+            if (val == null)
+                ov.add(null);
+            else {
+                ov.add(val);
+                od.addRef(val); // put ref on list to check
+            }
+        }
+        v.setStringValues(null);
+        v.setOtermRefs(ov);
+        v.setScalarType("oterm_ref");
+    }
+    
+    /**
        update a Values object from String to another type, based
        on a reference term
     */
-    public static void transformValues(String ref, Values v) {
+    public static void transformValues(Term valueType, Values v) throws Exception {
         List<String> sv = v.getStringValues();
         boolean allNumeric = true;
         boolean allBoolean = true;
         boolean allInt = true;
+        boolean allOtermRef = true;
+        boolean allObjectRef = true;
         int l = sv.size();
         for (int i=0; i<l; i++) {
             String val = sv.get(i);
@@ -735,16 +930,54 @@ public class GenericsUtilImpl {
                 allNumeric &= Pattern.matches("^-?[0-9]*\\.?[0-9]+$",val);
                 allInt &= Pattern.matches("^-?[0-9]+$",val);
                 allBoolean &= Pattern.matches("^[01]$",val);
+                allOtermRef &= Pattern.matches("^.+:[0-9]+$",val);
+                allObjectRef &= Pattern.matches("^[0-9]+/[0-9]+",val);
             }
         }
-        if (allBoolean)
-            makeBooleanValues(v);
-        else if (allNumeric) {
-            // kludge: should get this from ontology service
-            if (allInt && (ref.equals("ME:0000005")))
-                makeIntValues(v);
-            else
+        String dataType = null;
+        String ref = valueType.getOtermRef();
+        String objectType = null;
+        if (ref != null) {
+            dataType = od.getDataType(ref);
+            objectType = od.getObjectType(ref);
+            if ((objectType != null) || (od.getOtermType(ref) != null))
+                dataType = "ref";
+        }
+        if (dataType==null) {
+            // guess based on values
+            if (allBoolean)
+                makeBooleanValues(v);
+            else if (allNumeric)
                 makeFloatValues(v);
+        }
+        else {
+            if (dataType.equals("boolean")) {
+                if (allBoolean)
+                    makeBooleanValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
+            }
+            else if (dataType.equals("int")) {
+                if (allInt)
+                    makeIntValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
+            }
+            else if (dataType.equals("float")) {
+                if (allNumeric)
+                    makeFloatValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
+            }
+            else if ((dataType.equals("ref")) &&
+                     (v.getScalarType().equals("string"))) {
+                if (allOtermRef)
+                    makeOtermRefValues(v);
+                else if ((allObjectRef) && (objectType != null))
+                    makeObjectRefValues(v,objectType);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be references");
+            }
         }
     }
 
@@ -788,22 +1021,97 @@ public class GenericsUtilImpl {
     }
 
     /**
+       update a Value object from String to ObjectRef, check refs
+    */
+    public static void makeObjectRefValue(Value v, String objectType) throws Exception {
+        if (v.getScalarType().equals("object_ref"))
+            return; // already pre-mapped
+
+        String sv = v.getStringValue();
+        if (sv == null)
+            v.setObjectRef(null);
+        else
+            v.setObjectRef(sv);
+        checkObjects(Arrays.asList(sv), objectType);
+        v.setStringValue(null);
+        v.setScalarType("object_ref");
+    }
+
+    /**
+       update a Value object from String to OtermRef, add ref to
+       be checked later
+    */
+    public static void makeOtermRefValue(Value v) throws Exception {
+        if (v.getScalarType().equals("oterm_ref"))
+            return; // already pre-mapped
+        
+        String sv = v.getStringValue();
+        if (sv == null)
+            v.setOtermRef(null);
+        else {
+            v.setOtermRef(sv);
+            od.addRef(sv); // put ref on list to check
+        }
+        v.setStringValue(null);
+        v.setScalarType("oterm_ref");
+    }
+    
+    /**
        update a Value object from String to another type, based
        on a reference term
     */
-    public static void transformValue(String ref, Value v) {
+    public static void transformValue(Term valueType, Value v) throws Exception {
         String sv = v.getStringValue();
         boolean isNumeric = Pattern.matches("^-?[0-9]*\\.?[0-9]+$",sv);
         boolean isBoolean = Pattern.matches("^[01]$",sv);
         boolean isInt = Pattern.matches("^-?[0-9]+$",sv);
-        if (isBoolean)
-            makeBooleanValue(v);
-        else if (isNumeric) {
-            // kludge: should get this from ontology service
-            if (isInt && (ref.equals("ME:0000005")))
-                makeIntValue(v);
-            else
+        boolean isOtermRef = Pattern.matches("^.+:[0-9]+$",sv);
+        boolean isObjectRef = Pattern.matches("^[0-9]+/[0-9]+",sv);
+
+        String dataType = null;
+        String ref = valueType.getOtermRef();
+        String objectType = null;
+        if (ref != null) {
+            dataType = od.getDataType(ref);
+            objectType = od.getObjectType(ref);
+            if ((objectType != null) || (od.getOtermType(ref) != null))
+                dataType = "ref";
+        }
+        if (dataType==null) {
+            // guess based on values
+            if (isBoolean)
+                makeBooleanValue(v);
+            else if (isNumeric)
                 makeFloatValue(v);
+        }
+        else {
+            if (dataType.equals("boolean")) {
+                if (isBoolean)
+                    makeBooleanValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
+            }
+            else if (dataType.equals("int")) {
+                if (isInt)
+                    makeIntValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
+            }
+            else if (dataType.equals("float")) {
+                if (isNumeric)
+                    makeFloatValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
+            }
+            else if ((dataType.equals("ref")) &&
+                     (v.getScalarType().equals("string"))) {
+                if (isOtermRef)
+                    makeOtermRefValue(v);
+                else if ((isObjectRef) && (objectType != null))
+                    makeObjectRefValue(v,objectType);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be references");
+            }
         }
     }
     
@@ -814,7 +1122,7 @@ public class GenericsUtilImpl {
        In step 1, just gathers any terms to be mapped.
        In step 2, maps them.
     */
-    public static boolean map(Term t, OntologyData od, int step) throws Exception {
+    public static boolean map(Term t, int step) throws Exception {
         boolean rv = false;
         if (t==null)
             return rv;
@@ -844,7 +1152,7 @@ public class GenericsUtilImpl {
        In step 1, just gathers any terms to be mapped.
        In step 2, maps them.
     */
-    public static boolean map(Value v, OntologyData od, int step) throws Exception {
+    public static boolean map(Value v, int step) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -879,7 +1187,7 @@ public class GenericsUtilImpl {
     /**
        update pre-mapped values with a reference.  Returns true if it mapped.
     */
-    public static boolean map(Values v, OntologyData od, int step) throws Exception {
+    public static boolean map(Values v, int step) throws Exception {
         boolean rv = false;
         if (v==null)
             return rv;
@@ -924,97 +1232,87 @@ public class GenericsUtilImpl {
     /**
        Map premapped types in a TypedValue.  Returns true if any mapped.
     */
-    public static boolean map(TypedValue tv, OntologyData od, int step) throws Exception {
+    public static boolean map(TypedValue tv, int step) throws Exception {
         boolean rv = false;
         if (tv==null)
             return rv;
         Term t = tv.getValueType();
-        rv |= map(t,od,step);
+        rv |= map(t,step);
         Value v = tv.getValue();
-        rv |= map(v,od,step);
-        rv |= map(tv.getValueUnits(),od,step);
-        if (t != null) {
-            String ref = t.getOtermRef();
-            if ((ref != null) &&
-                (step > 1) &&
-                (ref.indexOf(":") > -1))
-                transformValue(ref, v);
-        }
+        rv |= map(v,step);
+        rv |= map(tv.getValueUnits(),step);
+        if ((t != null) && (step > 1))
+            transformValue(t, v);
         return rv;
     }
 
     /**
        Map premapped types in a TypedValues.  Returns true if any mapped.
     */
-    public static boolean map(TypedValues tvs, OntologyData od, int step) throws Exception {
+    public static boolean map(TypedValues tvs, int step) throws Exception {
         boolean rv = false;
         if (tvs==null)
             return rv;
         Term t = tvs.getValueType();
-        rv |= map(t,od,step);
+        rv |= map(t,step);
         List<TypedValue> vc = tvs.getValueContext();
         if (vc != null) {
             for (TypedValue tv : vc)
-                rv |= map(tv,od,step);
+                rv |= map(tv,step);
         }
         Values v = tvs.getValues();
-        rv |= map(v,od,step);
-        rv |= map(tvs.getValueUnits(),od,step);
-        if (t != null) {
-            String ref = t.getOtermRef();
-            if ((ref != null) &&
-                (step > 1) &&
-                (ref.indexOf(":") > -1))
-                transformValues(ref, v);
-        }
+        rv |= map(v,step);
+        rv |= map(tvs.getValueUnits(),step);
+        if ((t != null) && (step > 1))
+            transformValues(t, v);
         return rv;
     }
 
     /**
        Map premapped types in a DimensionContext.  Returns true if any mapped.
     */
-    public static boolean map(DimensionContext dc, OntologyData od, int step) throws Exception {
+    public static boolean map(DimensionContext dc, int step) throws Exception {
         boolean rv = false;
         if (dc==null)
             return rv;
-        rv |= map(dc.getDataType(),od,step);
+        rv |= map(dc.getDataType(),step);
         for (TypedValues tvs : dc.getTypedValues())
-            rv |= map(tvs,od,step);
+            rv |= map(tvs,step);
         return rv;
     }
     
     /**
        Map premapped types in NDArray.  Returns true if any mapped.
     */
-    public static boolean map(NDArray nda, OntologyData od, int step) throws Exception {
+    public static boolean map(NDArray nda, int step) throws Exception {
         boolean rv = false;
-        rv |= map(nda.getDataType(),od,step);
+        rv |= map(nda.getDataType(),step);
         for (DimensionContext dc : nda.getDimContext())
-            rv |= map(dc,od,step);
+            rv |= map(dc,step);
         List<TypedValue> arrayContext = nda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv,od,step);
+                rv |= map(tv,step);
         }
-        rv |= map(nda.getTypedValues(),od,step);
+        rv |= map(nda.getTypedValues(),step);
         return rv;
     }
 
     /**
        Map premapped types in HNDArray.  Returns true if any mapped.
     */
-    public static boolean map(HNDArray hnda, OntologyData od, int step) throws Exception {
+    public static boolean map(HNDArray hnda, int step) throws Exception {
         boolean rv = false;
-        rv |= map(hnda.getDataType(),od,step);
+        rv |= map(hnda.getDataType(),step);
         for (DimensionContext dc : hnda.getDimContext())
-            rv |= map(dc,od,step);
+            rv |= map(dc,step);
         List<TypedValue> arrayContext = hnda.getArrayContext();
         if (arrayContext != null) {
             for (TypedValue tv : arrayContext)
-                rv |= map(tv,od,step);
+                rv |= map(tv,step);
         }
         for (TypedValues tv : hnda.getTypedValues())
-            rv |= map(tv,od,step);
+            rv |= map(tv,step);
         return rv;
     }
 
@@ -1044,7 +1342,8 @@ public class GenericsUtilImpl {
                                             String shockURL,
                                             AuthToken token,
                                             ImportCSVParams params) throws Exception {
-        WorkspaceClient wc = createWsClient(wsURL,token);
+        wc = createWsClient(wsURL,token);
+        od = new OntologyData(token, params.getWorkspaceName());
 
         // for provenance
         String methodName = "GenericsUtil.importCSV";
@@ -1057,11 +1356,11 @@ public class GenericsUtilImpl {
         HNDArray hnda = parseCSV(filePath);
 
         // map any pre-mapped values
-        OntologyData od = new OntologyData(token, params.getWorkspaceName());
-        boolean mapped = map(hnda,od,1);
+        boolean mapped = map(hnda,1);
         if (mapped) {
             od.mapRefs();
-            mapped = map(hnda,od,2);
+            mapped = map(hnda,2);
+            od.mapRefs();
         }
 
         // save as other type if necessary
@@ -1100,8 +1399,7 @@ public class GenericsUtilImpl {
         metadata.put("dimension_size",dimensionSize);
 
         // save in workspace
-        String objectRef = saveObject(wc,
-                                      params.getWorkspaceName(),
+        String objectRef = saveObject(params.getWorkspaceName(),
                                       params.getObjectName(),
                                       objectType,
                                       o,
