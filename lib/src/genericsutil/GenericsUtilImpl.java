@@ -186,8 +186,13 @@ public class GenericsUtilImpl {
                     List<String> parents = termInfo.getIsA();
                     if (parents != null) {
                         refToParents.put(ref,parents);
-                        for (String parent : parents)
-                            addRef(parent);
+                        for (String parent : parents) {
+                            int pos = parent.indexOf(" ");
+                            if (pos==-1)
+                                addRef(parent);
+                            else
+                                addRef(parent.substring(0,pos));
+                        }
                     }
                     List<String> xrefs = termInfo.getXref();
                     if (xrefs != null) {
