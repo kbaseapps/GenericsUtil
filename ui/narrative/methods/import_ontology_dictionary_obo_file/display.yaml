@@ -1,0 +1,52 @@
+#
+# Define basic display information
+#
+name     : UPLOAD OBO FILE
+subtitle : none
+tooltip  : |
+    Import an ontology dictionary in OBO format.
+
+screenshots :
+    []
+
+#
+# Define the set of other narrative methods that should be suggested to the user.
+#
+suggestions :
+    apps:
+        related :
+            []
+        next :
+            []
+    methods:
+        related :
+            []
+        next :
+            []
+
+
+#
+# Configure the display and description of the parameters
+#
+parameters :
+    obo_file :
+        ui-name : |
+            OBO file
+        short-hint : |
+            File with an ontology dictionary in OBO format.
+        long-hint  : |
+            File with an ontology dictionary in OBO format.
+
+    object_name :
+        ui-name : |
+            Name of the object to create
+        short-hint : |
+            Provide a name for the data you are uploading.
+        long-hint  : |
+            Provide a name for the data you are uploading.
+
+
+description : none
+
+
+technical-description : none

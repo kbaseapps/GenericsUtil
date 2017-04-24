@@ -10,9 +10,9 @@ module GenericsUtil {
 
     typedef mapping<string, string> usermeta;
 
+
     /*
-    matrix_name - name of object
-    workspace_name - workspace it gets saved to
+    Import a CSV file into a NDArray or HNDArray
     */
     typedef structure {
 	File file;
@@ -26,8 +26,23 @@ module GenericsUtil {
 
     typedef structure {
         string object_ref;
-    } ImportCSVResult;
+    } ImportResult;
 
     funcdef import_csv(ImportCSVParams params)
-      returns (ImportCSVResult result) authentication required;
+      returns (ImportResult result) authentication required;
+
+    /*
+    Import an OBO file into an OntologyDictionary
+    */
+    typedef structure {
+	File file;
+
+        string workspace_name;
+        string object_name;
+
+        usermeta metadata;
+    } ImportOBOParams;
+
+    funcdef import_obo(ImportOBOParams params)
+      returns (ImportResult result) authentication required;
 };

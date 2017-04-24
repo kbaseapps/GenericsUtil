@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportCSVParams</p>
+ * <p>Original spec-file type: ImportOBOParams</p>
  * <pre>
- * Import a CSV file into a NDArray or HNDArray
+ * Import an OBO file into an OntologyDictionary
  * </pre>
  * 
  */
@@ -24,10 +24,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "file",
     "workspace_name",
     "object_name",
-    "object_type",
     "metadata"
 })
-public class ImportCSVParams {
+public class ImportOBOParams {
 
     /**
      * <p>Original spec-file type: File</p>
@@ -40,8 +39,6 @@ public class ImportCSVParams {
     private java.lang.String workspaceName;
     @JsonProperty("object_name")
     private java.lang.String objectName;
-    @JsonProperty("object_type")
-    private java.lang.String objectType;
     @JsonProperty("metadata")
     private Map<String, String> metadata;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
@@ -66,7 +63,7 @@ public class ImportCSVParams {
         this.file = file;
     }
 
-    public ImportCSVParams withFile(File file) {
+    public ImportOBOParams withFile(File file) {
         this.file = file;
         return this;
     }
@@ -81,7 +78,7 @@ public class ImportCSVParams {
         this.workspaceName = workspaceName;
     }
 
-    public ImportCSVParams withWorkspaceName(java.lang.String workspaceName) {
+    public ImportOBOParams withWorkspaceName(java.lang.String workspaceName) {
         this.workspaceName = workspaceName;
         return this;
     }
@@ -96,23 +93,8 @@ public class ImportCSVParams {
         this.objectName = objectName;
     }
 
-    public ImportCSVParams withObjectName(java.lang.String objectName) {
+    public ImportOBOParams withObjectName(java.lang.String objectName) {
         this.objectName = objectName;
-        return this;
-    }
-
-    @JsonProperty("object_type")
-    public java.lang.String getObjectType() {
-        return objectType;
-    }
-
-    @JsonProperty("object_type")
-    public void setObjectType(java.lang.String objectType) {
-        this.objectType = objectType;
-    }
-
-    public ImportCSVParams withObjectType(java.lang.String objectType) {
-        this.objectType = objectType;
         return this;
     }
 
@@ -126,7 +108,7 @@ public class ImportCSVParams {
         this.metadata = metadata;
     }
 
-    public ImportCSVParams withMetadata(Map<String, String> metadata) {
+    public ImportOBOParams withMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
     }
@@ -143,7 +125,7 @@ public class ImportCSVParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((("ImportCSVParams"+" [file=")+ file)+", workspaceName=")+ workspaceName)+", objectName=")+ objectName)+", objectType=")+ objectType)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("ImportOBOParams"+" [file=")+ file)+", workspaceName=")+ workspaceName)+", objectName=")+ objectName)+", metadata=")+ metadata)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

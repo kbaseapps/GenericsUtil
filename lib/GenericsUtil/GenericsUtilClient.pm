@@ -81,20 +81,19 @@ sub new
     # We create an auth token, passing through the arguments that we were (hopefully) given.
 
     {
-	my $token = Bio::KBase::AuthToken->new(@args);
-	
-	if (!$token->error_message)
-	{
-	    $self->{token} = $token->token;
-	    $self->{client}->{token} = $token->token;
+	my %arg_hash2 = @args;
+	if (exists $arg_hash2{"token"}) {
+	    $self->{token} = $arg_hash2{"token"};
+	} elsif (exists $arg_hash2{"user_id"}) {
+	    my $token = Bio::KBase::AuthToken->new(@args);
+	    if (!$token->error_message) {
+	        $self->{token} = $token->token;
+	    }
 	}
-        else
-        {
-	    #
-	    # All methods in this module require authentication. In this case, if we
-	    # don't have a token, we can't continue.
-	    #
-	    die "Authentication failed: " . $token->error_message;
+	
+	if (exists $self->{token})
+	{
+	    $self->{client}->{token} = $self->{token};
 	}
     }
 
@@ -121,7 +120,7 @@ sub new
 
 <pre>
 $params is a GenericsUtil.ImportCSVParams
-$result is a GenericsUtil.ImportCSVResult
+$result is a GenericsUtil.ImportResult
 ImportCSVParams is a reference to a hash where the following keys are defined:
 	file has a value which is a GenericsUtil.File
 	workspace_name has a value which is a string
@@ -132,7 +131,7 @@ File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
 usermeta is a reference to a hash where the key is a string and the value is a string
-ImportCSVResult is a reference to a hash where the following keys are defined:
+ImportResult is a reference to a hash where the following keys are defined:
 	object_ref has a value which is a string
 
 </pre>
@@ -142,7 +141,7 @@ ImportCSVResult is a reference to a hash where the following keys are defined:
 =begin text
 
 $params is a GenericsUtil.ImportCSVParams
-$result is a GenericsUtil.ImportCSVResult
+$result is a GenericsUtil.ImportResult
 ImportCSVParams is a reference to a hash where the following keys are defined:
 	file has a value which is a GenericsUtil.File
 	workspace_name has a value which is a string
@@ -153,7 +152,7 @@ File is a reference to a hash where the following keys are defined:
 	path has a value which is a string
 	shock_id has a value which is a string
 usermeta is a reference to a hash where the key is a string and the value is a string
-ImportCSVResult is a reference to a hash where the following keys are defined:
+ImportResult is a reference to a hash where the following keys are defined:
 	object_ref has a value which is a string
 
 
@@ -213,6 +212,110 @@ ImportCSVResult is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 import_obo
+
+  $result = $obj->import_obo($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenericsUtil.ImportOBOParams
+$result is a GenericsUtil.ImportResult
+ImportOBOParams is a reference to a hash where the following keys are defined:
+	file has a value which is a GenericsUtil.File
+	workspace_name has a value which is a string
+	object_name has a value which is a string
+	metadata has a value which is a GenericsUtil.usermeta
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+	shock_id has a value which is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+ImportResult is a reference to a hash where the following keys are defined:
+	object_ref has a value which is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenericsUtil.ImportOBOParams
+$result is a GenericsUtil.ImportResult
+ImportOBOParams is a reference to a hash where the following keys are defined:
+	file has a value which is a GenericsUtil.File
+	workspace_name has a value which is a string
+	object_name has a value which is a string
+	metadata has a value which is a GenericsUtil.usermeta
+File is a reference to a hash where the following keys are defined:
+	path has a value which is a string
+	shock_id has a value which is a string
+usermeta is a reference to a hash where the key is a string and the value is a string
+ImportResult is a reference to a hash where the following keys are defined:
+	object_ref has a value which is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub import_obo
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function import_obo (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to import_obo:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'import_obo');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenericsUtil.import_obo",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'import_obo',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method import_obo",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'import_obo',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -256,16 +359,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'import_csv',
+                method_name => 'import_obo',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method import_csv",
+            error => "Error invoking method import_obo",
             status_line => $self->{client}->status_line,
-            method_name => 'import_csv',
+            method_name => 'import_obo',
         );
     }
 }
@@ -368,8 +471,7 @@ a reference to a hash where the key is a string and the value is a string
 
 =item Description
 
-matrix_name - name of object
-workspace_name - workspace it gets saved to
+Import a CSV file into a NDArray or HNDArray
 
 
 =item Definition
@@ -404,7 +506,7 @@ metadata has a value which is a GenericsUtil.usermeta
 
 
 
-=head2 ImportCSVResult
+=head2 ImportResult
 
 =over 4
 
@@ -426,6 +528,47 @@ object_ref has a value which is a string
 
 a reference to a hash where the following keys are defined:
 object_ref has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ImportOBOParams
+
+=over 4
+
+
+
+=item Description
+
+Import an OBO file into an OntologyDictionary
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+file has a value which is a GenericsUtil.File
+workspace_name has a value which is a string
+object_name has a value which is a string
+metadata has a value which is a GenericsUtil.usermeta
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+file has a value which is a GenericsUtil.File
+workspace_name has a value which is a string
+object_name has a value which is a string
+metadata has a value which is a GenericsUtil.usermeta
 
 
 =end text

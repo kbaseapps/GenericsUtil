@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportCSVResult</p>
+ * <p>Original spec-file type: ImportResult</p>
  * 
  * 
  */
@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "object_ref"
 })
-public class ImportCSVResult {
+public class ImportResult {
 
     @JsonProperty("object_ref")
     private String objectRef;
@@ -37,7 +37,7 @@ public class ImportCSVResult {
         this.objectRef = objectRef;
     }
 
-    public ImportCSVResult withObjectRef(String objectRef) {
+    public ImportResult withObjectRef(String objectRef) {
         this.objectRef = objectRef;
         return this;
     }
@@ -54,7 +54,7 @@ public class ImportCSVResult {
 
     @Override
     public String toString() {
-        return ((((("ImportCSVResult"+" [objectRef=")+ objectRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ImportResult"+" [objectRef=")+ objectRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

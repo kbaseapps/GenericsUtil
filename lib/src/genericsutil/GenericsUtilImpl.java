@@ -13,11 +13,10 @@ import us.kbase.common.service.*;
 import us.kbase.workspace.*;
 import us.kbase.shock.client.*;
 
-import us.kbase.common.utils.CorrectProcess;
-
 import kbasereport.*;
 import sdkontologyjmc.*;
 import us.kbase.kbasegenerics.*;
+import us.kbase.kbaseontology.OntologyDictionary;
 
 import org.strbio.IO;
 import org.strbio.io.*;
@@ -25,6 +24,8 @@ import org.strbio.util.*;
 import com.fasterxml.jackson.databind.*;
 
 import com.opencsv.*;
+
+import static java.lang.ProcessBuilder.Redirect;
 
 /**
    This class implements methods (currently just importing)
@@ -576,12 +577,14 @@ public class GenericsUtilImpl {
        file.
     */
     public static String setupFile(File f,
+                                   String prefix,
+                                   String suffix,
                                    String shockURL,
                                    AuthToken token) throws Exception {
         String rv = f.getPath();
         if (rv==null) {
             System.out.println("Getting file from Shock");
-            java.io.File tmpFile = java.io.File.createTempFile("mat", ".csv", tempDir);
+            java.io.File tmpFile = java.io.File.createTempFile(prefix, suffix, tempDir);
             tmpFile.delete();
             tmpFile = fromShock(f.getShockId(),
                                 shockURL,
@@ -1341,12 +1344,11 @@ public class GenericsUtilImpl {
     
     /**
        Imports a generic object from CSV file.
-       Needs a lot more format checking!
     */
-    public static ImportCSVResult importCSV(String wsURL,
-                                            String shockURL,
-                                            AuthToken token,
-                                            ImportCSVParams params) throws Exception {
+    public static ImportResult importCSV(String wsURL,
+                                         String shockURL,
+                                         AuthToken token,
+                                         ImportCSVParams params) throws Exception {
         wc = createWsClient(wsURL,token);
         od = new OntologyData(token, params.getWorkspaceName());
 
@@ -1355,7 +1357,11 @@ public class GenericsUtilImpl {
         List<UObject> methodParams = Arrays.asList(new UObject(params));
 
         // looks for local file; if not given, get from shock
-        String filePath = setupFile(params.getFile(), shockURL, token);
+        String filePath = setupFile(params.getFile(),
+                                    "mat",
+                                    ".csv",
+                                    shockURL,
+                                    token);
 
         // parse it into the object
         HNDArray hnda = parseCSV(filePath);
@@ -1413,10 +1419,65 @@ public class GenericsUtilImpl {
                                                      methodName,
                                                      methodParams));
 
-        ImportCSVResult rv = new ImportCSVResult()
+        ImportResult rv = new ImportResult()
             .withObjectRef(objectRef);
 
         // clean up tmp file if we used one
+        if (params.getFile().getPath()==null) {
+            java.io.File f = new java.io.File(filePath);
+            f.delete();
+        }
+
+        return rv;
+    }
+
+    /**
+       Imports an OntologyDictionary from an OBO file
+    */
+    public static ImportResult importOBO(String wsURL,
+                                         String shockURL,
+                                         AuthToken token,
+                                         ImportOBOParams params) throws Exception {
+        wc = createWsClient(wsURL,token);
+
+        // for provenance
+        String methodName = "GenericsUtil.importOBO";
+        List<UObject> methodParams = Arrays.asList(new UObject(params));
+
+        // looks for local file; if not given, get from shock
+        String filePath = setupFile(params.getFile(),
+                                    "dic",
+                                    ".obo",
+                                    shockURL,
+                                    token);
+
+        // turn it into a JSON file
+        java.io.File tmpFile = java.io.File.createTempFile("dic", ".json", tempDir);
+        ProcessBuilder pb = new ProcessBuilder("/kb/module/dependencies/bin/ont.pl",
+                                               "--from-obo",
+                                               filePath);
+        pb.redirectOutput(Redirect.to(tmpFile));
+        pb.start().waitFor();
+
+        // load the JSON file
+        ObjectMapper mapper = new ObjectMapper();
+        OntologyDictionary o = mapper.readValue(tmpFile, OntologyDictionary.class);
+
+        // save in workspace
+        String objectRef = saveObject(params.getWorkspaceName(),
+                                      params.getObjectName(),
+                                      "KBaseOntology.OntologyDictionary",
+                                      o,
+                                      null,
+                                      makeProvenance("KBaseOntology.OntologyDictionary imported from OBO file",
+                                                     methodName,
+                                                     methodParams));
+
+        ImportResult rv = new ImportResult()
+            .withObjectRef(objectRef);
+
+        // clean up tmp files
+        tmpFile.delete();
         if (params.getFile().getPath()==null) {
             java.io.File f = new java.io.File(filePath);
             f.delete();

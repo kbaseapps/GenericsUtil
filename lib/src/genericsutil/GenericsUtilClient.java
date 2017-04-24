@@ -167,15 +167,32 @@ public class GenericsUtilClient {
      * <pre>
      * </pre>
      * @param   params   instance of type {@link genericsutil.ImportCSVParams ImportCSVParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportCSVResult ImportCSVResult}
+     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public ImportCSVResult importCsv(ImportCSVParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public ImportResult importCsv(ImportCSVParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
-        TypeReference<List<ImportCSVResult>> retType = new TypeReference<List<ImportCSVResult>>() {};
-        List<ImportCSVResult> res = caller.jsonrpcCall("GenericsUtil.import_csv", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        TypeReference<List<ImportResult>> retType = new TypeReference<List<ImportResult>>() {};
+        List<ImportResult> res = caller.jsonrpcCall("GenericsUtil.import_csv", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: import_obo</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.ImportOBOParams ImportOBOParams}
+     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ImportResult importObo(ImportOBOParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ImportResult>> retType = new TypeReference<List<ImportResult>>() {};
+        List<ImportResult> res = caller.jsonrpcCall("GenericsUtil.import_obo", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

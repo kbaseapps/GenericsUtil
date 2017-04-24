@@ -22,7 +22,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "5d6a6313ecf4461836d82b9264708c1c4fbadbcf";
+    private static final String gitCommitHash = "74c21a21badc2fc4f212207c14f286b386501753";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;
@@ -48,17 +48,36 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <pre>
      * </pre>
      * @param   params   instance of type {@link genericsutil.ImportCSVParams ImportCSVParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportCSVResult ImportCSVResult}
+     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.import_csv", async=true)
-    public ImportCSVResult importCsv(ImportCSVParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
-        ImportCSVResult returnVal = null;
+    public ImportResult importCsv(ImportCSVParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        ImportResult returnVal = null;
         //BEGIN import_csv
         returnVal = GenericsUtilImpl.importCSV(wsUrl,
                                                shockUrl,
                                                authPart,
                                                params);
         //END import_csv
+        return returnVal;
+    }
+
+    /**
+     * <p>Original spec-file function name: import_obo</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.ImportOBOParams ImportOBOParams}
+     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     */
+    @JsonServerMethod(rpc = "GenericsUtil.import_obo", async=true)
+    public ImportResult importObo(ImportOBOParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        ImportResult returnVal = null;
+        //BEGIN import_obo
+        returnVal = GenericsUtilImpl.importOBO(wsUrl,
+                                               shockUrl,
+                                               authPart,
+                                               params);
+        //END import_obo
         return returnVal;
     }
     @JsonServerMethod(rpc = "GenericsUtil.status")

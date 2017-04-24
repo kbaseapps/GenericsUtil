@@ -98,7 +98,7 @@ public class GenericsUtilServerTest {
             .withObjectName("20160823-MT123_c_source2")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import Premapped Growth test finished");
     }
@@ -113,7 +113,7 @@ public class GenericsUtilServerTest {
             .withObjectName("nitrate_growth")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import Growth test finished");
     }
@@ -128,7 +128,7 @@ public class GenericsUtilServerTest {
             .withObjectName("nitrate_growth")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import Growth Simple test finished");
     }
@@ -143,7 +143,7 @@ public class GenericsUtilServerTest {
             .withObjectName("fitness_jw710")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import simple fitness test finished");
     }
@@ -158,7 +158,7 @@ public class GenericsUtilServerTest {
             .withObjectName("fitness_jw710_small")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import small fitness test finished");
     }
@@ -173,7 +173,7 @@ public class GenericsUtilServerTest {
             .withObjectName("fitness_multiple_dvh_strains")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import multi-strain fitness test finished");
     }
@@ -188,7 +188,7 @@ public class GenericsUtilServerTest {
             .withObjectName("enzyme_activity_dvh")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import enzyme activity test finished");
     }
@@ -203,7 +203,7 @@ public class GenericsUtilServerTest {
             .withObjectName("enzyme_activity_dvh_replicates")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import enzyme activity replicates test finished");
     }
@@ -218,7 +218,7 @@ public class GenericsUtilServerTest {
             .withObjectName("enzyme_activity_dvh_stats")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import enzyme activity statistics test finished");
     }
@@ -233,7 +233,7 @@ public class GenericsUtilServerTest {
             .withObjectName("taxonomic_abundance")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import taxonomic data test finished");
     }
@@ -248,7 +248,7 @@ public class GenericsUtilServerTest {
             .withObjectName("taxonomic_abundance_multiwell")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import multiwell taxonomic data test finished");
     }
@@ -263,7 +263,7 @@ public class GenericsUtilServerTest {
             .withObjectName("taxonomic_abundance_timeseries")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import time series taxonomic data test finished");
     }
@@ -278,7 +278,7 @@ public class GenericsUtilServerTest {
             .withObjectName("heterogenous_sampling")
             .withObjectType("KBaseGenerics.HNDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
         System.out.println("Import heterogenous environmental parameters data test finished");
     }
@@ -293,7 +293,7 @@ public class GenericsUtilServerTest {
             .withObjectName("bad_growth_data_1")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.fail("Should have thrown exception");
     }
     
@@ -307,7 +307,7 @@ public class GenericsUtilServerTest {
             .withObjectName("bad_growth_data_2")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.fail("Should have thrown exception");
     }
     
@@ -321,7 +321,7 @@ public class GenericsUtilServerTest {
             .withObjectName("bad_growth_data_3")
             .withObjectType("KBaseGenerics.NDArray")
             .withWorkspaceName("jmc:1480966800200");
-        ImportCSVResult rv = impl.importCsv(params, token, (RpcContext)null);
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
         Assert.fail("Should have thrown exception");
     }
 
@@ -358,7 +358,7 @@ public class GenericsUtilServerTest {
     // @Test
     public void testImportMapped() throws Exception {
         ImportCSVParams params = null;
-        ImportCSVResult rv = null;
+        ImportResult rv = null;
 
         /*
         params = new ImportCSVParams()

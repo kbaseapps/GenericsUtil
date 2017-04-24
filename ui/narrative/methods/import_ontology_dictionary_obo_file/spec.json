@@ -1,0 +1,59 @@
+{
+    "ver" : "",
+    "authors" : [ ],
+    "contact" : "help@kbase.us",
+    "visble" : true,
+    "categories" : [ "importers" ],
+    "widgets" : {
+	"input" : "kbaseNarrativeMethodInput"
+    },
+    "parameters" : [ 
+	{
+	    "id" : "obo_file",
+	    "optional" : false,
+	    "advanced" : false,
+	    "allow_multiple" : false,
+	    "default_values" : [ "" ],
+	    "field_type" : "file",
+	    "text_options" : {
+		"valid_ws_types" : [ ]
+	    }
+	}, 
+	{
+	    "id" : "object_name",
+	    "optional" : false,
+	    "advanced" : false,
+	    "allow_multiple" : false,
+	    "default_values" : [ "" ],
+	    "field_type" : "text",
+	    "text_options" : {
+		"valid_ws_types" : [ "KBaseOntology.OntologyDictionary" ],
+		"is_output_name" : true
+	    }
+	}
+    ],
+    "behavior" : {
+	"service-mapping" : {
+	    "url" : "",
+	    "name" : "GenericsUtil",
+	    "method" : "import_obo",
+	    "input_mapping" : [
+		{
+		    "narrative_system_variable": "workspace",
+		    "target_property": "workspace_name"
+		},
+		{
+		    "input_parameter": "object_name",
+		    "target_property": "object_name"
+		},
+		{
+		    "input_parameter": "obo_file",
+		    "target_property": "file/shock_id"
+		}
+	    ],
+	    "output_mapping" : [
+	    ]
+	}
+    },
+    "job_id_output_field": "docker"
+}
