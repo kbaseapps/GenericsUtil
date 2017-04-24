@@ -22,7 +22,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "74c21a21badc2fc4f212207c14f286b386501753";
+    private static final String gitCommitHash = "83e543aeff8db267b13c3494e5feee33d719c949";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;
@@ -78,6 +78,25 @@ public class GenericsUtilServer extends JsonServerServlet {
                                                authPart,
                                                params);
         //END import_obo
+        return returnVal;
+    }
+
+    /**
+     * <p>Original spec-file function name: export_csv</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.ExportParams ExportParams}
+     * @return   parameter "result" of type {@link genericsutil.ExportResult ExportResult}
+     */
+    @JsonServerMethod(rpc = "GenericsUtil.export_csv", async=true)
+    public ExportResult exportCsv(ExportParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        ExportResult returnVal = null;
+        //BEGIN export_csv
+        returnVal = GenericsUtilImpl.exportCSV(wsUrl,
+                                               shockUrl,
+                                               authPart,
+                                               params);
+        //END export_csv
         return returnVal;
     }
     @JsonServerMethod(rpc = "GenericsUtil.status")

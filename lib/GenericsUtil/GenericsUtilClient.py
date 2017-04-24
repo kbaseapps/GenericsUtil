@@ -64,6 +64,17 @@ class GenericsUtil(object):
             'GenericsUtil.import_obo',
             [params], self._service_ver, context)
 
+    def export_csv(self, params, context=None):
+        """
+        :param params: instance of type "ExportParams" (Exporter for generic
+           objects as CSV files) -> structure: parameter "input_ref" of String
+        :returns: instance of type "ExportResult" -> structure: parameter
+           "shock_id" of String
+        """
+        return self._client.call_method(
+            'GenericsUtil.export_csv',
+            [params], self._service_ver, context)
+
     def status(self, context=None):
         return self._client.call_method('GenericsUtil.status',
                                         [], self._service_ver, context)

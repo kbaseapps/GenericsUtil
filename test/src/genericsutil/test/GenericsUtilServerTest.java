@@ -328,28 +328,22 @@ public class GenericsUtilServerTest {
     /**
        import some ontology dictionaries
     */
-    // @Test
+    @Test
     public void testImportDictionaries() throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        File f = new File("/kb/module/test/data/data_type_ontology.json");
-        OntologyDictionary od = mapper.readValue(f, OntologyDictionary.class);
-        ObjectSaveData data = new ObjectSaveData()
-            .withType("KBaseOntology.OntologyDictionary")
-            .withData(new UObject(od))
-            .withName("data_type_ontology");
-        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
+        ImportOBOParams params = new ImportOBOParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/data_type_ontology.obo"))
+            .withObjectName("data_type_ontology")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportResult rv = impl.importObo(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
 
-        f = new File("/kb/module/test/data/context_measurement_ontology.json");
-        od = mapper.readValue(f, OntologyDictionary.class);
-        data.setData(new UObject(od));
-        data.setName("context_measurement_ontology");
-        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
-
-        f = new File("/kb/module/test/data/enigma_specific_ontology.json");
-        od = mapper.readValue(f, OntologyDictionary.class);
-        data.setData(new UObject(od));
-        data.setName("enigma_specific_ontology");
-        wsClient.saveObjects(new SaveObjectsParams().withWorkspace("jmc:1480966800200").withObjects(Arrays.asList(data))).get(0);
+        params = new ImportOBOParams()
+            .withFile(new genericsutil.File().withPath("/kb/module/test/data/context_measurement_ontology.obo"))
+            .withObjectName("context_measurement_ontology")
+            .withWorkspaceName("jmc:1480966800200");
+        rv = impl.importObo(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import dictionaries data test finished");
     }
     
     /**

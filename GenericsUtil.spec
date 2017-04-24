@@ -45,4 +45,18 @@ module GenericsUtil {
 
     funcdef import_obo(ImportOBOParams params)
       returns (ImportResult result) authentication required;
+
+    /*
+    Exporter for generic objects as CSV files
+    */
+    typedef structure {
+        string input_ref;
+    } ExportParams;
+
+    typedef structure {
+        string shock_id;
+    } ExportResult;
+
+    funcdef export_csv(ExportParams params)
+      returns (ExportResult result) authentication required;
 };

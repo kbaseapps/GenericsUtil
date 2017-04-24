@@ -1,0 +1,1628 @@
+format-version: 1.2
+saved-by: jmc
+namespace-id-rule: * ME:$sequence(7,0,9999999)$
+ontology: me
+
+[Term]
+id: ME:0000000
+name: term
+def: "Root of all ontological terms." []
+namespace: measure.ontology
+
+[Term]
+id: ME:0000001
+name: Context
+def: "Context." []
+namespace: measure.ontology
+is_a: ME:0000000
+
+[Term]
+id: ME:0000002
+name: Experimental Context
+def: "Experimental Context." []
+namespace: measure.ontology
+is_a: ME:0000001
+
+[Term]
+id: ME:0000003
+name: Series Type
+def: "Series Type." []
+namespace: measure.ontology
+is_a: ME:0000002
+
+[Term]
+id: ME:0000004
+name: Time Series
+def: "Time Series." []
+namespace: measure.ontology
+is_a: ME:0000003
+property_value: data_type float
+
+[Term]
+id: ME:0000005
+name: Replicate Series
+def: "Replicate Series." []
+namespace: measure.ontology
+is_a: ME:0000003
+property_value: data_type int
+
+[Term]
+id: ME:0000006
+name: Condition
+def: "Condition." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000007
+name: Method
+def: "Method." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000008
+name: Parameter
+def: "Parameter." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000009
+name: Date
+def: "Date." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000010
+name: Time
+def: "Time." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000011
+name: Comment
+def: "Comment." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000012
+name: Instrument
+def: "Instrument." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000013
+name: Category
+def: "Category." []
+namespace: measure.ontology
+is_a: ME:0000002
+property_value: data_type string
+
+[Term]
+id: ME:0000014
+name: Homogenized
+def: "Homogenized." []
+namespace: measure.ontology
+is_a: ME:0000002
+
+[Term]
+id: ME:0000015
+name: Anaerobic
+def: "Anaerobic." []
+namespace: measure.ontology
+is_a: ME:0000002
+
+[Term]
+id: ME:0000016
+name: Aerobic
+def: "Aerobic." []
+namespace: measure.ontology
+is_a: ME:0000002
+
+[Term]
+id: ME:0000017
+name: Undisturbed
+def: "Undisturbed." []
+namespace: measure.ontology
+is_a: ME:0000002
+
+[Term]
+id: ME:0000018
+name: Mathematical Context
+def: "Mathematical Context." []
+namespace: measure.ontology
+is_a: ME:0000001
+
+[Term]
+id: ME:0000019
+name: Normalized
+def: "Normalized." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000020
+name: Relative
+def: "Relative." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000021
+name: Increase
+def: "Increase." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000022
+name: Decrease
+def: "Decrease." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000023
+name: Gain
+def: "Gain." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000024
+name: Loss
+def: "Loss." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000025
+name: Nearest
+def: "Nearest." []
+namespace: measure.ontology
+is_a: ME:0000018
+
+[Term]
+id: ME:0000026
+name: Chemical Context
+def: "Chemical Context." []
+namespace: measure.ontology
+is_a: ME:0000001
+
+[Term]
+id: ME:0000027
+name: Molecule
+def: "Molecule." []
+namespace: measure.ontology
+xref: ORef: CHEBI
+is_a: ME:0000026
+
+[Term]
+id: ME:0000028
+name: Reaction
+def: "Reaction." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type string
+
+[Term]
+id: ME:0000029
+name: Surface Type
+def: "Surface Type." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type string
+
+[Term]
+id: ME:0000030
+name: Bead Type
+def: "Bead Type." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type string
+
+[Term]
+id: ME:0000031
+name: Bead Size
+def: "Bead Size." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type float
+
+[Term]
+id: ME:0000032
+name: Thermodynamics
+def: "Thermodynamics." []
+namespace: measure.ontology
+is_a: ME:0000026
+
+[Term]
+id: ME:0000033
+name: delta-G
+def: "delta-G." []
+namespace: measure.ontology
+is_a: ME:0000032
+property_value: data_type float
+
+[Term]
+id: ME:0000034
+name: delta-H
+def: "delta-H." []
+namespace: measure.ontology
+is_a: ME:0000032
+property_value: data_type float
+
+[Term]
+id: ME:0000035
+name: Specific Activity
+def: "Specific Activity." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type float
+
+[Term]
+id: ME:0000036
+name: Wavelength
+def: "Wavelength." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type float
+
+[Term]
+id: ME:0000037
+name: State
+def: "State." []
+namespace: measure.ontology
+is_a: ME:0000026
+property_value: data_type string
+
+[Term]
+id: ME:0000038
+name: Biological Context
+def: "Biological Context." []
+namespace: measure.ontology
+is_a: ME:0000001
+
+[Term]
+id: ME:0000039
+name: Cell
+def: "Cell." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000040
+name: Colony
+def: "Colony." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000041
+name: Strain
+def: "Strain." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000042
+name: Strain Name
+def: "Strain Name." []
+namespace: measure.ontology
+is_a: ME:0000041
+property_value: data_type string
+
+[Term]
+id: ME:0000043
+name: Strain ID
+def: "Strain ID." []
+namespace: measure.ontology
+xref: Ref: KBaseGenomes.Genome
+is_a: ME:0000041
+synonym: "OTU" EXACT []
+synonym: "Genome" EXACT []
+
+[Term]
+id: ME:0000044
+name: Taxon
+def: "Taxon." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000045
+name: Taxon Name
+def: "Taxon Name." []
+namespace: measure.ontology
+is_a: ME:0000044
+property_value: data_type string
+
+[Term]
+id: ME:0000046
+name: Taxon ID
+def: "Taxon ID." []
+namespace: measure.ontology
+xref: ORef: NCBITaxon
+is_a: ME:0000044
+
+[Term]
+id: ME:0000047
+name: Media
+def: "Media." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000048
+name: Media Name
+def: "Media Name." []
+namespace: measure.ontology
+is_a: ME:0000047
+property_value: data_type string
+
+[Term]
+id: ME:0000049
+name: Media Composition
+def: "Media Composition." []
+namespace: measure.ontology
+is_a: ME:0000047
+property_value: data_type string
+
+[Term]
+id: ME:0000050
+name: Media ID
+def: "Media ID." []
+namespace: measure.ontology
+xref: Ref: KBaseBiochem.Media
+is_a: ME:0000047
+
+[Term]
+id: ME:0000051
+name: Media Addition
+def: "Media Addition." []
+namespace: measure.ontology
+is_a: ME:0000047
+property_value: data_type string
+
+[Term]
+id: ME:0000052
+name: Metabolite
+def: "Metabolite." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000053
+name: Substrate
+def: "Substrate." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000054
+name: Carbon Source
+def: "Carbon Source." []
+namespace: measure.ontology
+is_a: ME:0000053
+
+[Term]
+id: ME:0000055
+name: Nitrogen Source
+def: "Nitrogen Source." []
+namespace: measure.ontology
+is_a: ME:0000053
+
+[Term]
+id: ME:0000056
+name: Electron Donor
+def: "Electron Donor." []
+namespace: measure.ontology
+is_a: ME:0000053
+
+[Term]
+id: ME:0000057
+name: Electron Acceptor
+def: "Electron Acceptor." []
+namespace: measure.ontology
+is_a: ME:0000053
+
+[Term]
+id: ME:0000058
+name: Gene
+def: "Gene." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000059
+name: Gene Name
+def: "Gene Name." []
+namespace: measure.ontology
+xref: Ref: KBaseGenomes.Genome.Feature.alias
+is_a: ME:0000058
+
+[Term]
+id: ME:0000060
+name: Gene GI
+def: "Gene GI." []
+namespace: measure.ontology
+is_a: ME:0000058
+property_value: data_type int
+
+[Term]
+id: ME:0000061
+name: Homologous Gene
+def: "Homologous Gene." []
+namespace: measure.ontology
+is_a: ME:0000058
+
+[Term]
+id: ME:0000062
+name: Orthologous Gene
+def: "Orthologous Gene." []
+namespace: measure.ontology
+is_a: ME:0000061
+
+[Term]
+id: ME:0000063
+name: Paralogous Gene
+def: "Paralogous Gene." []
+namespace: measure.ontology
+is_a: ME:0000061
+
+[Term]
+id: ME:0000064
+name: Essential Gene
+def: "Essential Gene." []
+namespace: measure.ontology
+is_a: ME:0000058
+
+[Term]
+id: ME:0000065
+name: Protein
+def: "Protein." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000066
+name: Protein Annotation
+def: "Protein Annotation." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000067
+name: KEGG Subsystem
+def: "KEGG Subsystem." []
+namespace: measure.ontology
+xref: ORef: KEGG
+is_a: ME:0000066
+
+[Term]
+id: ME:0000068
+name: TIGR Role
+def: "TIGR Role." []
+namespace: measure.ontology
+xref: ORef: TIGR
+is_a: ME:0000066
+
+[Term]
+id: ME:0000069
+name: SEED Subsystem
+def: "SEED Subsystem." []
+namespace: measure.ontology
+is_a: ME:0000066
+
+[Term]
+id: ME:0000070
+name: SEED Subsystem ID
+def: "SEED Subsystem ID." []
+namespace: measure.ontology
+xref: Ref: KBaseFBA.SubsystemAnnotation
+is_a: ME:0000069
+
+[Term]
+id: ME:0000071
+name: SEED Subsystem ID
+def: "SEED Subsystem ID." []
+namespace: measure.ontology
+xref: Ref: KBaseFBA.SubsystemAnnotation
+is_a: ME:0000069
+
+[Term]
+id: ME:0000072
+name: Protein Domain
+def: "Protein Domain." []
+namespace: measure.ontology
+xref: Ref: KBaseGeneFamilies.DomainModel.accession
+is_a: ME:0000066
+
+[Term]
+id: ME:0000073
+name: Pfam Domain
+def: "Pfam Domain." []
+namespace: measure.ontology
+is_a: ME:0000072
+
+[Term]
+id: ME:0000074
+name: Pfam Domain Accession
+def: "Pfam Domain Accession." []
+namespace: measure.ontology
+xref: ORef: Pfam
+xref: Ref: KBaseGeneFamilies.DomainModel.accession
+is_a: ME:0000073
+
+[Term]
+id: ME:0000075
+name: Operon
+def: "Operon." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000076
+name: Ribosome
+def: "Ribosome." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000077
+name: Growth Parameter
+def: "Growth Parameter." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000078
+name: Growth Rate
+def: "Growth Rate." []
+namespace: measure.ontology
+is_a: ME:0000077
+
+[Term]
+id: ME:0000079
+name: Doubling Time
+def: "Doubling Time." []
+namespace: measure.ontology
+is_a: ME:0000077
+
+[Term]
+id: ME:0000080
+name: Time Since Inoculation
+def: "Time Since Inoculation." []
+namespace: measure.ontology
+is_a: ME:0000077
+
+[Term]
+id: ME:0000081
+name: Growth Efficiency
+def: "Growth Efficiency." []
+namespace: measure.ontology
+is_a: ME:0000077
+
+[Term]
+id: ME:0000082
+name: Gene Regulation
+def: "Gene Regulation." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000083
+name: Up-regulated
+def: "Up-regulated." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000084
+name: Down-regulated
+def: "Down-regulated." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000085
+name: Transcription Factor
+def: "Transcription Factor." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000086
+name: Motif
+def: "Motif." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000087
+name: Binding Site
+def: "Binding Site." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000088
+name: Regulon
+def: "Regulon." []
+namespace: measure.ontology
+is_a: ME:0000082
+
+[Term]
+id: ME:0000089
+name: Taxonomy
+def: "Taxonomy." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000090
+name: Mutation
+def: "Mutation." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000091
+name: Mutation Effect
+def: "Mutation Effect." []
+namespace: measure.ontology
+is_a: ME:0000090
+
+[Term]
+id: ME:0000092
+name: Synonymous
+def: "Synonymous." []
+namespace: measure.ontology
+is_a: ME:0000091
+
+[Term]
+id: ME:0000093
+name: Non-Synonymous
+def: "Non-Synonymous." []
+namespace: measure.ontology
+is_a: ME:0000091
+
+[Term]
+id: ME:0000094
+name: Frameshift
+def: "Frameshift." []
+namespace: measure.ontology
+is_a: ME:0000091
+
+[Term]
+id: ME:0000095
+name: Stop
+def: "Stop." []
+namespace: measure.ontology
+is_a: ME:0000091
+
+[Term]
+id: ME:0000096
+name: Knockout
+def: "Knockout." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000097
+name: Environment
+def: "Environment." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000098
+name: Environmental Sample Location
+def: "Environmental Sample Location." []
+namespace: measure.ontology
+is_a: ME:0000097
+property_value: data_type string
+synonym: "Well" EXACT []
+
+[Term]
+id: ME:0000099
+name: Environmental Sample
+def: "Environmental Sample." []
+namespace: measure.ontology
+is_a: ME:0000097
+
+[Term]
+id: ME:0000100
+name: Environmental Sample Name
+def: "Environmental Sample Name." []
+namespace: measure.ontology
+is_a: ME:0000099
+property_value: data_type string
+
+[Term]
+id: ME:0000101
+name: Environmental Sample ID
+def: "Environmental Sample ID." []
+namespace: measure.ontology
+xref: Ref: KBaseCommunities.Sample
+is_a: ME:0000099
+
+[Term]
+id: ME:0000102
+name: Environmental Parameter
+def: "Environmental Parameter." []
+namespace: measure.ontology
+is_a: ME:0000097
+
+[Term]
+id: ME:0000103
+name: Ecology
+def: "Ecology." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000104
+name: Community Assembly Process
+def: "Community Assembly Process." []
+namespace: measure.ontology
+is_a: ME:0000103
+
+[Term]
+id: ME:0000105
+name: Variable Selection
+def: "Variable Selection." []
+namespace: measure.ontology
+is_a: ME:0000104
+
+[Term]
+id: ME:0000106
+name: Homogenous Selection
+def: "Homogenous Selection." []
+namespace: measure.ontology
+is_a: ME:0000104
+
+[Term]
+id: ME:0000107
+name: Dispersal Limitation
+def: "Dispersal Limitation." []
+namespace: measure.ontology
+is_a: ME:0000104
+
+[Term]
+id: ME:0000108
+name: Homogenizing Dispersal
+def: "Homogenizing Dispersal." []
+namespace: measure.ontology
+is_a: ME:0000104
+
+[Term]
+id: ME:0000109
+name: Undominated
+def: "Undominated." []
+namespace: measure.ontology
+is_a: ME:0000104
+
+[Term]
+id: ME:0000110
+name: Sequencing
+def: "Sequencing." []
+namespace: measure.ontology
+is_a: ME:0000038
+
+[Term]
+id: ME:0000111
+name: Read
+def: "Read." []
+namespace: measure.ontology
+is_a: ME:0000110
+
+[Term]
+id: ME:0000112
+name: Paired End Read
+def: "Paired End Read." []
+namespace: measure.ontology
+is_a: ME:0000111
+
+[Term]
+id: ME:0000113
+name: Single End Read
+def: "Single End Read." []
+namespace: measure.ontology
+is_a: ME:0000111
+
+[Term]
+id: ME:0000114
+name: Base Pair
+def: "Base Pair." []
+namespace: measure.ontology
+is_a: ME:0000110
+
+[Term]
+id: ME:0000115
+name: Sequencing Technology
+def: "Sequencing Technology." []
+namespace: measure.ontology
+is_a: ME:0000110
+
+[Term]
+id: ME:0000116
+name: Illumina
+def: "Illumina." []
+namespace: measure.ontology
+is_a: ME:0000115
+
+[Term]
+id: ME:0000117
+name: Pacbio
+def: "Pacbio." []
+namespace: measure.ontology
+is_a: ME:0000115
+
+[Term]
+id: ME:0000118
+name: GC content
+def: "GC content." []
+namespace: measure.ontology
+is_a: ME:0000110
+
+[Term]
+id: ME:0000119
+name: ENIGMA
+def: "ENIGMA." []
+namespace: measure.ontology
+is_a: ME:0000000
+
+[Term]
+id: ME:0000120
+name: ENIGMA Campaign
+def: "ENIGMA Campaign." []
+namespace: measure.ontology
+is_a: ME:0000119
+
+[Term]
+id: ME:0000121
+name: 100 Well Survey
+def: "100 Well Survey." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000122
+name: ENIGMA Microbial Isolation Characterization
+def: "ENIGMA Microbial Isolation Characterization." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000123
+name: Printable Worlds
+def: "Printable Worlds." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000124
+name: Predictive Network Biology
+def: "Predictive Network Biology." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000125
+name: Time Series
+def: "Time Series." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000126
+name: Memory
+def: "Memory." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000127
+name: Groundwater
+def: "Groundwater." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000128
+name: Natural and Synthetic Ecologies
+def: "Natural and Synthetic Ecologies." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000129
+name: Microparticle
+def: "Microparticle." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000130
+name: Metal Metabolism
+def: "Metal Metabolism." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000131
+name: Microbial Assembly Evolution
+def: "Microbial Assembly Evolution." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000132
+name: BigEMAC
+def: "BigEMAC." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000133
+name: Constructed Community
+def: "Constructed Community." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000134
+name: Sediment-Core
+def: "Sediment-Core." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000135
+name: Nitrate Respiratory Activity
+def: "Nitrate Respiratory Activity." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000136
+name: State
+def: "State." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000137
+name: UPO
+def: "UPO." []
+namespace: measure.ontology
+is_a: ME:0000120
+
+[Term]
+id: ME:0000138
+name: ENIGMA PI
+def: "ENIGMA PI." []
+namespace: measure.ontology
+is_a: ME:0000119
+
+[Term]
+id: ME:0000139
+name: Mike Adams
+def: "Mike Adams." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000140
+name: Paul Adams
+def: "Paul Adams." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000141
+name: Eric Alm
+def: "Eric Alm." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000142
+name: Adam Arkin
+def: "Adam Arkin." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000143
+name: Nitin Baliga
+def: "Nitin Baliga." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000144
+name: Kelly Bender
+def: "Kelly Bender." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000145
+name: Steven Brenner
+def: "Steven Brenner." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000146
+name: Gareth Butland
+def: "Gareth Butland." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000147
+name: Romy Chakraborty
+def: "Romy Chakraborty." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000148
+name: John-Marc Chandonia
+def: "John-Marc Chandonia." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000149
+name: Adam Deutschbauer
+def: "Adam Deutschbauer." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000150
+name: Dwayne Elias
+def: "Dwayne Elias." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000151
+name: Matthew Fields
+def: "Matthew Fields." []
+namespace: measure.ontology
+is_a: ME:0000138
+synonym: "Matt Fields" EXACT []
+
+[Term]
+id: ME:0000152
+name: Terry Hazen
+def: "Terry Hazen." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000153
+name: Trent Northen
+def: "Trent Northen." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000154
+name: Pavel Novichkov
+def: "Pavel Novichkov." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000155
+name: Andrilla Mukhopadhyay
+def: "Andrilla Mukhopadhyay." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000156
+name: Anup Singh
+def: "Anup Singh." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000157
+name: David Stahl
+def: "David Stahl." []
+namespace: measure.ontology
+is_a: ME:0000138
+synonym: "Dave Stahl" EXACT []
+
+[Term]
+id: ME:0000158
+name: Gary Suizdak
+def: "Gary Suizdak." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000159
+name: Judy Wall
+def: "Judy Wall." []
+namespace: measure.ontology
+is_a: ME:0000138
+
+[Term]
+id: ME:0000160
+name: Jizhong Joe Zhou
+def: "Jizhong Joe Zhou." []
+namespace: measure.ontology
+is_a: ME:0000138
+synonym: "Jizhong Zhou" EXACT []
+synonym: "Joe Zhou" EXACT []
+synonym: "Joe Jizhong Zhou" EXACT []
+
+[Term]
+id: ME:0000161
+name: Measurement
+def: "Measurement." []
+namespace: measure.ontology
+is_a: ME:0000000
+
+[Term]
+id: ME:0000162
+name: pH
+def: "pH." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000163
+name: Time
+def: "Time." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000164
+name: Temperature
+def: "Temperature." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000165
+name: Conductivity
+def: "Conductivity." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000166
+name: Redox Potential
+def: "Redox Potential." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000167
+name: Count
+def: "Count." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type int
+
+[Term]
+id: ME:0000168
+name: Optical Density
+def: "Optical Density." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000169
+name: Size
+def: "Size." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000170
+name: Concentration
+def: "Concentration." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000171
+name: Hybridization Intensity
+def: "Hybridization Intensity." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000172
+name: Expression Level
+def: "Expression Level." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000173
+name: Enzyme Activity
+def: "Enzyme Activity." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000174
+name: Absorbance
+def: "Absorbance." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000175
+name: Heat
+def: "Heat." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000176
+name: Mass
+def: "Mass." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000177
+name: Mutation
+def: "Mutation." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type string
+
+[Term]
+id: ME:0000178
+name: Genetic Interaction Score
+def: "Genetic Interaction Score." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000179
+name: Stoichiometric Ratio
+def: "Stoichiometric Ratio." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000180
+name: Abundance
+def: "Abundance." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type float
+
+[Term]
+id: ME:0000181
+name: Binary
+def: "Binary." []
+namespace: measure.ontology
+is_a: ME:0000161
+property_value: data_type boolean
+
+[Term]
+id: ME:0000182
+name: Growth
+def: "Growth." []
+namespace: measure.ontology
+is_a: ME:0000181
+
+[Term]
+id: ME:0000183
+name: Activity
+def: "Activity." []
+namespace: measure.ontology
+is_a: ME:0000181
+
+[Term]
+id: ME:0000184
+name: Presence
+def: "Presence." []
+namespace: measure.ontology
+is_a: ME:0000181
+
+[Term]
+id: ME:0000185
+name: Essentiality
+def: "Essentiality." []
+namespace: measure.ontology
+is_a: ME:0000181
+
+[Term]
+id: ME:0000186
+name: Statistic
+def: "Statistic." []
+namespace: measure.ontology
+is_a: ME:0000000
+
+[Term]
+id: ME:0000187
+name: Average
+def: "Average." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000188
+name: Difference
+def: "Difference." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000189
+name: Standard Deviation
+def: "Standard Deviation." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000190
+name: Standard Error
+def: "Standard Error." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000191
+name: Minimum
+def: "Minimum." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000192
+name: Maximum
+def: "Maximum." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000193
+name: Median
+def: "Median." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000194
+name: Ratio
+def: "Ratio." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000195
+name: Log Ratio
+def: "Log Ratio." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000196
+name: p Value
+def: "p Value." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000197
+name: T Score
+def: "T Score." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000198
+name: Frequency
+def: "Frequency." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000199
+name: Fold Enrichment
+def: "Fold Enrichment." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000200
+name: Evaluation
+def: "Evaluation." []
+namespace: measure.ontology
+is_a: ME:0000186
+
+[Term]
+id: ME:0000201
+name: Precision
+def: "Precision." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type float
+
+[Term]
+id: ME:0000202
+name: Recall
+def: "Recall." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type float
+
+[Term]
+id: ME:0000203
+name: TP
+def: "TP." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type int
+
+[Term]
+id: ME:0000204
+name: FP
+def: "FP." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type int
+
+[Term]
+id: ME:0000205
+name: TN
+def: "TN." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type int
+
+[Term]
+id: ME:0000206
+name: FN
+def: "FN." []
+namespace: measure.ontology
+is_a: ME:0000200
+property_value: data_type int
+
+[Term]
+id: ME:0000207
+name: Correlation
+def: "Correlation." []
+namespace: measure.ontology
+is_a: ME:0000186
+property_value: data_type float
+
+[Term]
+id: ME:0000208
+name: Pearson
+def: "Pearson." []
+namespace: measure.ontology
+is_a: ME:0000207
+
+[Term]
+id: ME:0000209
+name: Spearman
+def: "Spearman." []
+namespace: measure.ontology
+is_a: ME:0000207
+
+[Term]
+id: ME:0000210
+name: Kendall tau
+def: "Kendall tau." []
+namespace: measure.ontology
+is_a: ME:0000207
+
+[Term]
+id: ME:0000211
+name: Goodman and Kruskal's gamma
+def: "Goodman and Kruskal's gamma." []
+namespace: measure.ontology
+is_a: ME:0000207
+
+[Term]
+id: ME:0000212
+name: Multivariate Analysis
+def: "Multivariate Analysis." []
+namespace: measure.ontology
+is_a: ME:0000186
+
+[Term]
+id: ME:0000213
+name: Factor Analysis
+def: "Factor Analysis." []
+namespace: measure.ontology
+is_a: ME:0000212
+
+[Term]
+id: ME:0000214
+name: Factor
+def: "Factor." []
+namespace: measure.ontology
+is_a: ME:0000213
+property_value: data_type int
+
+[Term]
+id: ME:0000215
+name: Factor Loading
+def: "Factor Loading." []
+namespace: measure.ontology
+is_a: ME:0000213
+property_value: data_type float
+
+[Term]
+id: ME:0000216
+name: Principal Component Analysis
+def: "Principal Component Analysis." []
+namespace: measure.ontology
+is_a: ME:0000212
+
+[Term]
+id: ME:0000217
+name: Principal Component
+def: "Principal Component." []
+namespace: measure.ontology
+is_a: ME:0000216
+property_value: data_type int
+
+[Term]
+id: ME:0000218
+name: Weight
+def: "Weight." []
+namespace: measure.ontology
+is_a: ME:0000216
+property_value: data_type float

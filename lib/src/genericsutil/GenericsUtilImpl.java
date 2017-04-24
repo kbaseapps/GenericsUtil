@@ -430,14 +430,14 @@ public class GenericsUtilImpl {
        If the file from Shock is 0-length, it is deleted and null is returned.
     */
     public static java.io.File fromShock(String shockID,
-                                         String shockUrl,
+                                         String shockURL,
                                          AuthToken token,
                                          java.io.File f,
                                          boolean gzip) throws Exception {
 
-        // System.err.println("shock cmd equivalent to "+"/usr/bin/curl -k -X GET "+shockUrl+" -H \"Authorization: OAuth "+token.toString()+"\""+(gzip ? "| /bin/gzip" : ""));
+        // System.err.println("shock cmd equivalent to "+"/usr/bin/curl -k -X GET "+shockURL+" -H \"Authorization: OAuth "+token.toString()+"\""+(gzip ? "| /bin/gzip" : ""));
         
-        BasicShockClient shockClient = new BasicShockClient(new URL(shockUrl), token);
+        BasicShockClient shockClient = new BasicShockClient(new URL(shockURL), token);
         ShockNode sn = shockClient.getNode(new ShockNodeId(shockID));
         OutputStream os = new FileOutputStream(f);
         if (gzip)
@@ -452,6 +452,24 @@ public class GenericsUtilImpl {
             return null;
         
         return f;
+    }
+
+    /**
+       store a file in Shock; returns ID
+       If file doesn't exist or can't be read, returns null.
+    */
+    public static String toShock(String shockURL,
+                                 AuthToken token,
+                                 java.io.File f) throws Exception {
+        if (!f.canRead())
+            return null;
+
+        BasicShockClient shockClient = new BasicShockClient(new URL(shockURL), token);
+        InputStream is = new BufferedInputStream(new FileInputStream(f));
+        ShockNode sn = shockClient.addNode(is,f.getName(),null);
+        is.close();
+        String shockNodeID = sn.getId().getId();
+        return shockNodeID;
     }
 
     /**
@@ -792,6 +810,15 @@ public class GenericsUtilImpl {
         return hnda;
     }
 
+    /**
+       Writes a HNDArray object to a CSV file.
+    */
+    public static void writeCSV(HNDArray hnda, String filePath) throws Exception {
+        PrintfWriter outfile = new PrintfWriter(filePath);
+        
+        outfile.close();
+    }
+    
     /**
        update a Values object from String to Float
     */
@@ -1341,6 +1368,21 @@ public class GenericsUtilImpl {
             .withTypedValues(hnda.getTypedValues().get(0));
         return rv;
     }
+
+    /**
+       Convert a NDArray to a HNDArray
+    */
+    public static HNDArray makeHNDArray(NDArray nda) throws Exception {
+        HNDArray rv = new HNDArray()
+            .withName(nda.getName())
+            .withDescription(nda.getDescription())
+            .withDataType(nda.getDataType())
+            .withArrayContext(nda.getArrayContext())
+            .withNDimensions(nda.getNDimensions())
+            .withDimContext(nda.getDimContext())
+            .withTypedValues(Arrays.asList(nda.getTypedValues()));
+        return rv;
+    }
     
     /**
        Imports a generic object from CSV file.
@@ -1482,6 +1524,45 @@ public class GenericsUtilImpl {
             java.io.File f = new java.io.File(filePath);
             f.delete();
         }
+
+        return rv;
+    }
+
+    /**
+       Exports a generic object to a CSV file
+    */
+    public static ExportResult exportCSV(String wsURL,
+                                         String shockURL,
+                                         AuthToken token,
+                                         ExportParams params) throws Exception {
+        wc = createWsClient(wsURL,token);
+
+        // figure out type of object
+        GetObjectInfo3Results goir = wc.getObjectInfo3(new GetObjectInfo3Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(params.getInputRef()))));
+        String oType = getTypeFromObjectInfo(goir.getInfos().get(0));
+
+        // get from workspace as a HNDArray
+        HNDArray hnda = null;
+        if (oType.startsWith("KBaseGenerics.NDArray")) {
+            NDArray nda = wc.getObjects(Arrays.asList(new ObjectIdentity().withRef(params.getInputRef()))).get(0).getData().asClassInstance(NDArray.class);
+            hnda = makeHNDArray(nda);
+        }
+        else {
+            hnda = wc.getObjects(Arrays.asList(new ObjectIdentity().withRef(params.getInputRef()))).get(0).getData().asClassInstance(HNDArray.class);
+        }
+
+        // export to CSV file
+        java.io.File tmpFile = java.io.File.createTempFile("mat", ".csv", tempDir);
+        tmpFile.delete();
+        writeCSV(hnda, tmpFile.getPath());
+
+        // save in Shock
+        String shockID = toShock(shockURL, token, tmpFile);
+        ExportResult rv = new ExportResult()
+            .withShockId(shockID);
+
+        // clean up tmp file
+        tmpFile.delete();
 
         return rv;
     }

@@ -1,0 +1,241 @@
+format-version: 1.2
+saved-by: jmc
+namespace-id-rule: * DA:$sequence(7,0,9999999)$
+ontology: da
+
+[Term]
+id: DA:0000000
+name: term
+def: "Root of all ontological terms." []
+namespace: datatype.ontology
+
+[Term]
+id: DA:0000001
+name: assay
+def: "Assay." []
+namespace: datatype.ontology
+is_a: DA:0000000
+
+[Term]
+id: DA:0000002
+name: small molecule assay
+def: "Small Molecule Assay." []
+namespace: datatype.ontology
+is_a: DA:0000001
+
+[Term]
+id: DA:0000003
+name: environmental measurement
+def: "Environmental Measurement." []
+namespace: datatype.ontology
+is_a: DA:0000002
+
+[Term]
+id: DA:0000004
+name: chemical measurement
+def: "Chemical Measurement." []
+namespace: datatype.ontology
+is_a: DA:0000002
+
+[Term]
+id: DA:0000005
+name: metabolite assay
+def: "Metabolite Assay." []
+namespace: datatype.ontology
+is_a: DA:0000002
+
+[Term]
+id: DA:0000006
+name: reaction yield
+def: "Reaction Yield." []
+namespace: datatype.ontology
+is_a: DA:0000002
+
+[Term]
+id: DA:0000007
+name: gene / protein assay
+def: "Gene / Protein Assay." []
+namespace: datatype.ontology
+is_a: DA:0000001
+
+[Term]
+id: DA:0000008
+name: gene fitness
+def: "Gene Fitness." []
+namespace: datatype.ontology
+is_a: DA:0000007
+
+[Term]
+id: DA:0000009
+name: gene knockout fitness
+def: "Gene Knockout Fitness." []
+namespace: datatype.ontology
+is_a: DA:0000008
+
+[Term]
+id: DA:0000010
+name: gene upregulation fitness
+def: "Gene Upregulation Fitness." []
+namespace: datatype.ontology
+is_a: DA:0000008
+
+[Term]
+id: DA:0000011
+name: fitness correlation
+def: "Fitness Correlation." []
+namespace: datatype.ontology
+is_a: DA:0000008
+
+[Term]
+id: DA:0000012
+name: genetic interaction
+def: "Genetic Interaction." []
+namespace: datatype.ontology
+is_a: DA:0000008
+
+[Term]
+id: DA:0000013
+name: gene expression
+def: "Gene Expression." []
+namespace: datatype.ontology
+is_a: DA:0000007
+
+[Term]
+id: DA:0000014
+name: enzyme activity
+def: "Enzyme Activity." []
+namespace: datatype.ontology
+is_a: DA:0000007
+
+[Term]
+id: DA:0000015
+name: protein interaction
+def: "Protein Interaction." []
+namespace: datatype.ontology
+is_a: DA:0000007
+
+[Term]
+id: DA:0000016
+name: protein function
+def: "Protein Function." []
+namespace: datatype.ontology
+is_a: DA:0000007
+
+[Term]
+id: DA:0000017
+name: microbial assay
+def: "Microbial Assay." []
+namespace: datatype.ontology
+is_a: DA:0000001
+
+[Term]
+id: DA:0000018
+name: microbial growth
+def: "Microbial Growth." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000019
+name: microbial mobility
+def: "Microbial Mobility." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000020
+name: microbial thermodynamics
+def: "Microbial Thermodynamics." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000021
+name: microbial corrosion
+def: "Microbial Corrosion." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000022
+name: microbial evolution
+def: "Microbial Evolution." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000023
+name: microbial solute permeability
+def: "Microbial Solute Permeability." []
+namespace: datatype.ontology
+is_a: DA:0000017
+
+[Term]
+id: DA:0000024
+name: microbial community assay
+def: "Microbial Community Assay." []
+namespace: datatype.ontology
+is_a: DA:0000001
+
+[Term]
+id: DA:0000025
+name: metagenomic gene abundance
+def: "Metagenomic Gene Abundance." []
+namespace: datatype.ontology
+is_a: DA:0000024
+
+[Term]
+id: DA:0000026
+name: taxonomic abundance
+def: "Taxonomic Abundance." []
+namespace: datatype.ontology
+is_a: DA:0000024
+
+[Term]
+id: DA:0000027
+name: association
+def: "Association." []
+namespace: datatype.ontology
+is_a: DA:0000000
+
+[Term]
+id: DA:0000028
+name: set <x>
+def: "Set <x>." []
+namespace: datatype.ontology
+is_a: DA:0000027
+
+[Term]
+id: DA:0000029
+name: cluster <x>
+def: "Cluster <x>." []
+namespace: datatype.ontology
+is_a: DA:0000027
+
+[Term]
+id: DA:0000030
+name: group <x>
+def: "Group <x>." []
+namespace: datatype.ontology
+is_a: DA:0000027
+
+[Term]
+id: DA:0000031
+name: bicluster <x,y>
+def: "Bicluster <x,y>." []
+namespace: datatype.ontology
+is_a: DA:0000027
+
+[Term]
+id: DA:0000032
+name: map <x,y>
+def: "Map <x,y>." []
+namespace: datatype.ontology
+is_a: DA:0000027
+
+[Term]
+id: DA:0000033
+name: correlation <x,y>
+def: "Correlation <x,y>." []
+namespace: datatype.ontology
+is_a: DA:0000027
