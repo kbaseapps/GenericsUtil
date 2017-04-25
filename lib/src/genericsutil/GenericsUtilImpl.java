@@ -131,7 +131,7 @@ public class GenericsUtilImpl {
                 List<String> idRules = oi.getNamespaceIdRule();
                 if (prefix != null) {
                     prefixMap.put(prefix,ref);
-                    System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
+                    // System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
                 }
                 if (idRules != null) {
                     for (String rule : idRules) {
@@ -142,7 +142,7 @@ public class GenericsUtilImpl {
                         if (pos2 > 0) {
                             prefix = rule.substring(pos1+1,pos2);
                             prefixMap.put(prefix,ref);
-                            System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
+                            // System.out.println("mapped prefix "+prefix+" to "+ref+", "+nTerms+" terms");
                         }
                     }
                 }
@@ -167,8 +167,8 @@ public class GenericsUtilImpl {
             String dictRef = prefixMap.get(prefix);
             if (dictRef==null)
                 throw new IllegalArgumentException("No ontology dictionary available for prefix '"+prefix+"'");
-            System.err.println("debug1: "+dictRef);
-            System.err.println("debug2: "+refs.toString());
+            // System.err.println("debug1: "+dictRef);
+            // System.err.println("debug2: "+refs.toString());
             GetOntologyTermsOut out = oc.getOntologyTerms(new GetOntologyTermsParams().withOntologyDictionaryRef(dictRef).withTermIds(refs));
             // System.err.println("debug3: "+out.toString());
             if (out==null)
@@ -826,11 +826,11 @@ public class GenericsUtilImpl {
     public static String toString(Value v) {
         String scalarType = v.getScalarType();
         if (scalarType.equals("int"))
-            return new Integer(v.getIntValue()).toString();
+            return new Long(v.getIntValue()).toString();
         else if (scalarType.equals("float"))
             return new Double(v.getFloatValue()).toString();
         else if (scalarType.equals("boolean"))
-            return new Integer(v.getBooleanValue()).toString();
+            return new Long(v.getBooleanValue()).toString();
 
         String rv = v.getStringValue();
         if (scalarType.equals("object_ref"))
@@ -841,47 +841,66 @@ public class GenericsUtilImpl {
     }
 
     /**
-       write Values to a CVSWriter
+       write Values to a CVSWriter.  prefix indicates the non-heterogeneous
+       dimension index, which will be prepended to each line.  If null,
+       nothing will be prepended.
     */
-    public static void writeValues(Long[] dLengths, Values v, CSVWriter outfile) {
-        String scalarType = v.getScalarType();
+    public static void writeValues(Long prefix, List<Long> dLengths, Values v, CSVWriter outfile) {
+        int nDimensions = dLengths.size();
+        int length = 1;
         ArrayList<String> line = new ArrayList<String>();
-        long[] indices = new long[dLengths.length];
-        /**
-           todo:
-        
+        Long[] indices = new Long[nDimensions];
+        for (int i=0; i<nDimensions; i++) {
+            indices[i] = new Long(1L);
+            length *= (int)(dLengths.get(i).longValue());
+        }
+        String scalarType = v.getScalarType();
+
+        // get correct set(s) of values
+        Object[] objects = null;
+        Object[] refs = null;
         if (scalarType.equals("int"))
-            return new Integer(v.getIntValue()).toString();
+            objects = v.getIntValues().toArray();
         else if (scalarType.equals("float"))
-            return new Double(v.getFloatValue()).toString();
+            objects = v.getFloatValues().toArray();
         else if (scalarType.equals("boolean"))
-            return new Integer(v.getBooleanValue()).toString();
+            objects = v.getBooleanValues().toArray();
+        else {
+            objects = v.getStringValues().toArray();
+            if (scalarType.equals("object_ref"))
+                refs = v.getObjectRefs().toArray();
+            else if (scalarType.equals("oterm_ref"))
+                refs = v.getOtermRefs().toArray();
+        }
 
-        String rv = v.getStringValue();
-        if (scalarType.equals("object_ref"))
-            rv += " <"+v.getObjectRef()+">";
-        else if (scalarType.equals("oterm_ref"))
-            rv += " <"+v.getOtermRef()+">";
-        return rv;
-        */
+        // print out the values
+        for (int i=0; i<length; i++) {
+            if (objects[i] != null) {
+                if (prefix != null)
+                    line.add(prefix.toString());
+                for (int j=0; j<nDimensions; j++)
+                    line.add(indices[j].toString());
+                String s = objects[i].toString();
+                if ((refs != null) &&
+                    (refs[i] != null))
+                    s += " <"+refs[i].toString()+">";
+                line.add(s);
+                outfile.writeNext(line.toArray(new String[line.size()]));
+                line.clear();
+            }
+            // increment all indices
+            if (i<length-1) {
+                indices[nDimensions-1]++;
+                for (int j=nDimensions-1; j>=0; j--) {
+                    if (indices[j] > dLengths.get(j)) {
+                        indices[j] = new Long(1L);
+                        indices[j-1]++;
+                    }
+                }
+            }
+        }
     }
 
-    /**
-       make TypedValues metadata (but not the values) into
-       an ArrayList of Strings
-    */
-    public static ArrayList<String> toStrings(TypedValues tvs) {
-        ArrayList<String> rv = new ArrayList<String>();
-        rv.add(toString(tvs.getValueType()));
-        if (tvs.getValueContext() != null)
-            for (Term t : tvs.getValueContext())
-                rv.add(toString(t));
-        Term t = tvs.getValueUnits();
-        if (t != null)
-            rv.add(toString(t));
-        return rv;
-    }
-    
     /**
        make a TypedValue (including the value) into
        an ArrayList of Strings
@@ -898,6 +917,21 @@ public class GenericsUtilImpl {
         return rv;
     }
 
+    /**
+       make TypedValues metadata (but not the values) into
+       an ArrayList of Strings
+    */
+    public static ArrayList<String> toStrings(TypedValues tvs) {
+        ArrayList<String> rv = new ArrayList<String>();
+        rv.add(toString(tvs.getValueType()));
+        if (tvs.getValueContext() != null)
+            for (TypedValue tv : tvs.getValueContext())
+                rv.addAll(toStrings(tv));
+        Term t = tvs.getValueUnits();
+        if (t != null)
+            rv.add(toString(t));
+        return rv;
+    }
 
     /**
        Writes a HNDArray object to a CSV file.
@@ -914,59 +948,74 @@ public class GenericsUtilImpl {
         if (hnda.getName() != null) {
             line.add("name");
             line.add(hnda.getName());
-            outfile.writeNext(line.toArray());
+            outfile.writeNext(line.toArray(new String[line.size()]));
             line.clear();
         }
         if (hnda.getDescription() != null) {
             line.add("description");
             line.add(hnda.getDescription());
-            outfile.writeNext(line.toArray());
+            outfile.writeNext(line.toArray(new String[line.size()]));
             line.clear();
         }
         if (hnda.getDataType() != null) {
             line.add("type");
             line.add(toString(hnda.getDataType()));
-            outfile.writeNext(line.toArray());
+            outfile.writeNext(line.toArray(new String[line.size()]));
             line.clear();
         }
-        if (!isHeterogenous) {
+        if (!isHeterogeneous) {
             line.add("values");
             line.addAll(toStrings(hnda.getTypedValues().get(0)));
-            outfile.writeNext(line.toArray());
+            outfile.writeNext(line.toArray(new String[line.size()]));
             line.clear();
         }
+
+        // write array metadata
         if (hnda.getArrayContext() != null) {
             for (TypedValue tv : hnda.getArrayContext()) {
                 line.add("meta");
                 line.addAll(toStrings(tv));
-                outfile.writeNext(line.toArray());
+                outfile.writeNext(line.toArray(new String[line.size()]));
                 line.clear();
             }
         }
+
+        // write array dimensions
         line.add("size");
-        for (DimensionContext dc : hnda.getDimContext())
+        ArrayList<Long> dLengths = new ArrayList<Long>();
+        for (DimensionContext dc : hnda.getDimContext()) {
+            dLengths.add(dc.getSize());
             line.add(dc.getSize().toString());
-        outfile.writeNext(line.toArray());
+        }
+        outfile.writeNext(line.toArray(new String[line.size()]));
         line.clear();
 
+        // write metadata for each dimension
         Integer i = 1;
         for (DimensionContext dc : hnda.getDimContext()) {
             for (TypedValues tvs : dc.getTypedValues()) {
                 line.add("dmeta");
                 line.add(i.toString());
                 line.addAll(toStrings(tvs));
-                outfile.writeNext(line.toArray());
+                outfile.writeNext(line.toArray(new String[line.size()]));
                 line.clear();
-                writeValues(Arrays.toList(dc.getSize()), tvs.getValues(), outfile);
+                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), outfile);
             }
             i++;
         }
 
         line.add("data");
-        outfile.writeNext(line.toArray());
+        outfile.writeNext(line.toArray(new String[line.size()]));
         line.clear();
 
-        // todo:  write the data
+        // write out the actual data
+        Long prefix = null;
+        if (isHeterogeneous) {
+            prefix = dLengths.get(0);
+            dLengths.remove(0);
+        }
+        for (TypedValues tvs : hnda.getTypedValues())
+            writeValues(prefix, dLengths, tvs.getValues(), outfile);
         
         outfile.flush();
         outfile.close();

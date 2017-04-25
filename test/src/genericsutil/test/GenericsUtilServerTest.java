@@ -91,7 +91,7 @@ public class GenericsUtilServerTest {
     /**
        import some pre-mapped growth data
     */
-    @Test
+    // @Test
     public void testImportGrowthPreMapped() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/20160823-MT123_c_source2_generic.csv"))
@@ -132,6 +132,19 @@ public class GenericsUtilServerTest {
         Assert.assertNotNull(rv);
         System.out.println("Import Growth Simple test finished");
     }
+
+    /**
+       export some growth data
+    */
+    @Test
+    public void testExportGrowth2() throws Exception {
+        ExportParams params = new ExportParams()
+            .withInputRef("14956/7/35");
+        ExportResult rv = impl.exportCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Export Growth Simple test finished");
+    }
+    
     
     /**
        import some fitness data
@@ -196,7 +209,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, replicates
     */
-    @Test
+    // @Test
     public void testImportEA2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
@@ -226,7 +239,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    @Test    
+    // @Test    
     public void testImportTax() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
@@ -241,7 +254,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    @Test
+    // @Test
     public void testImportTax2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))
@@ -328,7 +341,7 @@ public class GenericsUtilServerTest {
     /**
        import some ontology dictionaries
     */
-    @Test
+    // @Test
     public void testImportDictionaries() throws Exception {
         ImportOBOParams params = new ImportOBOParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/data_type_ontology.obo"))
