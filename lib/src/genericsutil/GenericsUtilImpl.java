@@ -800,7 +800,7 @@ public class GenericsUtilImpl {
                 }
 
                 // store the value in the string data array
-                // see not above about converting to the correct
+                // see note above about converting to the correct
                 // type at mapping time
                 curValues.getStringValues().set((int)index,unquote(val));
             }
@@ -811,11 +811,164 @@ public class GenericsUtilImpl {
     }
 
     /**
+       make a Term into a String
+    */
+    public static String toString(Term t) {
+        String rv = t.getTermName();
+        if (t.getOtermRef() != null)
+            rv += " <"+t.getOtermRef()+">";
+        return rv;
+    }
+
+    /**
+       make a Value into a String
+    */
+    public static String toString(Value v) {
+        String scalarType = v.getScalarType();
+        if (scalarType.equals("int"))
+            return new Integer(v.getIntValue()).toString();
+        else if (scalarType.equals("float"))
+            return new Double(v.getFloatValue()).toString();
+        else if (scalarType.equals("boolean"))
+            return new Integer(v.getBooleanValue()).toString();
+
+        String rv = v.getStringValue();
+        if (scalarType.equals("object_ref"))
+            rv += " <"+v.getObjectRef()+">";
+        else if (scalarType.equals("oterm_ref"))
+            rv += " <"+v.getOtermRef()+">";
+        return rv;
+    }
+
+    /**
+       write Values to a CVSWriter
+    */
+    public static void writeValues(Long[] dLengths, Values v, CSVWriter outfile) {
+        String scalarType = v.getScalarType();
+        ArrayList<String> line = new ArrayList<String>();
+        long[] indices = new long[dLengths.length];
+        /**
+           todo:
+        
+        if (scalarType.equals("int"))
+            return new Integer(v.getIntValue()).toString();
+        else if (scalarType.equals("float"))
+            return new Double(v.getFloatValue()).toString();
+        else if (scalarType.equals("boolean"))
+            return new Integer(v.getBooleanValue()).toString();
+
+        String rv = v.getStringValue();
+        if (scalarType.equals("object_ref"))
+            rv += " <"+v.getObjectRef()+">";
+        else if (scalarType.equals("oterm_ref"))
+            rv += " <"+v.getOtermRef()+">";
+        return rv;
+        */
+    }
+
+    /**
+       make TypedValues metadata (but not the values) into
+       an ArrayList of Strings
+    */
+    public static ArrayList<String> toStrings(TypedValues tvs) {
+        ArrayList<String> rv = new ArrayList<String>();
+        rv.add(toString(tvs.getValueType()));
+        if (tvs.getValueContext() != null)
+            for (Term t : tvs.getValueContext())
+                rv.add(toString(t));
+        Term t = tvs.getValueUnits();
+        if (t != null)
+            rv.add(toString(t));
+        return rv;
+    }
+    
+    /**
+       make a TypedValue (including the value) into
+       an ArrayList of Strings
+    */
+    public static ArrayList<String> toStrings(TypedValue tv) {
+        ArrayList<String> rv = new ArrayList<String>();
+        Term t = tv.getValueType();
+        rv.add(toString(t));
+        Value v = tv.getValue();
+        rv.add(toString(v));
+        t = tv.getValueUnits();
+        if (t != null)
+            rv.add(toString(t));
+        return rv;
+    }
+
+
+    /**
        Writes a HNDArray object to a CSV file.
     */
     public static void writeCSV(HNDArray hnda, String filePath) throws Exception {
-        PrintfWriter outfile = new PrintfWriter(filePath);
+        CSVWriter outfile = new CSVWriter(new BufferedWriter(new FileWriter(filePath)));
+
+        // check whether HNDArray is really heterogenous
+        int numHet = hnda.getTypedValues().size();
+        boolean isHeterogeneous = (numHet > 1);
+
+        // write out common headers
+        ArrayList<String> line = new ArrayList<String>();
+        if (hnda.getName() != null) {
+            line.add("name");
+            line.add(hnda.getName());
+            outfile.writeNext(line.toArray());
+            line.clear();
+        }
+        if (hnda.getDescription() != null) {
+            line.add("description");
+            line.add(hnda.getDescription());
+            outfile.writeNext(line.toArray());
+            line.clear();
+        }
+        if (hnda.getDataType() != null) {
+            line.add("type");
+            line.add(toString(hnda.getDataType()));
+            outfile.writeNext(line.toArray());
+            line.clear();
+        }
+        if (!isHeterogenous) {
+            line.add("values");
+            line.addAll(toStrings(hnda.getTypedValues().get(0)));
+            outfile.writeNext(line.toArray());
+            line.clear();
+        }
+        if (hnda.getArrayContext() != null) {
+            for (TypedValue tv : hnda.getArrayContext()) {
+                line.add("meta");
+                line.addAll(toStrings(tv));
+                outfile.writeNext(line.toArray());
+                line.clear();
+            }
+        }
+        line.add("size");
+        for (DimensionContext dc : hnda.getDimContext())
+            line.add(dc.getSize().toString());
+        outfile.writeNext(line.toArray());
+        line.clear();
+
+        Integer i = 1;
+        for (DimensionContext dc : hnda.getDimContext()) {
+            for (TypedValues tvs : dc.getTypedValues()) {
+                line.add("dmeta");
+                line.add(i.toString());
+                line.addAll(toStrings(tvs));
+                outfile.writeNext(line.toArray());
+                line.clear();
+                writeValues(Arrays.toList(dc.getSize()), tvs.getValues(), outfile);
+            }
+            i++;
+        }
+
+        line.add("data");
+        outfile.writeNext(line.toArray());
+        line.clear();
+
+        // todo:  write the data
         
+        outfile.flush();
         outfile.close();
     }
     
