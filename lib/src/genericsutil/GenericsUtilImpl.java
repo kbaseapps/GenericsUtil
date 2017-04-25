@@ -292,9 +292,13 @@ public class GenericsUtilImpl {
                 return true;
             List<String> synonyms = refToSynonyms.get(ref);
             if (synonyms != null) {
-                for (String synonym : synonyms)
+                for (String synonym : synonyms) {
+                    int pos = synonym.indexOf(" EXACT");
+                    if (pos > -1)
+                        synonym = synonym.substring(0,pos);
                     if (synonym.toLowerCase().equals(term))
                         return true;
+                }
             }
             List<String> parents = refToParents.get(ref);
             if (parents != null) {
@@ -356,6 +360,13 @@ public class GenericsUtilImpl {
     */
     private static String getTypeFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
         return info.getE3();
+    }
+
+    /**
+       Helper function to get name when listing/saving an object
+    */
+    private static String getNameFromObjectInfo(Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info) {
+        return info.getE2();
     }
     
     /**
@@ -885,7 +896,7 @@ public class GenericsUtilImpl {
                     (refs[i] != null))
                     s += " <"+refs[i].toString()+">";
                 line.add(s);
-                outfile.writeNext(line.toArray(new String[line.size()]));
+                outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
             }
             // increment all indices
@@ -936,9 +947,7 @@ public class GenericsUtilImpl {
     /**
        Writes a HNDArray object to a CSV file.
     */
-    public static void writeCSV(HNDArray hnda, String filePath) throws Exception {
-        CSVWriter outfile = new CSVWriter(new BufferedWriter(new FileWriter(filePath)));
-
+    public static void writeCSV(HNDArray hnda, CSVWriter outfile) throws Exception {
         // check whether HNDArray is really heterogenous
         int numHet = hnda.getTypedValues().size();
         boolean isHeterogeneous = (numHet > 1);
@@ -948,25 +957,25 @@ public class GenericsUtilImpl {
         if (hnda.getName() != null) {
             line.add("name");
             line.add(hnda.getName());
-            outfile.writeNext(line.toArray(new String[line.size()]));
+            outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
         if (hnda.getDescription() != null) {
             line.add("description");
             line.add(hnda.getDescription());
-            outfile.writeNext(line.toArray(new String[line.size()]));
+            outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
         if (hnda.getDataType() != null) {
             line.add("type");
             line.add(toString(hnda.getDataType()));
-            outfile.writeNext(line.toArray(new String[line.size()]));
+            outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
         if (!isHeterogeneous) {
             line.add("values");
             line.addAll(toStrings(hnda.getTypedValues().get(0)));
-            outfile.writeNext(line.toArray(new String[line.size()]));
+            outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
 
@@ -975,7 +984,7 @@ public class GenericsUtilImpl {
             for (TypedValue tv : hnda.getArrayContext()) {
                 line.add("meta");
                 line.addAll(toStrings(tv));
-                outfile.writeNext(line.toArray(new String[line.size()]));
+                outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
             }
         }
@@ -987,7 +996,7 @@ public class GenericsUtilImpl {
             dLengths.add(dc.getSize());
             line.add(dc.getSize().toString());
         }
-        outfile.writeNext(line.toArray(new String[line.size()]));
+        outfile.writeNext(line.toArray(new String[line.size()]),false);
         line.clear();
 
         // write metadata for each dimension
@@ -997,7 +1006,7 @@ public class GenericsUtilImpl {
                 line.add("dmeta");
                 line.add(i.toString());
                 line.addAll(toStrings(tvs));
-                outfile.writeNext(line.toArray(new String[line.size()]));
+                outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
                 writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), outfile);
             }
@@ -1005,7 +1014,7 @@ public class GenericsUtilImpl {
         }
 
         line.add("data");
-        outfile.writeNext(line.toArray(new String[line.size()]));
+        outfile.writeNext(line.toArray(new String[line.size()]),false);
         line.clear();
 
         // write out the actual data
@@ -1018,7 +1027,6 @@ public class GenericsUtilImpl {
             writeValues(prefix, dLengths, tvs.getValues(), outfile);
         
         outfile.flush();
-        outfile.close();
     }
     
     /**
@@ -1739,9 +1747,10 @@ public class GenericsUtilImpl {
                                          ExportParams params) throws Exception {
         wc = createWsClient(wsURL,token);
 
-        // figure out type of object
+        // figure out name and type of object
         GetObjectInfo3Results goir = wc.getObjectInfo3(new GetObjectInfo3Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(params.getInputRef()))));
         String oType = getTypeFromObjectInfo(goir.getInfos().get(0));
+        String oName = getNameFromObjectInfo(goir.getInfos().get(0));
 
         // get from workspace as a HNDArray
         HNDArray hnda = null;
@@ -1753,10 +1762,22 @@ public class GenericsUtilImpl {
             hnda = wc.getObjects(Arrays.asList(new ObjectIdentity().withRef(params.getInputRef()))).get(0).getData().asClassInstance(HNDArray.class);
         }
 
-        // export to CSV file
-        java.io.File tmpFile = java.io.File.createTempFile("mat", ".csv", tempDir);
+        // export to CSV file, which inexplicably has
+        // to be inside of a zip file.
+        java.io.File tmpFile = java.io.File.createTempFile("mat", ".zip", tempDir);
         tmpFile.delete();
-        writeCSV(hnda, tmpFile.getPath());
+        ZipOutputStream zout = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tmpFile)));
+        CSVWriter outfile = new CSVWriter(new OutputStreamWriter(zout));
+
+        if (!oName.toLowerCase().endsWith(".csv"))
+            oName += ".csv";
+        zout.putNextEntry(new ZipEntry(oName));
+        zout.flush();
+        writeCSV(hnda, outfile);
+        outfile.flush();
+        zout.flush();
+        zout.closeEntry();
+        outfile.close();
 
         // save in Shock
         String shockID = toShock(shockURL, token, tmpFile);
