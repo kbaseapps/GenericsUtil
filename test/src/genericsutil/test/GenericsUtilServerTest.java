@@ -299,7 +299,7 @@ public class GenericsUtilServerTest {
     /**
        import some bad data
     */
-    @Test(expected=Exception.class)
+    // @Test(expected=Exception.class)
     public void testBad1() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad1.csv"))
@@ -313,7 +313,7 @@ public class GenericsUtilServerTest {
     /**
        import some bad data, 2
     */
-    @Test(expected=Exception.class)
+    // @Test(expected=Exception.class)
     public void testBad2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad2.csv"))
@@ -327,7 +327,7 @@ public class GenericsUtilServerTest {
     /**
        import some bad data, 3
     */
-    @Test(expected=Exception.class)
+    // @Test(expected=Exception.class)
     public void testBad3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_typed_bad3.csv"))

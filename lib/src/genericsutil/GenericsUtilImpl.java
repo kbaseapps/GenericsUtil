@@ -288,23 +288,30 @@ public class GenericsUtilImpl {
         public boolean matches(String ref, String term) throws Exception {
             term = term.toLowerCase();
             String match = refToTerm.get(ref);
+            // System.out.println("debug5: "+ref+" "+term+" "+match);
             if (match.toLowerCase().equals(term))
                 return true;
             List<String> synonyms = refToSynonyms.get(ref);
             if (synonyms != null) {
                 for (String synonym : synonyms) {
                     int pos = synonym.indexOf(" EXACT");
-                    if (pos > -1)
+                    if (pos > 0)
                         synonym = synonym.substring(0,pos);
+                    synonym = unquote(synonym);
+                    // System.out.println("debug4: "+term+" "+synonym);
                     if (synonym.toLowerCase().equals(term))
                         return true;
                 }
             }
             List<String> parents = refToParents.get(ref);
             if (parents != null) {
-                for (String parent : parents)
+                for (String parent : parents) {
+                    int pos = parent.indexOf(" ");
+                    if (pos > 0)
+                        parent = parent.substring(0,pos);
                     if (matches(parent, term))
                         return true;
+                }
             }
             return false;
         }
@@ -1005,6 +1012,7 @@ public class GenericsUtilImpl {
             for (TypedValues tvs : dc.getTypedValues()) {
                 line.add("dmeta");
                 line.add(i.toString());
+                line.add(toString(dc.getDataType()));
                 line.addAll(toStrings(tvs));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
@@ -1383,7 +1391,7 @@ public class GenericsUtilImpl {
                 t.setTermName(name);
                 t.setOtermRef(ref);
                 String dictName = od.getTerm(ref);
-                if (!name.toLowerCase().equals(dictName.toLowerCase()))
+                if (!od.matches(ref,name))
                     System.out.println("mapping "+name+" to "+dictName);
                 t.setOtermName(dictName);
             }
