@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: ImportCSVParams</p>
- * <pre>
- * Import a CSV file into a NDArray or HNDArray
- * </pre>
+ * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -31,7 +29,10 @@ public class ImportCSVParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")
@@ -48,7 +49,10 @@ public class ImportCSVParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")
@@ -58,7 +62,10 @@ public class ImportCSVParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")

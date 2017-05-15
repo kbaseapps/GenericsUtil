@@ -13,7 +13,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * <p>Original spec-file type: File</p>
- * 
+ * <pre>
+ * Import a CSV file into a NDArray or HNDArray.
+ * "File" and "usermeta" are common to all import methods.
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

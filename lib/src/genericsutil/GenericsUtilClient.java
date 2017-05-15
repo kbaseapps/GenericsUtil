@@ -213,6 +213,40 @@ public class GenericsUtilClient {
         return res.get(0);
     }
 
+    /**
+     * <p>Original spec-file function name: list_generic_objects</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
+     * @return   parameter "result" of type {@link genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public ListGenericObjectsResult listGenericObjects(ListGenericObjectsParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<ListGenericObjectsResult>> retType = new TypeReference<List<ListGenericObjectsResult>>() {};
+        List<ListGenericObjectsResult> res = caller.jsonrpcCall("GenericsUtil.list_generic_objects", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: get_generic_metadata</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
+     * @return   parameter "result" of type {@link genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public GetGenericMetadataResult getGenericMetadata(GetGenericMetadataParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<GetGenericMetadataResult>> retType = new TypeReference<List<GetGenericMetadataResult>>() {};
+        List<GetGenericMetadataResult> res = caller.jsonrpcCall("GenericsUtil.get_generic_metadata", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
     public Map<String, Object> status(RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         TypeReference<List<Map<String, Object>>> retType = new TypeReference<List<Map<String, Object>>>() {};

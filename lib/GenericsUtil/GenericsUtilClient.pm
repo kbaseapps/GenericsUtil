@@ -406,6 +406,222 @@ ExportResult is a reference to a hash where the following keys are defined:
     }
 }
  
+
+
+=head2 list_generic_objects
+
+  $result = $obj->list_generic_objects($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenericsUtil.ListGenericObjectsParams
+$result is a GenericsUtil.ListGenericObjectsResult
+ListGenericObjectsParams is a reference to a hash where the following keys are defined:
+	workspace_names has a value which is a reference to a list where each element is a string
+	allowed_object_types has a value which is a reference to a list where each element is a string
+	allowed_data_types has a value which is a reference to a list where each element is a string
+	allowed_scalar_types has a value which is a reference to a list where each element is a string
+	min_dimensions has a value which is an int
+	max_dimensions has a value which is an int
+	limit_mapped has a value which is an int
+ListGenericObjectsResult is a reference to a hash where the following keys are defined:
+	object_ids has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenericsUtil.ListGenericObjectsParams
+$result is a GenericsUtil.ListGenericObjectsResult
+ListGenericObjectsParams is a reference to a hash where the following keys are defined:
+	workspace_names has a value which is a reference to a list where each element is a string
+	allowed_object_types has a value which is a reference to a list where each element is a string
+	allowed_data_types has a value which is a reference to a list where each element is a string
+	allowed_scalar_types has a value which is a reference to a list where each element is a string
+	min_dimensions has a value which is an int
+	max_dimensions has a value which is an int
+	limit_mapped has a value which is an int
+ListGenericObjectsResult is a reference to a hash where the following keys are defined:
+	object_ids has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub list_generic_objects
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function list_generic_objects (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to list_generic_objects:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'list_generic_objects');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenericsUtil.list_generic_objects",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'list_generic_objects',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method list_generic_objects",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'list_generic_objects',
+				       );
+    }
+}
+ 
+
+
+=head2 get_generic_metadata
+
+  $result = $obj->get_generic_metadata($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenericsUtil.GetGenericMetadataParams
+$result is a GenericsUtil.GetGenericMetadataResult
+GetGenericMetadataParams is a reference to a hash where the following keys are defined:
+	object_ids has a value which is a reference to a list where each element is a string
+GetGenericMetadataResult is a reference to a hash where the following keys are defined:
+	object_info has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.GenericMetadata
+GenericMetadata is a reference to a hash where the following keys are defined:
+	object_type has a value which is a string
+	data_type has a value which is a string
+	n_dimensions has a value which is an int
+	is_mapped has a value which is a GenericsUtil.boolean
+	value_types has a value which is a reference to a list where each element is a string
+	scalar_types has a value which is a reference to a list where each element is a string
+	dimension_types has a value which is a reference to a list where each element is a string
+	dimension_sizes has a value which is a reference to a list where each element is an int
+	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+boolean is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenericsUtil.GetGenericMetadataParams
+$result is a GenericsUtil.GetGenericMetadataResult
+GetGenericMetadataParams is a reference to a hash where the following keys are defined:
+	object_ids has a value which is a reference to a list where each element is a string
+GetGenericMetadataResult is a reference to a hash where the following keys are defined:
+	object_info has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.GenericMetadata
+GenericMetadata is a reference to a hash where the following keys are defined:
+	object_type has a value which is a string
+	data_type has a value which is a string
+	n_dimensions has a value which is an int
+	is_mapped has a value which is a GenericsUtil.boolean
+	value_types has a value which is a reference to a list where each element is a string
+	scalar_types has a value which is a reference to a list where each element is a string
+	dimension_types has a value which is a reference to a list where each element is a string
+	dimension_sizes has a value which is a reference to a list where each element is an int
+	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+boolean is an int
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub get_generic_metadata
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_generic_metadata (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_generic_metadata:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_generic_metadata');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenericsUtil.get_generic_metadata",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_generic_metadata',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_generic_metadata",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_generic_metadata',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -449,16 +665,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'export_csv',
+                method_name => 'get_generic_metadata',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method export_csv",
+            error => "Error invoking method get_generic_metadata",
             status_line => $self->{client}->status_line,
-            method_name => 'export_csv',
+            method_name => 'get_generic_metadata',
         );
     }
 }
@@ -495,10 +711,43 @@ sub _validate_version {
 
 
 
+=head2 boolean
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
 =head2 File
 
 =over 4
 
+
+
+=item Description
+
+Import a CSV file into a NDArray or HNDArray.
+
+"File" and "usermeta" are common to all import methods.
 
 
 =item Definition
@@ -557,11 +806,6 @@ a reference to a hash where the key is a string and the value is a string
 
 =over 4
 
-
-
-=item Description
-
-Import a CSV file into a NDArray or HNDArray
 
 
 =item Definition
@@ -724,6 +968,225 @@ shock_id has a value which is a string
 
 a reference to a hash where the following keys are defined:
 shock_id has a value which is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 ListGenericObjectsParams
+
+=over 4
+
+
+
+=item Description
+
+List generic objects in one or more workspaces
+
+optional parameters:
+allowed_object_types - limits to specific types of object, e.g., KBaseGenerics.NDArray (version number is optional)
+allowed_data_types - limits to specific data types, e.g., microbial growth
+allowed_scalar_types - limits to specific scalar types, e.g., object_ref, int, float (see KBaseGenerics.spec for valid types).  HNDArrays must have at least one dimension that passes.
+min_dimensions - limits to generics with minimum number of dimensions
+max_dimensions - limits to generics with max number of dimensions
+limit_mapped - if 0 (or unset) returns all objects.  if 1, returns only mapped objects.  if 2, returns only umapped objects
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+workspace_names has a value which is a reference to a list where each element is a string
+allowed_object_types has a value which is a reference to a list where each element is a string
+allowed_data_types has a value which is a reference to a list where each element is a string
+allowed_scalar_types has a value which is a reference to a list where each element is a string
+min_dimensions has a value which is an int
+max_dimensions has a value which is an int
+limit_mapped has a value which is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+workspace_names has a value which is a reference to a list where each element is a string
+allowed_object_types has a value which is a reference to a list where each element is a string
+allowed_data_types has a value which is a reference to a list where each element is a string
+allowed_scalar_types has a value which is a reference to a list where each element is a string
+min_dimensions has a value which is an int
+max_dimensions has a value which is an int
+limit_mapped has a value which is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 ListGenericObjectsResult
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_ids has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_ids has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericMetadataParams
+
+=over 4
+
+
+
+=item Description
+
+Get metadata describing the dimensions of one or more generic objects
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_ids has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_ids has a value which is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GenericMetadata
+
+=over 4
+
+
+
+=item Description
+
+Basic metadata about an object:
+
+object_type - e.g., KBaseGenerics.HNDArray‑4.0
+data_type - e.g., microbial growth
+n_dimensions - number of dimensions
+is_mapped - 0 or 1 indicating mapped status
+value_types - list of value types in the object (there will only be 1 for NDArray objects), e.g., "specific activity"
+scalar_types - list of scalar types in the object (there will only be 1 for NDArray objects), e.g., "float"
+dimension_types - a string describing each dimension (e.g., "media name")
+dimension_sizes - size (length) of each dimension
+dimension_value_types - a string describing each context of each dimension (e.g., "media name")
+dimension_scalar_types - type of values in each context of each dimension (e.g., "int")
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_type has a value which is a string
+data_type has a value which is a string
+n_dimensions has a value which is an int
+is_mapped has a value which is a GenericsUtil.boolean
+value_types has a value which is a reference to a list where each element is a string
+scalar_types has a value which is a reference to a list where each element is a string
+dimension_types has a value which is a reference to a list where each element is a string
+dimension_sizes has a value which is a reference to a list where each element is an int
+dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_type has a value which is a string
+data_type has a value which is a string
+n_dimensions has a value which is an int
+is_mapped has a value which is a GenericsUtil.boolean
+value_types has a value which is a reference to a list where each element is a string
+scalar_types has a value which is a reference to a list where each element is a string
+dimension_types has a value which is a reference to a list where each element is a string
+dimension_sizes has a value which is a reference to a list where each element is an int
+dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericMetadataResult
+
+=over 4
+
+
+
+=item Description
+
+maps object ids to structure with metadata
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_info has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.GenericMetadata
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_info has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.GenericMetadata
 
 
 =end text

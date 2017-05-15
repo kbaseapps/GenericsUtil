@@ -22,7 +22,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "83e543aeff8db267b13c3494e5feee33d719c949";
+    private static final String gitCommitHash = "b65fd56c6c48a23860b42d28c53f2b89bcc31319";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;
@@ -97,6 +97,36 @@ public class GenericsUtilServer extends JsonServerServlet {
                                                authPart,
                                                params);
         //END export_csv
+        return returnVal;
+    }
+
+    /**
+     * <p>Original spec-file function name: list_generic_objects</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
+     * @return   parameter "result" of type {@link genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
+     */
+    @JsonServerMethod(rpc = "GenericsUtil.list_generic_objects", async=true)
+    public ListGenericObjectsResult listGenericObjects(ListGenericObjectsParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        ListGenericObjectsResult returnVal = null;
+        //BEGIN list_generic_objects
+        //END list_generic_objects
+        return returnVal;
+    }
+
+    /**
+     * <p>Original spec-file function name: get_generic_metadata</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
+     * @return   parameter "result" of type {@link genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
+     */
+    @JsonServerMethod(rpc = "GenericsUtil.get_generic_metadata", async=true)
+    public GetGenericMetadataResult getGenericMetadata(GetGenericMetadataParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
+        GetGenericMetadataResult returnVal = null;
+        //BEGIN get_generic_metadata
+        //END get_generic_metadata
         return returnVal;
     }
     @JsonServerMethod(rpc = "GenericsUtil.status")

@@ -30,7 +30,10 @@ public class ImportOBOParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")
@@ -45,7 +48,10 @@ public class ImportOBOParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")
@@ -55,7 +61,10 @@ public class ImportOBOParams {
 
     /**
      * <p>Original spec-file type: File</p>
-     * 
+     * <pre>
+     * Import a CSV file into a NDArray or HNDArray.
+     * "File" and "usermeta" are common to all import methods.
+     * </pre>
      * 
      */
     @JsonProperty("file")

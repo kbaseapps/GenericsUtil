@@ -35,9 +35,10 @@ class GenericsUtil(object):
 
     def import_csv(self, params, context=None):
         """
-        :param params: instance of type "ImportCSVParams" (Import a CSV file
-           into a NDArray or HNDArray) -> structure: parameter "file" of type
-           "File" -> structure: parameter "path" of String, parameter
+        :param params: instance of type "ImportCSVParams" -> structure:
+           parameter "file" of type "File" (Import a CSV file into a NDArray
+           or HNDArray. "File" and "usermeta" are common to all import
+           methods.) -> structure: parameter "path" of String, parameter
            "shock_id" of String, parameter "workspace_name" of String,
            parameter "object_name" of String, parameter "object_type" of
            String, parameter "metadata" of type "usermeta" -> mapping from
@@ -53,10 +54,12 @@ class GenericsUtil(object):
         """
         :param params: instance of type "ImportOBOParams" (Import an OBO file
            into an OntologyDictionary) -> structure: parameter "file" of type
-           "File" -> structure: parameter "path" of String, parameter
-           "shock_id" of String, parameter "workspace_name" of String,
-           parameter "object_name" of String, parameter "metadata" of type
-           "usermeta" -> mapping from String to String
+           "File" (Import a CSV file into a NDArray or HNDArray. "File" and
+           "usermeta" are common to all import methods.) -> structure:
+           parameter "path" of String, parameter "shock_id" of String,
+           parameter "workspace_name" of String, parameter "object_name" of
+           String, parameter "metadata" of type "usermeta" -> mapping from
+           String to String
         :returns: instance of type "ImportResult" -> structure: parameter
            "object_ref" of String
         """
@@ -73,6 +76,66 @@ class GenericsUtil(object):
         """
         return self._client.call_method(
             'GenericsUtil.export_csv',
+            [params], self._service_ver, context)
+
+    def list_generic_objects(self, params, context=None):
+        """
+        :param params: instance of type "ListGenericObjectsParams" (List
+           generic objects in one or more workspaces optional parameters:
+           allowed_object_types - limits to specific types of object, e.g.,
+           KBaseGenerics.NDArray (version number is optional)
+           allowed_data_types - limits to specific data types, e.g.,
+           microbial growth allowed_scalar_types - limits to specific scalar
+           types, e.g., object_ref, int, float (see KBaseGenerics.spec for
+           valid types).  HNDArrays must have at least one dimension that
+           passes. min_dimensions - limits to generics with minimum number of
+           dimensions max_dimensions - limits to generics with max number of
+           dimensions limit_mapped - if 0 (or unset) returns all objects.  if
+           1, returns only mapped objects.  if 2, returns only umapped
+           objects) -> structure: parameter "workspace_names" of list of
+           String, parameter "allowed_object_types" of list of String,
+           parameter "allowed_data_types" of list of String, parameter
+           "allowed_scalar_types" of list of String, parameter
+           "min_dimensions" of Long, parameter "max_dimensions" of Long,
+           parameter "limit_mapped" of Long
+        :returns: instance of type "ListGenericObjectsResult" -> structure:
+           parameter "object_ids" of list of String
+        """
+        return self._client.call_method(
+            'GenericsUtil.list_generic_objects',
+            [params], self._service_ver, context)
+
+    def get_generic_metadata(self, params, context=None):
+        """
+        :param params: instance of type "GetGenericMetadataParams" (Get
+           metadata describing the dimensions of one or more generic objects)
+           -> structure: parameter "object_ids" of list of String
+        :returns: instance of type "GetGenericMetadataResult" (maps object
+           ids to structure with metadata) -> structure: parameter
+           "object_info" of mapping from String to type "GenericMetadata"
+           (Basic metadata about an object: object_type - e.g.,
+           KBaseGenerics.HNDArray‑4.0 data_type - e.g., microbial growth
+           n_dimensions - number of dimensions is_mapped - 0 or 1 indicating
+           mapped status value_types - list of value types in the object
+           (there will only be 1 for NDArray objects), e.g., "specific
+           activity" scalar_types - list of scalar types in the object (there
+           will only be 1 for NDArray objects), e.g., "float" dimension_types
+           - a string describing each dimension (e.g., "media name")
+           dimension_sizes - size (length) of each dimension
+           dimension_value_types - a string describing each context of each
+           dimension (e.g., "media name") dimension_scalar_types - type of
+           values in each context of each dimension (e.g., "int")) ->
+           structure: parameter "object_type" of String, parameter
+           "data_type" of String, parameter "n_dimensions" of Long, parameter
+           "is_mapped" of type "boolean", parameter "value_types" of list of
+           String, parameter "scalar_types" of list of String, parameter
+           "dimension_types" of list of String, parameter "dimension_sizes"
+           of list of Long, parameter "dimension_value_types" of list of list
+           of String, parameter "dimension_scalar_types" of list of list of
+           String
+        """
+        return self._client.call_method(
+            'GenericsUtil.get_generic_metadata',
             [params], self._service_ver, context)
 
     def status(self, context=None):
