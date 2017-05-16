@@ -170,6 +170,18 @@ public class GenericsUtilServerTest {
         }
         System.out.println("List growth test finished");
     }
+
+    /**
+       test getting generic metadata
+    */
+    @Test
+    public void testGetGenericMetadata() throws Exception {
+        GetGenericMetadataParams params = new GetGenericMetadataParams()
+            .withObjectIds(Arrays.asList("14956/7/43", "14956/43/12"));
+        GetGenericMetadataResult rv = impl.getGenericMetadata(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get metadata test finished");
+    }
     
     /**
        import some fitness data
