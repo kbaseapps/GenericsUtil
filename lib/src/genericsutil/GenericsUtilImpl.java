@@ -1843,8 +1843,10 @@ public class GenericsUtilImpl {
                 matchingObjects.addAll(getRefsFromObjectInfo(wc.listObjects(new ListObjectsParams().withWorkspaces(wsNames).withType(objectType).withIncludeMetadata(new Long(0L)))));
             }
             else {
-                for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info : wc.listObjects(new ListObjectsParams().withWorkspaces(wsNames).withType(objectType).withIncludeMetadata(new Long(0L)))) {
+                for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info : wc.listObjects(new ListObjectsParams().withWorkspaces(wsNames).withType(objectType).withIncludeMetadata(new Long(1L)))) {
                     Map<String,String> meta = info.getE11();
+                    if (meta==null)
+                        continue;
                     if (params.getLimitMapped() != null) {
                         long l = params.getLimitMapped().longValue();
                         String mapped = meta.get("mapped");

@@ -121,7 +121,7 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    @Test
+    // @Test
     public void testImportGrowth2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_simple.csv"))
