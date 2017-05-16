@@ -1651,8 +1651,15 @@ public class GenericsUtilImpl {
             metadata.put("mapped","false");
         metadata.put("n_dimensions", hnda.getNDimensions().toString());
         String typeDescriptor = hnda.getDataType().getTermName();
-        if (nda != null)
-            metadata.put("scalar_type",nda.getTypedValues().getValues().getScalarType());
+        String scalarType = null;
+        for (TypedValues tv : hnda.getTypedValues()) {
+            if (scalarType == null)
+                scalarType = "";
+            else
+                scalarType += ", ";
+            scalarType += tv.getValues().getScalarType();
+        }
+        metadata.put("scalar_type",scalarType);
         
         typeDescriptor += " < ";
         String dimensionSize = "< ";
@@ -1795,6 +1802,114 @@ public class GenericsUtilImpl {
         // clean up tmp file
         tmpFile.delete();
 
+        return rv;
+    }
+
+    /**
+       Exports a generic object to a CSV file
+    */
+    public static ListGenericObjectsResult listGenericObjects(String wsURL,
+                                                              AuthToken token,
+                                                              ListGenericObjectsParams params) throws Exception {
+
+        // make sure caller specified workspace names
+        List<String> wsNames = params.getWorkspaceNames();
+        if (wsNames==null)
+            throw new Exception("Must specify workspace names when listing generic objects");
+
+        wc = createWsClient(wsURL,token);
+        ArrayList<String> matchingObjects = new ArrayList<String>();
+
+        // see if caller is filtering by object type
+        List<String> objectTypes = params.getAllowedObjectTypes();
+        // if not, look for all generic types
+        if (objectTypes == null)
+            objectTypes = Arrays.asList("KBaseGenerics.NDArray", "KBaseGenerics.HNDArray");
+
+        // see if caller is filtering by anything else
+        boolean needsMeta = false;
+        if ((params.getAllowedDataTypes() != null) ||
+            (params.getAllowedScalarTypes() != null) ||
+            (params.getMinDimensions() != null) ||
+            (params.getMaxDimensions() != null) ||
+            (params.getLimitMapped() != null))
+            needsMeta = true;
+            
+        // find all objects of each type
+        for (String objectType : objectTypes) {
+            if (!objectType.startsWith("KBaseGenerics."))
+                throw new Exception("listGenericObjects can only list generic objects; invalid type "+objectType);
+            if (!needsMeta) {
+                matchingObjects.addAll(getRefsFromObjectInfo(wc.listObjects(new ListObjectsParams().withWorkspaces(wsNames).withType(objectType).withIncludeMetadata(new Long(0L)))));
+            }
+            else {
+                for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info : wc.listObjects(new ListObjectsParams().withWorkspaces(wsNames).withType(objectType).withIncludeMetadata(new Long(0L)))) {
+                    Map<String,String> meta = info.getE11();
+                    if (params.getLimitMapped() != null) {
+                        long l = params.getLimitMapped().longValue();
+                        String mapped = meta.get("mapped");
+                        if ((l==1L) && ((mapped==null) ||
+                                        (!mapped.equals("true"))))
+                            continue;
+                        if ((l==2L) && (mapped != null) && (!mapped.equals("false")))
+                            continue;
+                    }
+                    if (params.getMinDimensions() != null) {
+                        long l = params.getMinDimensions().longValue();
+                        String dims = meta.get("n_dimensions");
+                        if (dims==null)
+                            continue;
+                        long d = StringUtil.atol(dims);
+                        if (d < l)
+                            continue;
+                    }
+                    if (params.getMaxDimensions() != null) {
+                        long l = params.getMaxDimensions().longValue();
+                        String dims = meta.get("n_dimensions");
+                        if (dims==null)
+                            continue;
+                        long d = StringUtil.atol(dims);
+                        if (d > l)
+                            continue;
+                    }
+                    if (params.getAllowedDataTypes() != null) {
+                        String dataType = meta.get("data_type");
+                        if (dataType == null)
+                            continue;
+                        int pos = dataType.indexOf(" <");
+                        if (pos > -1)
+                            dataType = dataType.substring(0,pos);
+                        
+                        boolean found = false;
+                        for (String okType : params.getAllowedDataTypes()) {
+                            if (dataType.equals(okType))
+                                found = true;
+                        }
+                        if (!found)
+                            continue;
+                    }
+                    if (params.getAllowedScalarTypes() != null) {
+                        String scalarType = meta.get("scalar_type");
+                        if (scalarType == null)
+                            continue;
+                        
+                        boolean found = false;
+                        for (String okType : params.getAllowedScalarTypes()) {
+                            if (scalarType.indexOf(okType) > -1)
+                                found = true;
+                        }
+                        if (!found)
+                            continue;
+                    }
+
+                    // if passed all filters, add it
+                    matchingObjects.add(getRefFromObjectInfo(info));
+                }
+            }
+        }
+
+        ListGenericObjectsResult rv = new ListGenericObjectsResult()
+            .withObjectIds(matchingObjects);
         return rv;
     }
 }

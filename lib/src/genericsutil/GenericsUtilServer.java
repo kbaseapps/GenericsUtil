@@ -111,6 +111,9 @@ public class GenericsUtilServer extends JsonServerServlet {
     public ListGenericObjectsResult listGenericObjects(ListGenericObjectsParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
         ListGenericObjectsResult returnVal = null;
         //BEGIN list_generic_objects
+        returnVal = GenericsUtilImpl.listGenericObjects(wsUrl,
+                                                        authPart,
+                                                        params);
         //END list_generic_objects
         return returnVal;
     }
