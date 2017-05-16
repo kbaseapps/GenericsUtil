@@ -144,7 +144,32 @@ public class GenericsUtilServerTest {
         Assert.assertNotNull(rv);
         System.out.println("Export Growth Simple test finished");
     }
-    
+
+    /**
+       list growth data
+    */
+    @Test
+    public void testListGrowth() throws Exception {
+        ListGenericObjectsParams params = new ListGenericObjectsParams()
+            .withWorkspaceNames(Arrays.asList("jmc:1480966800200"));
+        ListGenericObjectsResult rv = impl.listGenericObjects(params, token, (RpcContext)null);
+        for (String id : rv.getObjectIds()) {
+            System.out.println("object found: "+id);
+        }
+        params = new ListGenericObjectsParams()
+            .withWorkspaceNames(Arrays.asList("jmc:1480966800200"))
+            .withAllowedDataTypes(Arrays.asList("microbial growth"))
+            .withAllowedObjectTypes(Arrays.asList("KBaseGenerics.NDArray"))
+            .withAllowedScalarTypes(Arrays.asList("float"))
+            .withMinDimensions(new Long(2L))
+            .withMaxDimensions(new Long(5L))
+            .withLimitMapped(new Long(1L));
+        rv = impl.listGenericObjects(params, token, (RpcContext)null);
+        for (String id : rv.getObjectIds()) {
+            System.out.println("growth object found: "+id);
+        }
+        System.out.println("List growth test finished");
+    }
     
     /**
        import some fitness data
