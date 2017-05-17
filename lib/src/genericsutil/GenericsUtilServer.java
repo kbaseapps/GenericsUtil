@@ -129,6 +129,9 @@ public class GenericsUtilServer extends JsonServerServlet {
     public GetGenericMetadataResult getGenericMetadata(GetGenericMetadataParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
         GetGenericMetadataResult returnVal = null;
         //BEGIN get_generic_metadata
+        returnVal = GenericsUtilImpl.getGenericMetadata(wsUrl,
+                                                        authPart,
+                                                        params);
         //END get_generic_metadata
         return returnVal;
     }

@@ -1806,7 +1806,8 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Exports a generic object to a CSV file
+       List Generic objects in one or more workspaces, with
+       optional filters
     */
     public static ListGenericObjectsResult listGenericObjects(String wsURL,
                                                               AuthToken token,
@@ -1914,5 +1915,31 @@ public class GenericsUtilImpl {
             .withObjectIds(matchingObjects);
         return rv;
     }
+
+    /**
+       Gets metadata describing the data type and all dimensions of
+       a generic object     
+    */
+    public static GetGenericMetadataResult getGenericMetadata(String wsURL,
+                                                              AuthToken token,
+                                                              GetGenericMetadataParams params) throws Exception {
+
+        // make sure caller specified workspace names
+        List<String> objectIDs = params.getObjectIds();
+        if (objectIDs==null)
+            throw new Exception("Must specify object ids when getting generic metadata");
+
+        wc = createWsClient(wsURL,token);
+
+        HashMap<String,GenericMetadata> objectInfo = new HashMap<String,GenericMetadata>();
+        for (String objectID : objectIDs) {
+            for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info : wc.getObjectInfo3(new GetObjectInfo3Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID+"/data_type; "+objectID+"/n_dimensions")))).getInfos()) {
+                System.out.println("info: "+info.toString());
+            }
+        }
+
+        GetGenericMetadataResult rv = new GetGenericMetadataResult()
+            .withObjectInfo(objectInfo);
+        return rv;
+    }
 }
-      
