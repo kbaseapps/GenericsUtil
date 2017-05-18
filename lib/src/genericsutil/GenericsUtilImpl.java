@@ -859,6 +859,19 @@ public class GenericsUtilImpl {
     }
 
     /**
+       Strip references out of exported strings
+    */
+    public static String stripRef(String s) {
+        String rv = s;
+        if (rv.endsWith(">")) {
+            int pos = rv.indexOf(" <");
+            if (pos > -1)
+                rv = rv.substring(0,pos);
+        }
+        return rv;
+    }
+
+    /**
        write Values to a CVSWriter.  prefix indicates the non-heterogeneous
        dimension index, which will be prepended to each line.  If null,
        nothing will be prepended.
@@ -1933,8 +1946,57 @@ public class GenericsUtilImpl {
 
         HashMap<String,GenericMetadata> objectInfo = new HashMap<String,GenericMetadata>();
         for (String objectID : objectIDs) {
-            for (Tuple11<Long, String, String, String, Long, String, Long, String, String, Long, Map<String,String>> info : wc.getObjectInfo3(new GetObjectInfo3Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID+"/data_type; "+objectID+"/n_dimensions")))).getInfos()) {
-                System.out.println("info: "+info.toString());
+            for (ObjectData od : wc.getObjects2(new GetObjects2Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID).withIncluded(Arrays.asList("/data_type","/n_dimensions","/dim_context","/typed_values/1/value_type"))))).getData()) {
+                GenericMetadata gm = new GenericMetadata();
+                gm.setObjectType(getTypeFromObjectInfo(od.getInfo()));
+                HNDArray hnda = null;
+                if (gm.getObjectType().startsWith("KBaseGenerics.NDArray")) {
+                    NDArray nda = od.getData().asClassInstance(NDArray.class);
+                    hnda = makeHNDArray(nda);
+                }
+                else
+                    hnda = od.getData().asClassInstance(HNDArray.class);
+
+                // get data type and n_dimensions from object data
+                gm.setDataType(stripRef(toString(hnda.getDataType())));
+                gm.setNDimensions(hnda.getNDimensions());
+
+                // get mapped status from metadata
+                Long isMapped = new Long(0L);
+                Map<String,String> meta = od.getInfo().getE11();
+                if (meta!=null) {
+                    String mapped = meta.get("mapped");
+                    if ((mapped != null) && (mapped.equals("true")))
+                        isMapped = new Long(1L);
+                }
+
+                // loop over all dimensions to get names and types
+                List<String> valueTypes = new ArrayList<String>();
+                List<String> scalarTypes = new ArrayList<String>();
+                List<String> dimensionTypes = new ArrayList<String>();
+                List<Long> dimensionSizes = new ArrayList<Long>();
+                List<List<String>> dimensionValueTypes = new ArrayList<List<String>>();
+                List<List<String>> dimensionScalarTypes = new ArrayList<List<String>>();
+                for (DimensionContext dc : hnda.getDimContext()) {
+                    dimensionTypes.add(stripRef(toString(dc.getDataType())));
+                    dimensionSizes.add(dc.getSize());
+                    List<String> dimensionValueType = new ArrayList<String>();
+                    List<String> dimensionScalarType = new ArrayList<String>();
+                    for (TypedValues tv : dc.getTypedValues()) {
+                        dimensionValueType.add(stripRef(toString(tv.getValueType())));
+                        dimensionScalarType.add(tv.getValues().getScalarType());
+                    }
+                    dimensionValueTypes.add(dimensionValueType);
+                    dimensionScalarTypes.add(dimensionScalarType);
+                }
+                gm.setDimensionTypes(dimensionTypes);
+                gm.setDimensionSizes(dimensionSizes);
+                gm.setDimensionValueTypes(dimensionValueTypes);
+                gm.setDimensionScalarTypes(dimensionScalarTypes);
+
+                // save data
+                gm.setIsMapped(isMapped);
+                objectInfo.put(objectID,gm);
             }
         }
 
