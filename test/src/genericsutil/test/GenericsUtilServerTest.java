@@ -91,7 +91,7 @@ public class GenericsUtilServerTest {
     /**
        import some pre-mapped growth data
     */
-    // @Test
+    @Test
     public void testImportGrowthPreMapped() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/20160823-MT123_c_source2_generic.csv"))
@@ -177,7 +177,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testGetGenericMetadata() throws Exception {
         GetGenericMetadataParams params = new GetGenericMetadataParams()
-            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/14"));
+            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/15", "14956/45/25"));
         GetGenericMetadataResult rv = impl.getGenericMetadata(params, token, (RpcContext)null);
         System.out.println(rv.toString());
         System.out.println("Get metadata test finished");
@@ -321,7 +321,7 @@ public class GenericsUtilServerTest {
     /**
        import some environmental parameters data
     */
-    // @Test
+    @Test
     public void testImportEP() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/heterogenous_sampling.csv"))

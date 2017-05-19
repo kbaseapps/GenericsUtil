@@ -28,7 +28,7 @@ dmeta, 1, category
 8, in situ measurement
 9, in situ measurement
 10, in situ measurement
-dmeta, 2, environmental sample name
+dmeta, 2, environmental sample, environmental sample name
 1, FW301-7-25-12
 2, FW300-7-25-12
 3, FW021-7-26-12
@@ -36,11 +36,11 @@ dmeta, 2, well
 1, FW-301
 2, FW-300
 3, FW-021
-dmeta, 2, environmental sample location, comment, FRC Area Code
+dmeta, 2, environmental sample, environmental sample location, comment, FRC Area Code
 1, Background
 2, Background
 3, 1
-dmeta, 2, environmental sample location, comment, Cluster #
+dmeta, 2, environmental sample, environmental sample location, comment, Cluster #
 1, 81
 2, 59
 3, 46

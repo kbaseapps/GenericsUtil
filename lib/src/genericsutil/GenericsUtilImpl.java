@@ -22,7 +22,6 @@ import org.strbio.IO;
 import org.strbio.io.*;
 import org.strbio.util.*;
 import com.fasterxml.jackson.databind.*;
-import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.*;
 
@@ -1511,7 +1510,7 @@ public class GenericsUtilImpl {
             else if (step > 1)
                 refs.add(null);
         }
-        if (step > 1) {
+        if ((step > 1) && (rv)) {
             if (oTerm) {
                 v.setOtermRefs(refs);
                 v.setScalarType("oterm_ref");
