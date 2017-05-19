@@ -940,6 +940,21 @@ public class GenericsUtilImpl {
     }
 
     /**
+       make a TypedValue (including the value) into
+       a single descriptive string
+    */
+    public static String toString(TypedValue tv, boolean includeRefs) {
+        Term t = tv.getValueType();
+        String rv = toString(t,includeRefs);
+        Value v = tv.getValue();
+        rv += " = "+toString(v,includeRefs);
+        t = tv.getValueUnits();
+        if (t != null)
+            rv += " ("+toString(t,includeRefs)+")";
+        return rv;
+    }
+    
+    /**
        make TypedValues metadata (but not the values) into
        an ArrayList of Strings
     */
@@ -955,6 +970,21 @@ public class GenericsUtilImpl {
         return rv;
     }
 
+    /**
+       make TypedValues metadata (but not the values) into
+       a descriptive String
+    */
+    public static String toString(TypedValues tvs, boolean includeRefs) {
+        String rv = toString(tvs.getValueType(),includeRefs);
+        if (tvs.getValueContext() != null)
+            for (TypedValue tv : tvs.getValueContext())
+                rv += "; "+toString(tv,includeRefs);
+        Term t = tvs.getValueUnits();
+        if (t != null)
+            rv += " ("+toString(t,includeRefs)+")";
+        return rv;
+    }
+    
     /**
        Writes a HNDArray object to a CSV file.
     */
@@ -1675,7 +1705,7 @@ public class GenericsUtilImpl {
                 valuesType += ", ";
             }
             scalarType += tv.getValues().getScalarType();
-            valuesType += StringUtils.join(toStrings(tv,false)," ");
+            valuesType += toString(tv,false);
         }
         metadata.put("scalar_type",scalarType);
         metadata.put("value_type",valuesType);
@@ -1998,7 +2028,7 @@ public class GenericsUtilImpl {
                     List<String> dimensionValueType = new ArrayList<String>();
                     List<String> dimensionScalarType = new ArrayList<String>();
                     for (TypedValues tv : dc.getTypedValues()) {
-                        dimensionValueType.add(StringUtils.join(toStrings(tv,false)," "));
+                        dimensionValueType.add(toString(tv,false));
                         dimensionScalarType.add(tv.getValues().getScalarType());
                     }
                     dimensionValueTypes.add(dimensionValueType);
