@@ -106,7 +106,7 @@ public class GenericsUtilServerTest {
     /**
        import some growth data
     */
-    // @Test
+    @Test
     public void testImportGrowth() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/growth_nitrate_multi.csv"))
@@ -136,7 +136,7 @@ public class GenericsUtilServerTest {
     /**
        export some growth data
     */
-    @Test
+    // @Test
     public void testExportGrowth2() throws Exception {
         ExportParams params = new ExportParams()
             .withInputRef("14956/7/35");
@@ -148,7 +148,7 @@ public class GenericsUtilServerTest {
     /**
        list growth data
     */
-    @Test
+    // @Test
     public void testListGrowth() throws Exception {
         ListGenericObjectsParams params = new ListGenericObjectsParams()
             .withWorkspaceNames(Arrays.asList("jmc:1480966800200"));
@@ -216,7 +216,7 @@ public class GenericsUtilServerTest {
     /**
        import some multi-strain fitness data
     */
-    // @Test
+    @Test
     public void testImportFitness3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/fitness_multi_random.csv"))
@@ -246,7 +246,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, replicates
     */
-    // @Test
+    @Test
     public void testImportEA2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_replicates.csv"))
@@ -261,7 +261,7 @@ public class GenericsUtilServerTest {
     /**
        import some enzyme activity data, statistics
     */
-    // @Test
+    @Test
     public void testImportEA3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/activity_statistics.csv"))
@@ -276,7 +276,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    // @Test    
+    @Test    
     public void testImportTax() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance.csv"))
@@ -291,7 +291,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    // @Test
+    @Test
     public void testImportTax2() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_multiwell.csv"))
@@ -306,7 +306,7 @@ public class GenericsUtilServerTest {
     /**
        import some taxonomic data
     */
-    // @Test
+    @Test
     public void testImportTax3() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/otu_abundance_timeseries.csv"))
@@ -321,7 +321,7 @@ public class GenericsUtilServerTest {
     /**
        import some environmental parameters data
     */
-    // @Test
+    @Test
     public void testImportEP() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new genericsutil.File().withPath("/kb/module/test/data/heterogenous_sampling.csv"))

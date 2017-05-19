@@ -22,6 +22,7 @@ import org.strbio.IO;
 import org.strbio.io.*;
 import org.strbio.util.*;
 import com.fasterxml.jackson.databind.*;
+import org.apache.commons.lang3.StringUtils;
 
 import com.opencsv.*;
 
@@ -831,9 +832,9 @@ public class GenericsUtilImpl {
     /**
        make a Term into a String
     */
-    public static String toString(Term t) {
+    public static String toString(Term t, boolean includeRef) {
         String rv = t.getTermName();
-        if (t.getOtermRef() != null)
+        if (includeRef && (t.getOtermRef() != null))
             rv += " <"+t.getOtermRef()+">";
         return rv;
     }
@@ -841,7 +842,7 @@ public class GenericsUtilImpl {
     /**
        make a Value into a String
     */
-    public static String toString(Value v) {
+    public static String toString(Value v, boolean includeRef) {
         String scalarType = v.getScalarType();
         if (scalarType.equals("int"))
             return new Long(v.getIntValue()).toString();
@@ -851,22 +852,11 @@ public class GenericsUtilImpl {
             return new Long(v.getBooleanValue()).toString();
 
         String rv = v.getStringValue();
-        if (scalarType.equals("object_ref"))
-            rv += " <"+v.getObjectRef()+">";
-        else if (scalarType.equals("oterm_ref"))
-            rv += " <"+v.getOtermRef()+">";
-        return rv;
-    }
-
-    /**
-       Strip references out of exported strings
-    */
-    public static String stripRef(String s) {
-        String rv = s;
-        if (rv.endsWith(">")) {
-            int pos = rv.indexOf(" <");
-            if (pos > -1)
-                rv = rv.substring(0,pos);
+        if (includeRef) {
+            if (scalarType.equals("object_ref"))
+                rv += " <"+v.getObjectRef()+">";
+            else if (scalarType.equals("oterm_ref"))
+                rv += " <"+v.getOtermRef()+">";
         }
         return rv;
     }
@@ -876,7 +866,7 @@ public class GenericsUtilImpl {
        dimension index, which will be prepended to each line.  If null,
        nothing will be prepended.
     */
-    public static void writeValues(Long prefix, List<Long> dLengths, Values v, CSVWriter outfile) {
+    public static void writeValues(Long prefix, List<Long> dLengths, Values v, boolean includeRefs, CSVWriter outfile) {
         int nDimensions = dLengths.size();
         int length = 1;
         ArrayList<String> line = new ArrayList<String>();
@@ -912,7 +902,8 @@ public class GenericsUtilImpl {
                 for (int j=0; j<nDimensions; j++)
                     line.add(indices[j].toString());
                 String s = objects[i].toString();
-                if ((refs != null) &&
+                if (includeRefs &&
+                    (refs != null) &&
                     (refs[i] != null))
                     s += " <"+refs[i].toString()+">";
                 line.add(s);
@@ -936,15 +927,15 @@ public class GenericsUtilImpl {
        make a TypedValue (including the value) into
        an ArrayList of Strings
     */
-    public static ArrayList<String> toStrings(TypedValue tv) {
+    public static ArrayList<String> toStrings(TypedValue tv, boolean includeRefs) {
         ArrayList<String> rv = new ArrayList<String>();
         Term t = tv.getValueType();
-        rv.add(toString(t));
+        rv.add(toString(t,includeRefs));
         Value v = tv.getValue();
-        rv.add(toString(v));
+        rv.add(toString(v,includeRefs));
         t = tv.getValueUnits();
         if (t != null)
-            rv.add(toString(t));
+            rv.add(toString(t,includeRefs));
         return rv;
     }
 
@@ -952,22 +943,22 @@ public class GenericsUtilImpl {
        make TypedValues metadata (but not the values) into
        an ArrayList of Strings
     */
-    public static ArrayList<String> toStrings(TypedValues tvs) {
+    public static ArrayList<String> toStrings(TypedValues tvs, boolean includeRefs) {
         ArrayList<String> rv = new ArrayList<String>();
-        rv.add(toString(tvs.getValueType()));
+        rv.add(toString(tvs.getValueType(),includeRefs));
         if (tvs.getValueContext() != null)
             for (TypedValue tv : tvs.getValueContext())
-                rv.addAll(toStrings(tv));
+                rv.addAll(toStrings(tv,includeRefs));
         Term t = tvs.getValueUnits();
         if (t != null)
-            rv.add(toString(t));
+            rv.add(toString(t,includeRefs));
         return rv;
     }
 
     /**
        Writes a HNDArray object to a CSV file.
     */
-    public static void writeCSV(HNDArray hnda, CSVWriter outfile) throws Exception {
+    public static void writeCSV(HNDArray hnda, boolean includeRefs, CSVWriter outfile) throws Exception {
         // check whether HNDArray is really heterogenous
         int numHet = hnda.getTypedValues().size();
         boolean isHeterogeneous = (numHet > 1);
@@ -988,13 +979,13 @@ public class GenericsUtilImpl {
         }
         if (hnda.getDataType() != null) {
             line.add("type");
-            line.add(toString(hnda.getDataType()));
+            line.add(toString(hnda.getDataType(),includeRefs));
             outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
         if (!isHeterogeneous) {
             line.add("values");
-            line.addAll(toStrings(hnda.getTypedValues().get(0)));
+            line.addAll(toStrings(hnda.getTypedValues().get(0),includeRefs));
             outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
@@ -1003,7 +994,7 @@ public class GenericsUtilImpl {
         if (hnda.getArrayContext() != null) {
             for (TypedValue tv : hnda.getArrayContext()) {
                 line.add("meta");
-                line.addAll(toStrings(tv));
+                line.addAll(toStrings(tv,includeRefs));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
             }
@@ -1025,11 +1016,11 @@ public class GenericsUtilImpl {
             for (TypedValues tvs : dc.getTypedValues()) {
                 line.add("dmeta");
                 line.add(i.toString());
-                line.add(toString(dc.getDataType()));
-                line.addAll(toStrings(tvs));
+                line.add(toString(dc.getDataType(),includeRefs));
+                line.addAll(toStrings(tvs,includeRefs));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
-                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), outfile);
+                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), includeRefs, outfile);
             }
             i++;
         }
@@ -1045,7 +1036,7 @@ public class GenericsUtilImpl {
             dLengths.remove(0);
         }
         for (TypedValues tvs : hnda.getTypedValues())
-            writeValues(prefix, dLengths, tvs.getValues(), outfile);
+            writeValues(prefix, dLengths, tvs.getValues(), includeRefs, outfile);
         
         outfile.flush();
     }
@@ -1458,39 +1449,47 @@ public class GenericsUtilImpl {
         if (v==null)
             return rv;
         List<String> svs = v.getStringValues();
-        if (svs.get(0).endsWith(">")) {
-            int l = svs.size();
-            List<String> refs = new ArrayList<String>(l);
-            for (int i=0; i<l; i++) {
-                String sv = svs.get(i);
-                int pos = sv.lastIndexOf(" <");
-                if (pos==-1)
-                    throw new Exception("error mapping value '"+sv+"': either all or no values must be mapped in the file");
+        int l = svs.size();
+        List<String> refs = new ArrayList<String>(l);
+        boolean oTerm = false;
+        for (int i=0; i<l; i++) {
+            String sv = svs.get(i);
+            int pos;
+            if ((sv != null) &&
+                (sv.endsWith(">")) &&
+                ((pos = sv.lastIndexOf(" <")) > -1)) {
+
                 String ref = sv.substring(pos+2,sv.length()-1);
+                rv = true;
+                if (ref.indexOf(":")>-1)
+                    oTerm = true;
                 if (step==1) {
-                    if (ref.indexOf(":")>-1)
+                    if (oTerm)
                         od.addRef(ref);
                 }
                 else {
                     sv = sv.substring(0,pos);
                     svs.set(i,sv);
                     refs.add(ref);
-                    String dictName = od.getTerm(ref);
-                    if (!sv.toLowerCase().equals(dictName.toLowerCase()))
-                        System.out.println("mapping "+sv+" to "+dictName);
+                    if (oTerm) {
+                        String dictName = od.getTerm(ref);
+                        if (!sv.toLowerCase().equals(dictName.toLowerCase()))
+                            System.out.println("mapping "+sv+" to "+dictName);
+                    }
                 }
             }
-            if (step > 1) {
-                if (refs.get(0).indexOf(":")>-1) {
-                    v.setOtermRefs(refs);
-                    v.setScalarType("oterm_ref");
-                }
-                else {
-                    v.setObjectRefs(refs);
-                    v.setScalarType("object_ref");
-                }
+            else if (step > 1)
+                refs.add(null);
+        }
+        if (step > 1) {
+            if (oTerm) {
+                v.setOtermRefs(refs);
+                v.setScalarType("oterm_ref");
             }
-            rv = true;
+            else {
+                v.setObjectRefs(refs);
+                v.setScalarType("object_ref");
+            }
         }
         return rv;
     }
@@ -1665,14 +1664,21 @@ public class GenericsUtilImpl {
         metadata.put("n_dimensions", hnda.getNDimensions().toString());
         String typeDescriptor = hnda.getDataType().getTermName();
         String scalarType = null;
+        String valuesType = null;
         for (TypedValues tv : hnda.getTypedValues()) {
-            if (scalarType == null)
+            if (scalarType == null) {
                 scalarType = "";
-            else
+                valuesType = "";
+            }
+            else {
                 scalarType += ", ";
+                valuesType += ", ";
+            }
             scalarType += tv.getValues().getScalarType();
+            valuesType += StringUtils.join(toStrings(tv,false)," ");
         }
         metadata.put("scalar_type",scalarType);
+        metadata.put("value_type",valuesType);
         
         typeDescriptor += " < ";
         String dimensionSize = "< ";
@@ -1801,7 +1807,7 @@ public class GenericsUtilImpl {
             oName += ".csv";
         zout.putNextEntry(new ZipEntry(oName));
         zout.flush();
-        writeCSV(hnda, outfile);
+        writeCSV(hnda, true, outfile);
         outfile.flush();
         zout.flush();
         zout.closeEntry();
@@ -1946,7 +1952,7 @@ public class GenericsUtilImpl {
 
         HashMap<String,GenericMetadata> objectInfo = new HashMap<String,GenericMetadata>();
         for (String objectID : objectIDs) {
-            for (ObjectData od : wc.getObjects2(new GetObjects2Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID).withIncluded(Arrays.asList("/data_type","/n_dimensions","/dim_context","/typed_values/1/value_type"))))).getData()) {
+            for (ObjectData od : wc.getObjects2(new GetObjects2Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID).withIncluded(Arrays.asList("/data_type","/n_dimensions","/dim_context"))))).getData()) {
                 GenericMetadata gm = new GenericMetadata();
                 gm.setObjectType(getTypeFromObjectInfo(od.getInfo()));
                 HNDArray hnda = null;
@@ -1958,17 +1964,26 @@ public class GenericsUtilImpl {
                     hnda = od.getData().asClassInstance(HNDArray.class);
 
                 // get data type and n_dimensions from object data
-                gm.setDataType(stripRef(toString(hnda.getDataType())));
+                gm.setDataType(toString(hnda.getDataType(),false));
                 gm.setNDimensions(hnda.getNDimensions());
 
-                // get mapped status from metadata
+                // get mapped status and scalar/values types from metadata
                 Long isMapped = new Long(0L);
                 Map<String,String> meta = od.getInfo().getE11();
                 if (meta!=null) {
                     String mapped = meta.get("mapped");
                     if ((mapped != null) && (mapped.equals("true")))
                         isMapped = new Long(1L);
+                    String valueType = meta.get("value_type");
+                    if (valueType != null) {
+                        gm.setValueTypes(Arrays.asList(valueType.split(", ")));
+                    }
+                    String scalarType = meta.get("scalar_type");
+                    if (scalarType != null) {
+                        gm.setScalarTypes(Arrays.asList(scalarType.split(", ")));
+                    }
                 }
+                gm.setIsMapped(isMapped);
 
                 // loop over all dimensions to get names and types
                 List<String> valueTypes = new ArrayList<String>();
@@ -1978,12 +1993,12 @@ public class GenericsUtilImpl {
                 List<List<String>> dimensionValueTypes = new ArrayList<List<String>>();
                 List<List<String>> dimensionScalarTypes = new ArrayList<List<String>>();
                 for (DimensionContext dc : hnda.getDimContext()) {
-                    dimensionTypes.add(stripRef(toString(dc.getDataType())));
+                    dimensionTypes.add(toString(dc.getDataType(),false));
                     dimensionSizes.add(dc.getSize());
                     List<String> dimensionValueType = new ArrayList<String>();
                     List<String> dimensionScalarType = new ArrayList<String>();
                     for (TypedValues tv : dc.getTypedValues()) {
-                        dimensionValueType.add(stripRef(toString(tv.getValueType())));
+                        dimensionValueType.add(StringUtils.join(toStrings(tv,false)," "));
                         dimensionScalarType.add(tv.getValues().getScalarType());
                     }
                     dimensionValueTypes.add(dimensionValueType);
@@ -1995,7 +2010,6 @@ public class GenericsUtilImpl {
                 gm.setDimensionScalarTypes(dimensionScalarTypes);
 
                 // save data
-                gm.setIsMapped(isMapped);
                 objectInfo.put(objectID,gm);
             }
         }
