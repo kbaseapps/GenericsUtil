@@ -644,14 +644,14 @@ GetGenericDimensionLabelsParams is a reference to a hash where the following key
 	convert_to_string has a value which is a GenericsUtil.boolean
 boolean is an int
 GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
-	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
 Values is a reference to a hash where the following keys are defined:
-	scalar_type has a value which is a GenericsUtil.data_type
-	object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
-	oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+	scalar_type has a value which is a KBaseGenerics.data_type
+	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a KBaseGenerics.oterm_ref
 	int_values has a value which is a reference to a list where each element is an int
 	float_values has a value which is a reference to a list where each element is a float
-	boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	boolean_values has a value which is a reference to a list where each element is a KBaseGenerics.boolean
 	string_values has a value which is a reference to a list where each element is a string
 data_type is a string
 object_ref is a string
@@ -671,14 +671,14 @@ GetGenericDimensionLabelsParams is a reference to a hash where the following key
 	convert_to_string has a value which is a GenericsUtil.boolean
 boolean is an int
 GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
-	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
 Values is a reference to a hash where the following keys are defined:
-	scalar_type has a value which is a GenericsUtil.data_type
-	object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
-	oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+	scalar_type has a value which is a KBaseGenerics.data_type
+	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a KBaseGenerics.oterm_ref
 	int_values has a value which is a reference to a list where each element is an int
 	float_values has a value which is a reference to a list where each element is a float
-	boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	boolean_values has a value which is a reference to a list where each element is a KBaseGenerics.boolean
 	string_values has a value which is a reference to a list where each element is a string
 data_type is a string
 object_ref is a string
@@ -943,132 +943,6 @@ an int
 =begin text
 
 an int
-
-=end text
-
-=back
-
-
-
-=head2 data_type
-
-=over 4
-
-
-
-=item Description
-
-Values object from KBaseGenerics.spec; for some reason,
-#include did not work here:
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
-=head2 oterm_ref
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
-=head2 object_ref
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a string
-</pre>
-
-=end html
-
-=begin text
-
-a string
-
-=end text
-
-=back
-
-
-
-=head2 Values
-
-=over 4
-
-
-
-=item Definition
-
-=begin html
-
-<pre>
-a reference to a hash where the following keys are defined:
-scalar_type has a value which is a GenericsUtil.data_type
-object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
-oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
-int_values has a value which is a reference to a list where each element is an int
-float_values has a value which is a reference to a list where each element is a float
-boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
-string_values has a value which is a reference to a list where each element is a string
-
-</pre>
-
-=end html
-
-=begin text
-
-a reference to a hash where the following keys are defined:
-scalar_type has a value which is a GenericsUtil.data_type
-object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
-oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
-int_values has a value which is a reference to a list where each element is an int
-float_values has a value which is a reference to a list where each element is a float
-boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
-string_values has a value which is a reference to a list where each element is a string
-
 
 =end text
 
@@ -1593,7 +1467,7 @@ convert_to_string has a value which is a GenericsUtil.boolean
 
 <pre>
 a reference to a hash where the following keys are defined:
-dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
 
 </pre>
 
@@ -1602,7 +1476,7 @@ dimension_labels has a value which is a reference to a hash where the key is a s
 =begin text
 
 a reference to a hash where the following keys are defined:
-dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
 
 
 =end text

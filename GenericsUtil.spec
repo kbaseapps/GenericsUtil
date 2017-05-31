@@ -1,3 +1,5 @@
+#include <KBaseGenerics.spec>
+
 /*
   A KBase module: GenericsUtil.  Utilities for manipulating
   Generic objects.
@@ -5,24 +7,6 @@
 
 module GenericsUtil {
     typedef int boolean;
-
-    /*
-    Values object from KBaseGenerics.spec; for some reason,
-    #include did not work here:
-    */
-    typedef string data_type;
-    typedef string oterm_ref;
-    typedef string object_ref;
-    typedef structure{
-        data_type   scalar_type;
-
-        list<object_ref>  object_refs;
-        list<oterm_ref>   oterm_refs;
-	list<int>         int_values;
-	list<float>       float_values;
-        list<boolean>     boolean_values;
-        list<string>      string_values;
-    } Values;
 
     /*
     Import a CSV file into a NDArray or HNDArray.
@@ -177,7 +161,7 @@ module GenericsUtil {
     } GetGenericDimensionLabelsParams;
 
     typedef structure {
-        mapping<string,Values> dimension_labels;
+        mapping<string,KBaseGenerics.Values> dimension_labels;
     } GetGenericDimensionLabelsResult;
 
     funcdef get_generic_dimension_labels(GetGenericDimensionLabelsParams params)

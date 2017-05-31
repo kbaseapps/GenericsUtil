@@ -182,6 +182,20 @@ public class GenericsUtilServerTest {
         System.out.println(rv.toString());
         System.out.println("Get metadata test finished");
     }
+
+    /**
+       test getting axis labels
+    */
+    @Test
+    public void testGetGenericDimensionLabels() throws Exception {
+        GetGenericDimensionLabelsParams params = new GetGenericDimensionLabelsParams()
+            .withObjectId("14956/45/25")
+            .withConvertToString(new Long(1L))
+            .withDimensionIds(Arrays.asList("1/1","2/3"));
+        GetGenericDimensionLabelsResult rv = impl.getGenericDimensionLabels(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get labels test finished");
+    }
     
     /**
        import some fitness data
