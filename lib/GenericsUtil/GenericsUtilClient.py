@@ -138,6 +138,53 @@ class GenericsUtil(object):
             'GenericsUtil.get_generic_metadata',
             [params], self._service_ver, context)
 
+    def get_generic_dimension_labels(self, params, context=None):
+        """
+        :param params: instance of type "GetGenericDimensionLabelsParams"
+           (gets labels for list of dimension axes for a generic object. User
+           will pass in the numeric indices of all dimensions they care about
+           (e.g., 1/1 will mean 1st dimension, 1st data type, 2/1 = 2nd
+           dimension, 1st data type), and an optional flag,
+           convert_to_string. The API will return a hash mapping each of the
+           dimension indices to a Values object.  The Values will either
+           contain the scalar type in the original format, or if the
+           convert_to_string flag is set, will convert the scalar type to
+           strings.) -> structure: parameter "object_id" of String, parameter
+           "dimension_ids" of list of String, parameter "convert_to_string"
+           of type "boolean"
+        :returns: instance of type "GetGenericDimensionLabelsResult" ->
+           structure: parameter "dimension_labels" of mapping from String to
+           type "Values" -> structure: parameter "scalar_type" of type
+           "data_type" (Values object from KBaseGenerics.spec; for some
+           reason, #include did not work here:), parameter "object_refs" of
+           list of type "object_ref", parameter "oterm_refs" of list of type
+           "oterm_ref", parameter "int_values" of list of Long, parameter
+           "float_values" of list of Double, parameter "boolean_values" of
+           list of type "boolean", parameter "string_values" of list of String
+        """
+        return self._client.call_method(
+            'GenericsUtil.get_generic_dimension_labels',
+            [params], self._service_ver, context)
+
+    def get_generic_data(self, params, context=None):
+        """
+        :param params: instance of type "GetGenericDataParams" (gets subset
+           of generic data as a 2D matrix Users will pass in the dimension
+           indices to use as variables (1st is X axis; 2nd is Y axis), and
+           which dimension indices to fix to particular constants (indicated
+           as a 1-based index into the list of dimension labels in tha
+           dimension), and the method will select out the subset of data from
+           the generic object and return a 2D array of numeric data.) ->
+           structure: parameter "object_id" of String, parameter
+           "variable_dimension_ids" of list of String, parameter
+           "constant_dimension_ids" of mapping from String to Long
+        :returns: instance of type "GetGenericDataResult" -> structure:
+           parameter "data_2d_float" of list of list of Double
+        """
+        return self._client.call_method(
+            'GenericsUtil.get_generic_data',
+            [params], self._service_ver, context)
+
     def status(self, context=None):
         return self._client.call_method('GenericsUtil.status',
                                         [], self._service_ver, context)

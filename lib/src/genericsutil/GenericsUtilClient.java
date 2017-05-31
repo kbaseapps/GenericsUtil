@@ -16,7 +16,8 @@ import us.kbase.common.service.UnauthorizedException;
 /**
  * <p>Original spec-file module name: GenericsUtil</p>
  * <pre>
- * A KBase module: GenericsUtil
+ * A KBase module: GenericsUtil.  Utilities for manipulating
+ * Generic objects.
  * </pre>
  */
 public class GenericsUtilClient {
@@ -244,6 +245,40 @@ public class GenericsUtilClient {
         args.add(params);
         TypeReference<List<GetGenericMetadataResult>> retType = new TypeReference<List<GetGenericMetadataResult>>() {};
         List<GetGenericMetadataResult> res = caller.jsonrpcCall("GenericsUtil.get_generic_metadata", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: get_generic_dimension_labels</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.GetGenericDimensionLabelsParams GetGenericDimensionLabelsParams}
+     * @return   parameter "result" of type {@link genericsutil.GetGenericDimensionLabelsResult GetGenericDimensionLabelsResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public GetGenericDimensionLabelsResult getGenericDimensionLabels(GetGenericDimensionLabelsParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<GetGenericDimensionLabelsResult>> retType = new TypeReference<List<GetGenericDimensionLabelsResult>>() {};
+        List<GetGenericDimensionLabelsResult> res = caller.jsonrpcCall("GenericsUtil.get_generic_dimension_labels", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        return res.get(0);
+    }
+
+    /**
+     * <p>Original spec-file function name: get_generic_data</p>
+     * <pre>
+     * </pre>
+     * @param   params   instance of type {@link genericsutil.GetGenericDataParams GetGenericDataParams}
+     * @return   parameter "result" of type {@link genericsutil.GetGenericDataResult GetGenericDataResult}
+     * @throws IOException if an IO exception occurs
+     * @throws JsonClientException if a JSON RPC exception occurs
+     */
+    public GetGenericDataResult getGenericData(GetGenericDataParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+        List<Object> args = new ArrayList<Object>();
+        args.add(params);
+        TypeReference<List<GetGenericDataResult>> retType = new TypeReference<List<GetGenericDataResult>>() {};
+        List<GetGenericDataResult> res = caller.jsonrpcCall("GenericsUtil.get_generic_data", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 

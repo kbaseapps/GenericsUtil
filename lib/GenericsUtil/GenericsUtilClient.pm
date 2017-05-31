@@ -26,7 +26,8 @@ GenericsUtil::GenericsUtilClient
 =head1 DESCRIPTION
 
 
-A KBase module: GenericsUtil
+A KBase module: GenericsUtil.  Utilities for manipulating
+Generic objects.
 
 
 =cut
@@ -622,6 +623,218 @@ boolean is an int
     }
 }
  
+
+
+=head2 get_generic_dimension_labels
+
+  $result = $obj->get_generic_dimension_labels($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenericsUtil.GetGenericDimensionLabelsParams
+$result is a GenericsUtil.GetGenericDimensionLabelsResult
+GetGenericDimensionLabelsParams is a reference to a hash where the following keys are defined:
+	object_id has a value which is a string
+	dimension_ids has a value which is a reference to a list where each element is a string
+	convert_to_string has a value which is a GenericsUtil.boolean
+boolean is an int
+GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
+	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+Values is a reference to a hash where the following keys are defined:
+	scalar_type has a value which is a GenericsUtil.data_type
+	object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+	int_values has a value which is a reference to a list where each element is an int
+	float_values has a value which is a reference to a list where each element is a float
+	boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	string_values has a value which is a reference to a list where each element is a string
+data_type is a string
+object_ref is a string
+oterm_ref is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenericsUtil.GetGenericDimensionLabelsParams
+$result is a GenericsUtil.GetGenericDimensionLabelsResult
+GetGenericDimensionLabelsParams is a reference to a hash where the following keys are defined:
+	object_id has a value which is a string
+	dimension_ids has a value which is a reference to a list where each element is a string
+	convert_to_string has a value which is a GenericsUtil.boolean
+boolean is an int
+GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
+	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+Values is a reference to a hash where the following keys are defined:
+	scalar_type has a value which is a GenericsUtil.data_type
+	object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+	int_values has a value which is a reference to a list where each element is an int
+	float_values has a value which is a reference to a list where each element is a float
+	boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	string_values has a value which is a reference to a list where each element is a string
+data_type is a string
+object_ref is a string
+oterm_ref is a string
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub get_generic_dimension_labels
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_generic_dimension_labels (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_generic_dimension_labels:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_generic_dimension_labels');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenericsUtil.get_generic_dimension_labels",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_generic_dimension_labels',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_generic_dimension_labels",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_generic_dimension_labels',
+				       );
+    }
+}
+ 
+
+
+=head2 get_generic_data
+
+  $result = $obj->get_generic_data($params)
+
+=over 4
+
+=item Parameter and return types
+
+=begin html
+
+<pre>
+$params is a GenericsUtil.GetGenericDataParams
+$result is a GenericsUtil.GetGenericDataResult
+GetGenericDataParams is a reference to a hash where the following keys are defined:
+	object_id has a value which is a string
+	variable_dimension_ids has a value which is a reference to a list where each element is a string
+	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
+GetGenericDataResult is a reference to a hash where the following keys are defined:
+	data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+
+</pre>
+
+=end html
+
+=begin text
+
+$params is a GenericsUtil.GetGenericDataParams
+$result is a GenericsUtil.GetGenericDataResult
+GetGenericDataParams is a reference to a hash where the following keys are defined:
+	object_id has a value which is a string
+	variable_dimension_ids has a value which is a reference to a list where each element is a string
+	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
+GetGenericDataResult is a reference to a hash where the following keys are defined:
+	data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+
+
+=end text
+
+=item Description
+
+
+
+=back
+
+=cut
+
+ sub get_generic_data
+{
+    my($self, @args) = @_;
+
+# Authentication: required
+
+    if ((my $n = @args) != 1)
+    {
+	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
+							       "Invalid argument count for function get_generic_data (received $n, expecting 1)");
+    }
+    {
+	my($params) = @args;
+
+	my @_bad_arguments;
+        (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
+        if (@_bad_arguments) {
+	    my $msg = "Invalid arguments passed to get_generic_data:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
+								   method_name => 'get_generic_data');
+	}
+    }
+
+    my $url = $self->{url};
+    my $result = $self->{client}->call($url, $self->{headers}, {
+	    method => "GenericsUtil.get_generic_data",
+	    params => \@args,
+    });
+    if ($result) {
+	if ($result->is_error) {
+	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
+					       code => $result->content->{error}->{code},
+					       method_name => 'get_generic_data',
+					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
+					      );
+	} else {
+	    return wantarray ? @{$result->result} : $result->result->[0];
+	}
+    } else {
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method get_generic_data",
+					    status_line => $self->{client}->status_line,
+					    method_name => 'get_generic_data',
+				       );
+    }
+}
+ 
   
 sub status
 {
@@ -665,16 +878,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'get_generic_metadata',
+                method_name => 'get_generic_data',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method get_generic_metadata",
+            error => "Error invoking method get_generic_data",
             status_line => $self->{client}->status_line,
-            method_name => 'get_generic_metadata',
+            method_name => 'get_generic_data',
         );
     }
 }
@@ -730,6 +943,132 @@ an int
 =begin text
 
 an int
+
+=end text
+
+=back
+
+
+
+=head2 data_type
+
+=over 4
+
+
+
+=item Description
+
+Values object from KBaseGenerics.spec; for some reason,
+#include did not work here:
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a string
+</pre>
+
+=end html
+
+=begin text
+
+a string
+
+=end text
+
+=back
+
+
+
+=head2 oterm_ref
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a string
+</pre>
+
+=end html
+
+=begin text
+
+a string
+
+=end text
+
+=back
+
+
+
+=head2 object_ref
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a string
+</pre>
+
+=end html
+
+=begin text
+
+a string
+
+=end text
+
+=back
+
+
+
+=head2 Values
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+scalar_type has a value which is a GenericsUtil.data_type
+object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
+oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+int_values has a value which is a reference to a list where each element is an int
+float_values has a value which is a reference to a list where each element is a float
+boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+string_values has a value which is a reference to a list where each element is a string
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+scalar_type has a value which is a GenericsUtil.data_type
+object_refs has a value which is a reference to a list where each element is a GenericsUtil.object_ref
+oterm_refs has a value which is a reference to a list where each element is a GenericsUtil.oterm_ref
+int_values has a value which is a reference to a list where each element is an int
+float_values has a value which is a reference to a list where each element is a float
+boolean_values has a value which is a reference to a list where each element is a GenericsUtil.boolean
+string_values has a value which is a reference to a list where each element is a string
+
 
 =end text
 
@@ -1187,6 +1526,159 @@ object_info has a value which is a reference to a hash where the key is a string
 
 a reference to a hash where the following keys are defined:
 object_info has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.GenericMetadata
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericDimensionLabelsParams
+
+=over 4
+
+
+
+=item Description
+
+gets labels for list of dimension axes for a generic object.
+
+User will pass in the numeric indices of all dimensions they care
+about (e.g., 1/1 will mean 1st dimension, 1st data type, 2/1 = 2nd
+dimension, 1st data type), and an optional flag, convert_to_string.
+The API will return a hash mapping each of the dimension indices to
+a Values object.  The Values will either contain the scalar type in
+the original format, or if the convert_to_string flag is set, will
+convert the scalar type to strings.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_id has a value which is a string
+dimension_ids has a value which is a reference to a list where each element is a string
+convert_to_string has a value which is a GenericsUtil.boolean
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_id has a value which is a string
+dimension_ids has a value which is a reference to a list where each element is a string
+convert_to_string has a value which is a GenericsUtil.boolean
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericDimensionLabelsResult
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+dimension_labels has a value which is a reference to a hash where the key is a string and the value is a GenericsUtil.Values
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericDataParams
+
+=over 4
+
+
+
+=item Description
+
+gets subset of generic data as a 2D matrix
+
+Users will pass in the dimension indices to use as variables (1st
+is X axis; 2nd is Y axis), and which dimension indices to fix to
+particular constants (indicated as a 1-based index into the list
+of dimension labels in tha dimension), and the method will select
+out the subset of data from the generic object and return a 2D
+array of numeric data.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+object_id has a value which is a string
+variable_dimension_ids has a value which is a reference to a list where each element is a string
+constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+object_id has a value which is a string
+variable_dimension_ids has a value which is a reference to a list where each element is a string
+constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
+
+
+=end text
+
+=back
+
+
+
+=head2 GetGenericDataResult
+
+=over 4
+
+
+
+=item Definition
+
+=begin html
+
+<pre>
+a reference to a hash where the following keys are defined:
+data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+
+</pre>
+
+=end html
+
+=begin text
+
+a reference to a hash where the following keys are defined:
+data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
 
 
 =end text
