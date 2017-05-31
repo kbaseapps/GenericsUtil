@@ -1972,7 +1972,7 @@ public class GenericsUtilImpl {
                                                               AuthToken token,
                                                               GetGenericMetadataParams params) throws Exception {
 
-        // make sure caller specified workspace names
+        // make sure caller specified objects
         List<String> objectIDs = params.getObjectIds();
         if (objectIDs==null)
             throw new Exception("Must specify object ids when getting generic metadata");
@@ -2045,6 +2045,41 @@ public class GenericsUtilImpl {
 
         GetGenericMetadataResult rv = new GetGenericMetadataResult()
             .withObjectInfo(objectInfo);
+        return rv;
+    }
+
+    /**
+       Gets dimension labels for specified dimensions of
+       a generic object     
+    */
+    public static GetGenericDimensionLabelsResult getGenericDimensionLabels(String wsURL,
+                                                                            AuthToken token,
+                                                                            GetGenericDimensionLabelsParams params) throws Exception {
+
+        String objectID = params.getObjectId();
+        if (objectID==null)
+            throw new Exception("Must specify object id when getting generic dimension labels");
+
+        wc = createWsClient(wsURL,token);
+    
+        GetGenericDimensionLabelsResult rv = new GetGenericDimensionLabelsResult();
+        return rv;
+    }
+
+    /**
+       Gets subset of data for a generic object     
+    */
+    public static GetGenericDataResult getGenericData(String wsURL,
+                                                      AuthToken token,
+                                                      GetGenericDataParams params) throws Exception {
+
+        String objectID = params.getObjectId();
+        if (objectID==null)
+            throw new Exception("Must specify object id when getting generic data");
+
+        wc = createWsClient(wsURL,token);
+    
+        GetGenericDataResult rv = new GetGenericDataResult();
         return rv;
     }
 }

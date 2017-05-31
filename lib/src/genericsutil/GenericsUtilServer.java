@@ -148,6 +148,9 @@ public class GenericsUtilServer extends JsonServerServlet {
     public GetGenericDimensionLabelsResult getGenericDimensionLabels(GetGenericDimensionLabelsParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
         GetGenericDimensionLabelsResult returnVal = null;
         //BEGIN get_generic_dimension_labels
+        returnVal = GenericsUtilImpl.getGenericDimensionLabels(wsUrl,
+                                                               authPart,
+                                                               params);
         //END get_generic_dimension_labels
         return returnVal;
     }
@@ -163,6 +166,9 @@ public class GenericsUtilServer extends JsonServerServlet {
     public GetGenericDataResult getGenericData(GetGenericDataParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
         GetGenericDataResult returnVal = null;
         //BEGIN get_generic_data
+        returnVal = GenericsUtilImpl.getGenericData(wsUrl,
+                                                    authPart,
+                                                    params);
         //END get_generic_data
         return returnVal;
     }
