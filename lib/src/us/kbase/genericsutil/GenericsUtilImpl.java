@@ -1180,6 +1180,81 @@ public class GenericsUtilImpl {
     }
 
     /**
+       update a Values object to only include unique values
+    */
+    public static void makeUniqueValues(Values v) {
+        String scalarType = v.getScalarType();
+        if (scalarType.equals("int")) {
+            List<Long> oldV = v.getIntValues();
+            int l = oldV.size();
+            List<Long> newV = new ArrayList<Long>();
+            for (int i=0; i<l; i++) {
+                Long val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setIntValues(newV);
+        }
+        else if (scalarType.equals("float")) {
+            List<Double> oldV = v.getFloatValues();
+            int l = oldV.size();
+            List<Double> newV = new ArrayList<Double>();
+            for (int i=0; i<l; i++) {
+                Double val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setFloatValues(newV);
+        }
+        else if (scalarType.equals("boolean")) {
+            List<Long> oldV = v.getBooleanValues();
+            int l = oldV.size();
+            List<Long> newV = new ArrayList<Long>();
+            for (int i=0; i<l; i++) {
+                Long val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setBooleanValues(newV);
+        }
+        else if (scalarType.equals("oterm_ref")) {
+            List<String> oldV = v.getOtermRefs();
+            int l = oldV.size();
+            List<String> newV = new ArrayList<String>();
+            for (int i=0; i<l; i++) {
+                String val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setOtermRefs(newV);
+        }
+        else if (scalarType.equals("object_ref")) {
+            List<String> oldV = v.getObjectRefs();
+            int l = oldV.size();
+            List<String> newV = new ArrayList<String>();
+            for (int i=0; i<l; i++) {
+                String val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setObjectRefs(newV);
+        }
+        if ((scalarType.equals("string")) ||
+            (scalarType.equals("oterm_ref")) ||
+            (scalarType.equals("object_ref"))) {
+            List<String> oldV = v.getStringValues();
+            int l = oldV.size();
+            List<String> newV = new ArrayList<String>();
+            for (int i=0; i<l; i++) {
+                String val = oldV.get(i);
+                if (!newV.contains(val))
+                    newV.add(val);
+            }
+            v.setStringValues(newV);
+        }
+    }
+    
+    /**
        check object references to be sure they're real and readable
     */
     public static void checkObjects(List<String> objectRefs, String objectType) throws Exception {
@@ -2102,7 +2177,7 @@ public class GenericsUtilImpl {
 
     /**
        Gets dimension labels for specified dimensions of
-       a generic object     
+       a generic object
     */
     public static GetGenericDimensionLabelsResult
         getGenericDimensionLabels(String wsURL,
@@ -2149,6 +2224,12 @@ public class GenericsUtilImpl {
                     makeStringValues(v);
                 }
 
+                if ((params.getUniqueValues() != null) &&
+                    (params.getUniqueValues().longValue()==1L)) {
+                    // convert Values scalar type to string
+                    makeUniqueValues(v);
+                }
+                
                 labels.put(dimensionID,v);
             }
         }

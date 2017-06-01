@@ -642,6 +642,7 @@ GetGenericDimensionLabelsParams is a reference to a hash where the following key
 	object_id has a value which is a string
 	dimension_ids has a value which is a reference to a list where each element is a string
 	convert_to_string has a value which is a GenericsUtil.boolean
+	unique_values has a value which is a GenericsUtil.boolean
 boolean is an int
 GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
 	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
@@ -669,6 +670,7 @@ GetGenericDimensionLabelsParams is a reference to a hash where the following key
 	object_id has a value which is a string
 	dimension_ids has a value which is a reference to a list where each element is a string
 	convert_to_string has a value which is a GenericsUtil.boolean
+	unique_values has a value which is a GenericsUtil.boolean
 boolean is an int
 GetGenericDimensionLabelsResult is a reference to a hash where the following keys are defined:
 	dimension_labels has a value which is a reference to a hash where the key is a string and the value is a KBaseGenerics.Values
@@ -761,7 +763,9 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	data_x_float has a value which is a reference to a list where each element is a float
+	data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	series_labels has a value which is a reference to a list where each element is a string
 
 </pre>
 
@@ -776,7 +780,9 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	data_x_float has a value which is a reference to a list where each element is a float
+	data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	series_labels has a value which is a reference to a list where each element is a string
 
 
 =end text
@@ -1424,7 +1430,10 @@ dimension, 1st data type), and an optional flag, convert_to_string.
 The API will return a hash mapping each of the dimension indices to
 a Values object.  The Values will either contain the scalar type in
 the original format, or if the convert_to_string flag is set, will
-convert the scalar type to strings.
+convert the scalar type to strings.  If unique_values is set, the
+API will only return the unique values in each dimension (these will
+also be re-indexed, but not resorted, so the Values array may be a
+different length).
 
 
 =item Definition
@@ -1436,6 +1445,7 @@ a reference to a hash where the following keys are defined:
 object_id has a value which is a string
 dimension_ids has a value which is a reference to a list where each element is a string
 convert_to_string has a value which is a GenericsUtil.boolean
+unique_values has a value which is a GenericsUtil.boolean
 
 </pre>
 
@@ -1447,6 +1457,7 @@ a reference to a hash where the following keys are defined:
 object_id has a value which is a string
 dimension_ids has a value which is a reference to a list where each element is a string
 convert_to_string has a value which is a GenericsUtil.boolean
+unique_values has a value which is a GenericsUtil.boolean
 
 
 =end text
@@ -1495,12 +1506,24 @@ dimension_labels has a value which is a reference to a hash where the key is a s
 
 gets subset of generic data as a 2D matrix
 
-Users will pass in the dimension indices to use as variables (1st
-is X axis; 2nd is Y axis), and which dimension indices to fix to
-particular constants (indicated as a 1-based index into the list
-of dimension labels in tha dimension), and the method will select
-out the subset of data from the generic object and return a 2D
-array of numeric data.
+Users passes in the dimension indices to use as variables (1st
+one must be X axis; additional variables will lead to additional
+series being returned).
+
+User selects which dimension indices to fix to
+particular constants.  This can be done one of two ways:  either
+by fixing an entire dimension (e.g., "2" for the 2nd dimension)
+to an index in the complete list
+of labels, or by fixing a dimension index (e.g., "2/3" for the
+3rd type of values in the 2nd dimension) to an index in the
+list of unique labels for that dimension index.
+
+return values:
+data_x_float is a list of x-axis values
+data_y_float is a list of y-axis values, 1 per series.  The number
+  of series depends on the number of variable dimensions.
+series_labels will show which variable index values correspond
+  to which series
 
 
 =item Definition
@@ -1543,7 +1566,9 @@ constant_dimension_ids has a value which is a reference to a hash where the key 
 
 <pre>
 a reference to a hash where the following keys are defined:
-data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+data_x_float has a value which is a reference to a list where each element is a float
+data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+series_labels has a value which is a reference to a list where each element is a string
 
 </pre>
 
@@ -1552,7 +1577,9 @@ data_2d_float has a value which is a reference to a list where each element is a
 =begin text
 
 a reference to a hash where the following keys are defined:
-data_2d_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+data_x_float has a value which is a reference to a list where each element is a float
+data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+series_labels has a value which is a reference to a list where each element is a string
 
 
 =end text

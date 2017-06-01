@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.*;
 
@@ -91,7 +92,7 @@ public class GenericsUtilServerTest {
     /**
        import some pre-mapped growth data
     */
-    @Test
+    // @Test
     public void testImportGrowthPreMapped() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new us.kbase.genericsutil.File().withPath("/kb/module/test/data/20160823-MT123_c_source2_generic.csv"))
@@ -194,7 +195,29 @@ public class GenericsUtilServerTest {
             .withDimensionIds(Arrays.asList("1/1","2/3"));
         GetGenericDimensionLabelsResult rv = impl.getGenericDimensionLabels(params, token, (RpcContext)null);
         System.out.println(rv.toString());
+        params.setConvertToString(null);
+        params.setUniqueValues(new Long(1L));
+        rv = impl.getGenericDimensionLabels(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
         System.out.println("Get labels test finished");
+    }
+
+    /**
+       test getting data
+    */
+    @Test
+    public void testGetGenericData() throws Exception {
+        Map<String,Long> cdi = new HashMap<String,Long>();
+        cdi.put("2/1",new Long(5L));
+        cdi.put("2/4",new Long(2L));
+        cdi.put("3",new Long(1L));
+        GetGenericDataParams params = new GetGenericDataParams()
+            .withObjectId("14956/45/25")
+            .withVariableDimensionIds(Arrays.asList("1/1","2/2","2/3"))
+            .withConstantDimensionIds(cdi);            
+        GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get data test finished");
     }
     
     /**
@@ -335,7 +358,7 @@ public class GenericsUtilServerTest {
     /**
        import some environmental parameters data
     */
-    @Test
+    // @Test
     public void testImportEP() throws Exception {
         ImportCSVParams params = new ImportCSVParams()
             .withFile(new us.kbase.genericsutil.File().withPath("/kb/module/test/data/heterogenous_sampling.csv"))

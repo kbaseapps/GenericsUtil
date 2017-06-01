@@ -22,7 +22,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * The API will return a hash mapping each of the dimension indices to
  * a Values object.  The Values will either contain the scalar type in
  * the original format, or if the convert_to_string flag is set, will
- * convert the scalar type to strings.
+ * convert the scalar type to strings.  If unique_values is set, the
+ * API will only return the unique values in each dimension (these will
+ * also be re-indexed, but not resorted, so the Values array may be a
+ * different length).
  * </pre>
  * 
  */
@@ -31,7 +34,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "object_id",
     "dimension_ids",
-    "convert_to_string"
+    "convert_to_string",
+    "unique_values"
 })
 public class GetGenericDimensionLabelsParams {
 
@@ -41,6 +45,8 @@ public class GetGenericDimensionLabelsParams {
     private List<String> dimensionIds;
     @JsonProperty("convert_to_string")
     private Long convertToString;
+    @JsonProperty("unique_values")
+    private Long uniqueValues;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
     @JsonProperty("object_id")
@@ -88,6 +94,21 @@ public class GetGenericDimensionLabelsParams {
         return this;
     }
 
+    @JsonProperty("unique_values")
+    public Long getUniqueValues() {
+        return uniqueValues;
+    }
+
+    @JsonProperty("unique_values")
+    public void setUniqueValues(Long uniqueValues) {
+        this.uniqueValues = uniqueValues;
+    }
+
+    public GetGenericDimensionLabelsParams withUniqueValues(Long uniqueValues) {
+        this.uniqueValues = uniqueValues;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<java.lang.String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -100,7 +121,7 @@ public class GetGenericDimensionLabelsParams {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((("GetGenericDimensionLabelsParams"+" [objectId=")+ objectId)+", dimensionIds=")+ dimensionIds)+", convertToString=")+ convertToString)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((("GetGenericDimensionLabelsParams"+" [objectId=")+ objectId)+", dimensionIds=")+ dimensionIds)+", convertToString=")+ convertToString)+", uniqueValues=")+ uniqueValues)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

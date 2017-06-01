@@ -152,12 +152,16 @@ module GenericsUtil {
     The API will return a hash mapping each of the dimension indices to
     a Values object.  The Values will either contain the scalar type in
     the original format, or if the convert_to_string flag is set, will
-    convert the scalar type to strings.
+    convert the scalar type to strings.  If unique_values is set, the
+    API will only return the unique values in each dimension (these will
+    also be re-indexed, but not resorted, so the Values array may be a
+    different length).
     */
     typedef structure {
 	string object_id;
         list<string> dimension_ids;
 	boolean convert_to_string;
+	boolean unique_values;
     } GetGenericDimensionLabelsParams;
 
     typedef structure {
@@ -171,12 +175,24 @@ module GenericsUtil {
     /*
     gets subset of generic data as a 2D matrix
 
-    Users will pass in the dimension indices to use as variables (1st
-    is X axis; 2nd is Y axis), and which dimension indices to fix to
-    particular constants (indicated as a 1-based index into the list
-    of dimension labels in tha dimension), and the method will select
-    out the subset of data from the generic object and return a 2D
-    array of numeric data.
+    Users passes in the dimension indices to use as variables (1st
+    one must be X axis; additional variables will lead to additional
+    series being returned).
+
+    User selects which dimension indices to fix to
+    particular constants.  This can be done one of two ways:  either
+    by fixing an entire dimension (e.g., "2" for the 2nd dimension)
+    to an index in the complete list
+    of labels, or by fixing a dimension index (e.g., "2/3" for the
+    3rd type of values in the 2nd dimension) to an index in the
+    list of unique labels for that dimension index.
+
+    return values:
+    data_x_float is a list of x-axis values
+    data_y_float is a list of y-axis values, 1 per series.  The number
+      of series depends on the number of variable dimensions.
+    series_labels will show which variable index values correspond
+      to which series
     */
     typedef structure {
 	string object_id;
@@ -185,7 +201,9 @@ module GenericsUtil {
     } GetGenericDataParams;
 
     typedef structure {
-        list<list<float>> data_2d_float;
+        list<float> data_x_float;
+        list<list<float>> data_y_float;
+        list<string> series_labels;
     } GetGenericDataResult;
 
     funcdef get_generic_data(GetGenericDataParams params)

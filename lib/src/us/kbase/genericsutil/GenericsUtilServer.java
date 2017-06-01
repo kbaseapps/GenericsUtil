@@ -23,7 +23,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "d790d4b8a98ee0af431d1f8234c647191308ccdc";
+    private static final String gitCommitHash = "96ea6c2e6cccc7bdb833c3db5595f89e57e73f8a";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;
@@ -48,8 +48,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: import_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportCSVParams ImportCSVParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ImportCSVParams ImportCSVParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ImportResult ImportResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.import_csv", async=true)
     public ImportResult importCsv(ImportCSVParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -67,8 +67,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: import_obo</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportOBOParams ImportOBOParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ImportOBOParams ImportOBOParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ImportResult ImportResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.import_obo", async=true)
     public ImportResult importObo(ImportOBOParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -86,8 +86,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: export_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ExportParams ExportParams}
-     * @return   parameter "result" of type {@link genericsutil.ExportResult ExportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ExportParams ExportParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ExportResult ExportResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.export_csv", async=true)
     public ExportResult exportCsv(ExportParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -105,8 +105,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: list_generic_objects</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
-     * @return   parameter "result" of type {@link genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.list_generic_objects", async=true)
     public ListGenericObjectsResult listGenericObjects(ListGenericObjectsParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -123,8 +123,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: get_generic_metadata</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.get_generic_metadata", async=true)
     public GetGenericMetadataResult getGenericMetadata(GetGenericMetadataParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -141,8 +141,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: get_generic_dimension_labels</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericDimensionLabelsParams GetGenericDimensionLabelsParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericDimensionLabelsResult GetGenericDimensionLabelsResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericDimensionLabelsParams GetGenericDimensionLabelsParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericDimensionLabelsResult GetGenericDimensionLabelsResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.get_generic_dimension_labels", async=true)
     public GetGenericDimensionLabelsResult getGenericDimensionLabels(GetGenericDimensionLabelsParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
@@ -159,8 +159,8 @@ public class GenericsUtilServer extends JsonServerServlet {
      * <p>Original spec-file function name: get_generic_data</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericDataParams GetGenericDataParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericDataResult GetGenericDataResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericDataParams GetGenericDataParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericDataResult GetGenericDataResult}
      */
     @JsonServerMethod(rpc = "GenericsUtil.get_generic_data", async=true)
     public GetGenericDataResult getGenericData(GetGenericDataParams params, AuthToken authPart, RpcContext jsonRpcContext) throws Exception {
