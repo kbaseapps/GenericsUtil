@@ -1,5 +1,5 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
 import java.util.Map;

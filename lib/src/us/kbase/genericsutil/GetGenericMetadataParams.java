@@ -1,5 +1,5 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +13,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ListGenericObjectsResult</p>
- * 
+ * <p>Original spec-file type: GetGenericMetadataParams</p>
+ * <pre>
+ * Get metadata describing the dimensions of one or more generic objects
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "object_ids"
 })
-public class ListGenericObjectsResult {
+public class GetGenericMetadataParams {
 
     @JsonProperty("object_ids")
     private List<String> objectIds;
@@ -38,7 +40,7 @@ public class ListGenericObjectsResult {
         this.objectIds = objectIds;
     }
 
-    public ListGenericObjectsResult withObjectIds(List<String> objectIds) {
+    public GetGenericMetadataParams withObjectIds(List<String> objectIds) {
         this.objectIds = objectIds;
         return this;
     }
@@ -55,7 +57,7 @@ public class ListGenericObjectsResult {
 
     @Override
     public java.lang.String toString() {
-        return ((((("ListGenericObjectsResult"+" [objectIds=")+ objectIds)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("GetGenericMetadataParams"+" [objectIds=")+ objectIds)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

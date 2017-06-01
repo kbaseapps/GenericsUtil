@@ -1,4 +1,4 @@
-package genericsutil;
+package us.kbase.genericsutil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.io.File;
@@ -167,8 +167,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: import_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportCSVParams ImportCSVParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ImportCSVParams ImportCSVParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ImportResult ImportResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -184,8 +184,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: import_obo</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ImportOBOParams ImportOBOParams}
-     * @return   parameter "result" of type {@link genericsutil.ImportResult ImportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ImportOBOParams ImportOBOParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ImportResult ImportResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -201,8 +201,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: export_csv</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ExportParams ExportParams}
-     * @return   parameter "result" of type {@link genericsutil.ExportResult ExportResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ExportParams ExportParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ExportResult ExportResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -218,8 +218,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: list_generic_objects</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
-     * @return   parameter "result" of type {@link genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.ListGenericObjectsParams ListGenericObjectsParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.ListGenericObjectsResult ListGenericObjectsResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -235,8 +235,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: get_generic_metadata</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericMetadataParams GetGenericMetadataParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericMetadataResult GetGenericMetadataResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -252,8 +252,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: get_generic_dimension_labels</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericDimensionLabelsParams GetGenericDimensionLabelsParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericDimensionLabelsResult GetGenericDimensionLabelsResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericDimensionLabelsParams GetGenericDimensionLabelsParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericDimensionLabelsResult GetGenericDimensionLabelsResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
@@ -269,8 +269,8 @@ public class GenericsUtilClient {
      * <p>Original spec-file function name: get_generic_data</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link genericsutil.GetGenericDataParams GetGenericDataParams}
-     * @return   parameter "result" of type {@link genericsutil.GetGenericDataResult GetGenericDataResult}
+     * @param   params   instance of type {@link us.kbase.genericsutil.GetGenericDataParams GetGenericDataParams}
+     * @return   parameter "result" of type {@link us.kbase.genericsutil.GetGenericDataResult GetGenericDataResult}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */

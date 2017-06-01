@@ -39,7 +39,7 @@ compile:
 		--javasrc src \
 		--java \
 		--javasrv \
-		--javapackage .;
+		--javapackage us.kbase;
 
 build:
 	$(ANT) war -Djars.dir=$(JARS_DIR)

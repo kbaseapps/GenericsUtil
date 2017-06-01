@@ -1,5 +1,5 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,33 +12,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ImportResult</p>
+ * <p>Original spec-file type: ExportResult</p>
  * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "object_ref"
+    "shock_id"
 })
-public class ImportResult {
+public class ExportResult {
 
-    @JsonProperty("object_ref")
-    private String objectRef;
+    @JsonProperty("shock_id")
+    private String shockId;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("object_ref")
-    public String getObjectRef() {
-        return objectRef;
+    @JsonProperty("shock_id")
+    public String getShockId() {
+        return shockId;
     }
 
-    @JsonProperty("object_ref")
-    public void setObjectRef(String objectRef) {
-        this.objectRef = objectRef;
+    @JsonProperty("shock_id")
+    public void setShockId(String shockId) {
+        this.shockId = shockId;
     }
 
-    public ImportResult withObjectRef(String objectRef) {
-        this.objectRef = objectRef;
+    public ExportResult withShockId(String shockId) {
+        this.shockId = shockId;
         return this;
     }
 
@@ -54,7 +54,7 @@ public class ImportResult {
 
     @Override
     public String toString() {
-        return ((((("ImportResult"+" [objectRef=")+ objectRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ExportResult"+" [shockId=")+ shockId)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

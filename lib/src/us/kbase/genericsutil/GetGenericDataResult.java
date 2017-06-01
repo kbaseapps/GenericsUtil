@@ -1,7 +1,8 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -12,33 +13,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: ExportResult</p>
+ * <p>Original spec-file type: GetGenericDataResult</p>
  * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "shock_id"
+    "data_2d_float"
 })
-public class ExportResult {
+public class GetGenericDataResult {
 
-    @JsonProperty("shock_id")
-    private String shockId;
+    @JsonProperty("data_2d_float")
+    private List<List<Double>> data2dFloat;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("shock_id")
-    public String getShockId() {
-        return shockId;
+    @JsonProperty("data_2d_float")
+    public List<List<Double>> getData2dFloat() {
+        return data2dFloat;
     }
 
-    @JsonProperty("shock_id")
-    public void setShockId(String shockId) {
-        this.shockId = shockId;
+    @JsonProperty("data_2d_float")
+    public void setData2dFloat(List<List<Double>> data2dFloat) {
+        this.data2dFloat = data2dFloat;
     }
 
-    public ExportResult withShockId(String shockId) {
-        this.shockId = shockId;
+    public GetGenericDataResult withData2dFloat(List<List<Double>> data2dFloat) {
+        this.data2dFloat = data2dFloat;
         return this;
     }
 
@@ -54,7 +55,7 @@ public class ExportResult {
 
     @Override
     public String toString() {
-        return ((((("ExportResult"+" [shockId=")+ shockId)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("GetGenericDataResult"+" [data2dFloat=")+ data2dFloat)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

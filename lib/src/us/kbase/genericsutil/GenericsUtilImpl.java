@@ -1,4 +1,4 @@
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.io.*;
 import java.nio.file.*;
@@ -1128,6 +1128,58 @@ public class GenericsUtilImpl {
     }
 
     /**
+       update a Values object from anything else to String
+    */
+    public static void makeStringValues(Values v) {
+        String scalarType = v.getScalarType();
+        if (scalarType.equals("int")) {
+            List<Long> iv = v.getIntValues();
+            int l = iv.size();
+            List<String> sv = new ArrayList<String>(l);
+            for (int i=0; i<l; i++) {
+                Long val = iv.get(i);
+                if (val == null)
+                    sv.add(null);
+                else
+                    sv.add(val.toString());
+            }
+            v.setIntValues(null);
+            v.setStringValues(sv);
+        }
+        else if (scalarType.equals("float")) {
+            List<Double> fv = v.getFloatValues();
+            int l = fv.size();
+            List<String> sv = new ArrayList<String>(l);
+            for (int i=0; i<l; i++) {
+                Double val = fv.get(i);
+                if (val == null)
+                    sv.add(null);
+                else
+                    sv.add(val.toString());
+            }
+            v.setFloatValues(null);
+            v.setStringValues(sv);
+        }
+        else if (scalarType.equals("boolean")) {
+            List<Long> bv = v.getBooleanValues();
+            int l = bv.size();
+            List<String> sv = new ArrayList<String>(l);
+            for (int i=0; i<l; i++) {
+                Long val = bv.get(i);
+                if (val == null)
+                    sv.add(null);
+                else
+                    sv.add(val.toString());
+            }
+            v.setBooleanValues(null);
+            v.setStringValues(sv);
+        }
+        // refs and orefs are already stored in strings,
+        // so no need to change those
+        v.setScalarType("string");
+    }
+
+    /**
        check object references to be sure they're real and readable
     */
     public static void checkObjects(List<String> objectRefs, String objectType) throws Exception {
@@ -2052,17 +2104,58 @@ public class GenericsUtilImpl {
        Gets dimension labels for specified dimensions of
        a generic object     
     */
-    public static GetGenericDimensionLabelsResult getGenericDimensionLabels(String wsURL,
-                                                                            AuthToken token,
-                                                                            GetGenericDimensionLabelsParams params) throws Exception {
+    public static GetGenericDimensionLabelsResult
+        getGenericDimensionLabels(String wsURL,
+                                  AuthToken token,
+                                  GetGenericDimensionLabelsParams params) throws Exception {
 
         String objectID = params.getObjectId();
         if (objectID==null)
             throw new Exception("Must specify object id when getting generic dimension labels");
+        List<String> dimensionIDs = params.getDimensionIds();
+        if (dimensionIDs==null)
+            throw new Exception("Must specify at least one dimension id when getting dimension labels");
 
         wc = createWsClient(wsURL,token);
-    
-        GetGenericDimensionLabelsResult rv = new GetGenericDimensionLabelsResult();
+        Map<String,Values> labels = new HashMap<String,Values>();
+        for (ObjectData od : wc.getObjects2(new GetObjects2Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID).withIncluded(Arrays.asList("/dim_context"))))).getData()) {
+            String objectType = getTypeFromObjectInfo(od.getInfo());
+            HNDArray hnda = null;
+            if (objectType.startsWith("KBaseGenerics.NDArray")) {
+                NDArray nda = od.getData().asClassInstance(NDArray.class);
+                hnda = makeHNDArray(nda);
+            }
+            else
+                hnda = od.getData().asClassInstance(HNDArray.class);
+            
+            for (String dimensionID : dimensionIDs) {
+                int pos = dimensionID.indexOf("/");
+                if (pos<=0)
+                    throw new Exception("Error: invalid dimension index '"+dimensionID+"'; must be in format I/J where I and J are 1-based indices");
+                int dim1 = StringUtil.atoi(dimensionID,0,pos);
+                int dim2 = StringUtil.atoi(dimensionID,pos+1);
+                List<DimensionContext> dcs = hnda.getDimContext();
+                if ((dim1 < 1) || (dim1 > dcs.size()))
+                    throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; first number must be in range 1-"+dcs.size());
+                DimensionContext dc = dcs.get(dim1-1);
+                List<TypedValues> tvs = dc.getTypedValues();
+                if ((dim2 < 1) || (dim2 > tvs.size()))
+                    throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; second number must be in range 1-"+tvs.size());
+                Values v = tvs.get(dim2-1).getValues();
+
+                if ((params.getConvertToString() != null) &&
+                    (params.getConvertToString().longValue()==1L)) {
+                    // convert Values scalar type to string
+                    makeStringValues(v);
+                }
+
+                labels.put(dimensionID,v);
+            }
+        }
+        
+        GetGenericDimensionLabelsResult rv =
+            new GetGenericDimensionLabelsResult()
+            .withDimensionLabels(labels);
         return rv;
     }
 

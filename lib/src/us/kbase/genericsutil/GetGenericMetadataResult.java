@@ -1,5 +1,5 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,37 +9,38 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import kbasegenerics.Values;
 
 
 /**
- * <p>Original spec-file type: GetGenericDimensionLabelsResult</p>
- * 
+ * <p>Original spec-file type: GetGenericMetadataResult</p>
+ * <pre>
+ * maps object ids to structure with metadata
+ * </pre>
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "dimension_labels"
+    "object_info"
 })
-public class GetGenericDimensionLabelsResult {
+public class GetGenericMetadataResult {
 
-    @JsonProperty("dimension_labels")
-    private Map<String, Values> dimensionLabels;
+    @JsonProperty("object_info")
+    private Map<String, GenericMetadata> objectInfo;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
-    @JsonProperty("dimension_labels")
-    public Map<String, Values> getDimensionLabels() {
-        return dimensionLabels;
+    @JsonProperty("object_info")
+    public Map<String, GenericMetadata> getObjectInfo() {
+        return objectInfo;
     }
 
-    @JsonProperty("dimension_labels")
-    public void setDimensionLabels(Map<String, Values> dimensionLabels) {
-        this.dimensionLabels = dimensionLabels;
+    @JsonProperty("object_info")
+    public void setObjectInfo(Map<String, GenericMetadata> objectInfo) {
+        this.objectInfo = objectInfo;
     }
 
-    public GetGenericDimensionLabelsResult withDimensionLabels(Map<String, Values> dimensionLabels) {
-        this.dimensionLabels = dimensionLabels;
+    public GetGenericMetadataResult withObjectInfo(Map<String, GenericMetadata> objectInfo) {
+        this.objectInfo = objectInfo;
         return this;
     }
 
@@ -55,7 +56,7 @@ public class GetGenericDimensionLabelsResult {
 
     @Override
     public java.lang.String toString() {
-        return ((((("GetGenericDimensionLabelsResult"+" [dimensionLabels=")+ dimensionLabels)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("GetGenericMetadataResult"+" [objectInfo=")+ objectInfo)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

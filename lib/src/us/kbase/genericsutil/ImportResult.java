@@ -1,8 +1,7 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -13,33 +12,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: GetGenericDataResult</p>
+ * <p>Original spec-file type: ImportResult</p>
  * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "data_2d_float"
+    "object_ref"
 })
-public class GetGenericDataResult {
+public class ImportResult {
 
-    @JsonProperty("data_2d_float")
-    private List<List<Double>> data2dFloat;
+    @JsonProperty("object_ref")
+    private String objectRef;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    @JsonProperty("data_2d_float")
-    public List<List<Double>> getData2dFloat() {
-        return data2dFloat;
+    @JsonProperty("object_ref")
+    public String getObjectRef() {
+        return objectRef;
     }
 
-    @JsonProperty("data_2d_float")
-    public void setData2dFloat(List<List<Double>> data2dFloat) {
-        this.data2dFloat = data2dFloat;
+    @JsonProperty("object_ref")
+    public void setObjectRef(String objectRef) {
+        this.objectRef = objectRef;
     }
 
-    public GetGenericDataResult withData2dFloat(List<List<Double>> data2dFloat) {
-        this.data2dFloat = data2dFloat;
+    public ImportResult withObjectRef(String objectRef) {
+        this.objectRef = objectRef;
         return this;
     }
 
@@ -55,7 +54,7 @@ public class GetGenericDataResult {
 
     @Override
     public String toString() {
-        return ((((("GetGenericDataResult"+" [data2dFloat=")+ data2dFloat)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ImportResult"+" [objectRef=")+ objectRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

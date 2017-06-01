@@ -1,7 +1,8 @@
 
-package genericsutil;
+package us.kbase.genericsutil;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Generated;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -12,35 +13,33 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 
 /**
- * <p>Original spec-file type: GetGenericMetadataResult</p>
- * <pre>
- * maps object ids to structure with metadata
- * </pre>
+ * <p>Original spec-file type: ListGenericObjectsResult</p>
+ * 
  * 
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "object_info"
+    "object_ids"
 })
-public class GetGenericMetadataResult {
+public class ListGenericObjectsResult {
 
-    @JsonProperty("object_info")
-    private Map<String, GenericMetadata> objectInfo;
+    @JsonProperty("object_ids")
+    private List<String> objectIds;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
-    @JsonProperty("object_info")
-    public Map<String, GenericMetadata> getObjectInfo() {
-        return objectInfo;
+    @JsonProperty("object_ids")
+    public List<String> getObjectIds() {
+        return objectIds;
     }
 
-    @JsonProperty("object_info")
-    public void setObjectInfo(Map<String, GenericMetadata> objectInfo) {
-        this.objectInfo = objectInfo;
+    @JsonProperty("object_ids")
+    public void setObjectIds(List<String> objectIds) {
+        this.objectIds = objectIds;
     }
 
-    public GetGenericMetadataResult withObjectInfo(Map<String, GenericMetadata> objectInfo) {
-        this.objectInfo = objectInfo;
+    public ListGenericObjectsResult withObjectIds(List<String> objectIds) {
+        this.objectIds = objectIds;
         return this;
     }
 
@@ -56,7 +55,7 @@ public class GetGenericMetadataResult {
 
     @Override
     public java.lang.String toString() {
-        return ((((("GetGenericMetadataResult"+" [objectInfo=")+ objectInfo)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((("ListGenericObjectsResult"+" [objectIds=")+ objectIds)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
