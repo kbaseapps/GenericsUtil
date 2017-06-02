@@ -1180,78 +1180,211 @@ public class GenericsUtilImpl {
     }
 
     /**
-       update a Values object to only include unique values
+       return a Values object that only includes unique
+       values from another object
     */
-    public static void makeUniqueValues(Values v) {
+    public static Values findUniqueValues(Values v) {
         String scalarType = v.getScalarType();
-        if (scalarType.equals("int")) {
-            List<Long> oldV = v.getIntValues();
-            int l = oldV.size();
-            List<Long> newV = new ArrayList<Long>();
-            for (int i=0; i<l; i++) {
-                Long val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setIntValues(newV);
-        }
-        else if (scalarType.equals("float")) {
-            List<Double> oldV = v.getFloatValues();
-            int l = oldV.size();
-            List<Double> newV = new ArrayList<Double>();
-            for (int i=0; i<l; i++) {
-                Double val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setFloatValues(newV);
-        }
-        else if (scalarType.equals("boolean")) {
-            List<Long> oldV = v.getBooleanValues();
-            int l = oldV.size();
-            List<Long> newV = new ArrayList<Long>();
-            for (int i=0; i<l; i++) {
-                Long val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setBooleanValues(newV);
-        }
-        else if (scalarType.equals("oterm_ref")) {
-            List<String> oldV = v.getOtermRefs();
-            int l = oldV.size();
-            List<String> newV = new ArrayList<String>();
-            for (int i=0; i<l; i++) {
-                String val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setOtermRefs(newV);
-        }
-        else if (scalarType.equals("object_ref")) {
-            List<String> oldV = v.getObjectRefs();
-            int l = oldV.size();
-            List<String> newV = new ArrayList<String>();
-            for (int i=0; i<l; i++) {
-                String val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setObjectRefs(newV);
-        }
+        Values rv = new Values().withScalarType(scalarType);
+        List oldV = null;
+        if (scalarType.equals("int"))
+            oldV = v.getIntValues();
+        else if (scalarType.equals("float"))
+            oldV = v.getFloatValues();
+        else if (scalarType.equals("boolean"))
+            oldV = v.getBooleanValues();
+        else if (scalarType.equals("oterm_ref"))
+            oldV = v.getOtermRefs();
+        else if (scalarType.equals("object_ref"))
+            oldV = v.getObjectRefs();
+
+        // converting to LinkedHashSet preserves order
+        // while keeping only unique values
+        LinkedHashSet lhs = new LinkedHashSet();
+        lhs.addAll(oldV);
+        List newV = new ArrayList(lhs);
+
+        if (scalarType.equals("int"))
+            rv.setIntValues(newV);
+        else if (scalarType.equals("float"))
+            rv.setFloatValues(newV);
+        else if (scalarType.equals("boolean"))
+            rv.setBooleanValues(newV);
+        else if (scalarType.equals("oterm_ref"))
+            rv.setOtermRefs(newV);
+        else if (scalarType.equals("object_ref"))
+            rv.setObjectRefs(newV);
+
+        // ref types also store data in the string array
         if ((scalarType.equals("string")) ||
             (scalarType.equals("oterm_ref")) ||
             (scalarType.equals("object_ref"))) {
-            List<String> oldV = v.getStringValues();
-            int l = oldV.size();
-            List<String> newV = new ArrayList<String>();
-            for (int i=0; i<l; i++) {
-                String val = oldV.get(i);
-                if (!newV.contains(val))
-                    newV.add(val);
-            }
-            v.setStringValues(newV);
+            oldV = v.getStringValues();
+            lhs = new LinkedHashSet();
+            lhs.addAll(oldV);
+            newV = new ArrayList(lhs);
+            rv.setStringValues(newV);
         }
+        return rv;
+    }
+
+    /**
+       return a Values object with one or more dimensions
+       fixed.  Non-fixed indices should be left null, and fixed
+       indices should be set to the 1-based index to fix.
+    */
+    public static Values fixValues(Values v,
+                                   List<Long> dLengths,
+                                   List<Long> fixedIndices) {
+        String scalarType = v.getScalarType();
+        Values rv = new Values().withScalarType(scalarType);
+        List oldV = null;
+        List oldRefs = null;
+        if (scalarType.equals("int"))
+            oldV = v.getIntValues();
+        else if (scalarType.equals("float"))
+            oldV = v.getFloatValues();
+        else if (scalarType.equals("boolean"))
+            oldV = v.getBooleanValues();
+        else if (scalarType.equals("string"))
+            oldV = v.getStringValues();
+        else if (scalarType.equals("oterm_ref")) {
+            oldV = v.getStringValues();
+            oldRefs = v.getOtermRefs();
+        }
+        else if (scalarType.equals("object_ref")) {
+            oldV = v.getStringValues();
+            oldRefs = v.getObjectRefs();
+        }
+
+        // loop over array to get only the right data
+        // this is inefficient and could be made faster if bottleneck!
+        List newV = new ArrayList();
+        List newRefs = new ArrayList();
+        int nDimensions = dLengths.size();
+        int length = 1;
+        ArrayList<String> line = new ArrayList<String>();
+        Long[] indices = new Long[nDimensions];
+        for (int i=0; i<nDimensions; i++) {
+            indices[i] = new Long(1L);
+            length *= (int)(dLengths.get(i).longValue());
+        }
+        for (int i=0; i<length; i++) {
+            boolean keep = true;
+            for (int j=0; j<nDimensions; j++)
+                if ((fixedIndices.get(j) != null) &&
+                    (!fixedIndices.get(j).equals(indices[j]))) {
+                    keep = false;
+                    j = nDimensions;
+                }
+            if (keep) {
+                newV.add(oldV.get(i));
+                if (oldRefs != null)
+                    newRefs.add(oldRefs.get(i));
+            }
+            // increment all indices
+            if (i<length-1) {
+                indices[nDimensions-1]++;
+                for (int j=nDimensions-1; j>=0; j--) {
+                    if (indices[j] > dLengths.get(j)) {
+                        indices[j] = new Long(1L);
+                        indices[j-1]++;
+                    }
+                }
+            }
+        }
+
+        // save in new object
+        if (scalarType.equals("int"))
+            rv.setIntValues(newV);
+        else if (scalarType.equals("float"))
+            rv.setFloatValues(newV);
+        else if (scalarType.equals("boolean"))
+            rv.setBooleanValues(newV);
+        else if (scalarType.equals("string"))
+            rv.setStringValues(newV);
+        else if (scalarType.equals("oterm_ref")) {
+            rv.setStringValues(newV);
+            rv.setOtermRefs(newRefs);
+        }
+        else if (scalarType.equals("object_ref")) {
+            rv.setStringValues(newV);
+            rv.setObjectRefs(newRefs);
+        }
+
+        return rv;
+    }
+
+    /**
+       Find the index in a dimension that matches a combination
+       of unique value indices.  All values are 1-based.
+    */
+    public static Long mergeUniqueIndices(DimensionContext dc,
+                                          List<Long> valueIndices) throws Exception {
+        // kepp list of possible answers
+        HashSet<Long> remainingIndices = new HashSet<Long>();
+        int dLength = (int)(dc.getSize().longValue());
+        for (int i=0; i<dLength; i++)
+            remainingIndices.add(new Long(i+1));
+        
+        List<TypedValues> tvs = dc.getTypedValues();
+        int nIndices = tvs.size();
+        if (nIndices != valueIndices.size())
+            throw new Exception("to find unique index for dimension, must fix all value indices");
+        for (int i=0; i<nIndices; i++) {
+            Values v = tvs.get(i).getValues();
+            Values uv = findUniqueValues(v);
+            String scalarType = v.getScalarType();
+
+            List objects = null;
+            List uniqueObjects = null;
+            if (scalarType.equals("int")) {
+                objects = v.getIntValues();
+                uniqueObjects = uv.getIntValues();
+            }
+            else if (scalarType.equals("float")) {
+                objects = v.getFloatValues();
+                uniqueObjects = uv.getFloatValues();
+            }
+            else if (scalarType.equals("boolean")) {
+                objects = v.getBooleanValues();
+                uniqueObjects = uv.getBooleanValues();
+            }
+            else if (scalarType.equals("string")) {
+                objects = v.getStringValues();
+                uniqueObjects = uv.getStringValues();
+            }
+            else if (scalarType.equals("object_ref")) {
+                objects = v.getObjectRefs();
+                uniqueObjects = uv.getObjectRefs();
+            }
+            else if (scalarType.equals("oterm_ref")) {
+                objects = v.getOtermRefs();
+                uniqueObjects = uv.getOtermRefs();
+            }
+            
+            for (int j=0; j<dLength; j++) {
+                if (!remainingIndices.contains(new Long(j+1)))
+                    continue;
+                    
+                Object o = objects.get(j);
+                Object uo = uniqueObjects.get((int)(valueIndices.get(i).longValue()));
+                if (o==null) {
+                    if (uo != null)
+                        remainingIndices.remove(new Long(j+1));
+                    continue;
+                }
+
+                if (!o.equals(uo))
+                    remainingIndices.remove(new Long(j+1));
+            }
+        }
+
+        // make sure there is ony one answer
+        if (remainingIndices.size() != 1)
+            throw new Exception("Error - unique indices not found for dimension");
+        List<Long> list = new ArrayList<Long>(remainingIndices);
+        return list.get(0);
     }
     
     /**
@@ -2226,8 +2359,8 @@ public class GenericsUtilImpl {
 
                 if ((params.getUniqueValues() != null) &&
                     (params.getUniqueValues().longValue()==1L)) {
-                    // convert Values scalar type to string
-                    makeUniqueValues(v);
+                    // make Values unique
+                    v = findUniqueValues(v);
                 }
                 
                 labels.put(dimensionID,v);
