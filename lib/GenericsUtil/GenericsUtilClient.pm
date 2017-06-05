@@ -537,7 +537,7 @@ GenericMetadata is a reference to a hash where the following keys are defined:
 	scalar_types has a value which is a reference to a list where each element is a string
 	dimension_types has a value which is a reference to a list where each element is a string
 	dimension_sizes has a value which is a reference to a list where each element is an int
-	has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	has_unique_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 boolean is an int
@@ -563,7 +563,7 @@ GenericMetadata is a reference to a hash where the following keys are defined:
 	scalar_types has a value which is a reference to a list where each element is a string
 	dimension_types has a value which is a reference to a list where each element is a string
 	dimension_sizes has a value which is a reference to a list where each element is an int
-	has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
+	has_unique_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 boolean is an int
@@ -1377,7 +1377,7 @@ value_types has a value which is a reference to a list where each element is a s
 scalar_types has a value which is a reference to a list where each element is a string
 dimension_types has a value which is a reference to a list where each element is a string
 dimension_sizes has a value which is a reference to a list where each element is an int
-has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
+has_unique_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 
@@ -1396,7 +1396,7 @@ value_types has a value which is a reference to a list where each element is a s
 scalar_types has a value which is a reference to a list where each element is a string
 dimension_types has a value which is a reference to a list where each element is a string
 dimension_sizes has a value which is a reference to a list where each element is an int
-has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
+has_unique_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 

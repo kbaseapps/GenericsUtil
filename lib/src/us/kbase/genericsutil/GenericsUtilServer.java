@@ -23,7 +23,7 @@ public class GenericsUtilServer extends JsonServerServlet {
     private static final long serialVersionUID = 1L;
     private static final String version = "0.0.1";
     private static final String gitUrl = "git@github.com:kbaseapps/GenericsUtil.git";
-    private static final String gitCommitHash = "b23ae3ea2e5cf2ad2116bc93eac185453383165b";
+    private static final String gitCommitHash = "e939aaca5b0a14dd52a973d9971236e412f2951b";
 
     //BEGIN_CLASS_HEADER
     private final String wsUrl;

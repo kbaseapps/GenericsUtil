@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "scalar_types",
     "dimension_types",
     "dimension_sizes",
-    "has_subindices",
+    "has_unique_subindices",
     "dimension_value_types",
     "dimension_scalar_types"
 })
@@ -62,8 +62,8 @@ public class GenericMetadata {
     private List<String> dimensionTypes;
     @JsonProperty("dimension_sizes")
     private List<Long> dimensionSizes;
-    @JsonProperty("has_subindices")
-    private List<Long> hasSubindices;
+    @JsonProperty("has_unique_subindices")
+    private List<Long> hasUniqueSubindices;
     @JsonProperty("dimension_value_types")
     private List<List<String>> dimensionValueTypes;
     @JsonProperty("dimension_scalar_types")
@@ -190,18 +190,18 @@ public class GenericMetadata {
         return this;
     }
 
-    @JsonProperty("has_subindices")
-    public List<Long> getHasSubindices() {
-        return hasSubindices;
+    @JsonProperty("has_unique_subindices")
+    public List<Long> getHasUniqueSubindices() {
+        return hasUniqueSubindices;
     }
 
-    @JsonProperty("has_subindices")
-    public void setHasSubindices(List<Long> hasSubindices) {
-        this.hasSubindices = hasSubindices;
+    @JsonProperty("has_unique_subindices")
+    public void setHasUniqueSubindices(List<Long> hasUniqueSubindices) {
+        this.hasUniqueSubindices = hasUniqueSubindices;
     }
 
-    public GenericMetadata withHasSubindices(List<Long> hasSubindices) {
-        this.hasSubindices = hasSubindices;
+    public GenericMetadata withHasUniqueSubindices(List<Long> hasUniqueSubindices) {
+        this.hasUniqueSubindices = hasUniqueSubindices;
         return this;
     }
 
@@ -247,7 +247,7 @@ public class GenericMetadata {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((((("GenericMetadata"+" [objectType=")+ objectType)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", isMapped=")+ isMapped)+", valueTypes=")+ valueTypes)+", scalarTypes=")+ scalarTypes)+", dimensionTypes=")+ dimensionTypes)+", dimensionSizes=")+ dimensionSizes)+", hasSubindices=")+ hasSubindices)+", dimensionValueTypes=")+ dimensionValueTypes)+", dimensionScalarTypes=")+ dimensionScalarTypes)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((("GenericMetadata"+" [objectType=")+ objectType)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", isMapped=")+ isMapped)+", valueTypes=")+ valueTypes)+", scalarTypes=")+ scalarTypes)+", dimensionTypes=")+ dimensionTypes)+", dimensionSizes=")+ dimensionSizes)+", hasUniqueSubindices=")+ hasUniqueSubindices)+", dimensionValueTypes=")+ dimensionValueTypes)+", dimensionScalarTypes=")+ dimensionScalarTypes)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

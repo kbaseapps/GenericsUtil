@@ -130,7 +130,7 @@ class GenericsUtil(object):
            "is_mapped" of type "boolean", parameter "value_types" of list of
            String, parameter "scalar_types" of list of String, parameter
            "dimension_types" of list of String, parameter "dimension_sizes"
-           of list of Long, parameter "has_subindices" of list of type
+           of list of Long, parameter "has_unique_subindices" of list of type
            "boolean", parameter "dimension_value_types" of list of list of
            String, parameter "dimension_scalar_types" of list of list of
            String
