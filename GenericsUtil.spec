@@ -128,7 +128,7 @@ module GenericsUtil {
 	list<string> scalar_types;
 	list<string> dimension_types;
 	list<int> dimension_sizes;
-	list<boolean> has_subindices;
+	list<boolean> has_unique_subindices;
 	list<list<string>> dimension_value_types;
 	list<list<string>> dimension_scalar_types;
     } GenericMetadata;
