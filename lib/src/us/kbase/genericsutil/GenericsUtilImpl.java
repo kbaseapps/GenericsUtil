@@ -2378,6 +2378,31 @@ public class GenericsUtilImpl {
     }
 
     /**
+       Translates a dimension label into values.  If no 2nd
+       dimension specified, assumes 1st.
+    */
+    public static Values getValues(HNDArray hnda,
+                                   String dimensionID) throws Exception {
+        int pos = dimensionID.indexOf("/");
+        int dim1 = 1;
+        int dim2 = 1;
+        if (pos<=0)
+            dim1 = StringUtil.atoi(dimensionID);
+        else {
+            dim1 = StringUtil.atoi(dimensionID,0,pos);
+            dim2 = StringUtil.atoi(dimensionID,pos+1);
+        }
+        List<DimensionContext> dcs = hnda.getDimContext();
+        if ((dim1 < 1) || (dim1 > dcs.size()))
+            throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; first number must be in range 1-"+dcs.size());
+        DimensionContext dc = dcs.get(dim1-1);
+        List<TypedValues> tvs = dc.getTypedValues();
+        if ((dim2 < 1) || (dim2 > tvs.size()))
+            throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; second number must be in range 1-"+tvs.size());
+        return(tvs.get(dim2-1).getValues());
+    }
+
+    /**
        Gets dimension labels for specified dimensions of
        a generic object
     */
@@ -2407,19 +2432,7 @@ public class GenericsUtilImpl {
             hnda = od.getData().asClassInstance(HNDArray.class);
         
         for (String dimensionID : dimensionIDs) {
-            int pos = dimensionID.indexOf("/");
-            if (pos<=0)
-                throw new Exception("Error: invalid dimension index '"+dimensionID+"'; must be in format I/J where I and J are 1-based indices");
-            int dim1 = StringUtil.atoi(dimensionID,0,pos);
-            int dim2 = StringUtil.atoi(dimensionID,pos+1);
-            List<DimensionContext> dcs = hnda.getDimContext();
-            if ((dim1 < 1) || (dim1 > dcs.size()))
-                throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; first number must be in range 1-"+dcs.size());
-            DimensionContext dc = dcs.get(dim1-1);
-            List<TypedValues> tvs = dc.getTypedValues();
-            if ((dim2 < 1) || (dim2 > tvs.size()))
-                throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; second number must be in range 1-"+tvs.size());
-            Values v = tvs.get(dim2-1).getValues();
+            Values v = getValues(hnda, dimensionID);
             
             if ((params.getConvertToString() != null) &&
                 (params.getConvertToString().longValue()==1L)) {
@@ -2535,11 +2548,27 @@ public class GenericsUtilImpl {
         // and save any remaining dimensions as variable
         variableDimensionIDs.addAll(allDimensionIDs);
 
+        // must be at least 1 variable dimension
+        if (variableDimensionIDs.size() < 1)
+            throw new Exception("There must be at least one variable dimension");
+
         // make the first variable dimension the X axis
+        String dimX = variableDimensionIDs.get(0);
+        Values valuesX = getValues(hnda,dimX);
+        if (dimX.indexOf("/") > 0)
+            valuesX = findUniqueValues(valuesX);
+
+        // loop over all other variable dimensions
+        List<String> seriesLabels = new ArrayList<String>();
+        List<Values> valuesY = new ArrayList<Values>();
         
         
 
-        GetGenericDataResult rv = new GetGenericDataResult();
+        GetGenericDataResult rv = new GetGenericDataResult()
+            .withValuesX(valuesX)
+            .withValuesY(valuesY)
+            .withSeriesLabels(seriesLabels);
+        
         return rv;
     }
 }
