@@ -128,6 +128,7 @@ module GenericsUtil {
 	list<string> scalar_types;
 	list<string> dimension_types;
 	list<int> dimension_sizes;
+	list<boolean> has_subindices;
 	list<list<string>> dimension_value_types;
 	list<list<string>> dimension_scalar_types;
     } GenericMetadata;
@@ -187,9 +188,9 @@ module GenericsUtil {
     3rd type of values in the 2nd dimension) to an index in the
     list of unique labels for that dimension index.
 
-    return values:
-    data_x_float is a list of x-axis values
-    data_y_float is a list of y-axis values, 1 per series.  The number
+    returns:
+    values_x will contain the list of x-axis values
+    values_y will contain 1 list of of y-axis values per series.  The number
       of series depends on the number of variable dimensions.
     series_labels will show which variable index values correspond
       to which series
@@ -201,8 +202,8 @@ module GenericsUtil {
     } GetGenericDataParams;
 
     typedef structure {
-        list<float> data_x_float;
-        list<list<float>> data_y_float;
+        KBaseGenerics.Values values_x;
+        list<KBaseGenerics.Values> values_y;
         list<string> series_labels;
     } GetGenericDataResult;
 

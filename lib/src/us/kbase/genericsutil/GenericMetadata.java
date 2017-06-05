@@ -40,6 +40,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "scalar_types",
     "dimension_types",
     "dimension_sizes",
+    "has_subindices",
     "dimension_value_types",
     "dimension_scalar_types"
 })
@@ -61,6 +62,8 @@ public class GenericMetadata {
     private List<String> dimensionTypes;
     @JsonProperty("dimension_sizes")
     private List<Long> dimensionSizes;
+    @JsonProperty("has_subindices")
+    private List<Long> hasSubindices;
     @JsonProperty("dimension_value_types")
     private List<List<String>> dimensionValueTypes;
     @JsonProperty("dimension_scalar_types")
@@ -187,6 +190,21 @@ public class GenericMetadata {
         return this;
     }
 
+    @JsonProperty("has_subindices")
+    public List<Long> getHasSubindices() {
+        return hasSubindices;
+    }
+
+    @JsonProperty("has_subindices")
+    public void setHasSubindices(List<Long> hasSubindices) {
+        this.hasSubindices = hasSubindices;
+    }
+
+    public GenericMetadata withHasSubindices(List<Long> hasSubindices) {
+        this.hasSubindices = hasSubindices;
+        return this;
+    }
+
     @JsonProperty("dimension_value_types")
     public List<List<String>> getDimensionValueTypes() {
         return dimensionValueTypes;
@@ -229,7 +247,7 @@ public class GenericMetadata {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((((((((((((((((("GenericMetadata"+" [objectType=")+ objectType)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", isMapped=")+ isMapped)+", valueTypes=")+ valueTypes)+", scalarTypes=")+ scalarTypes)+", dimensionTypes=")+ dimensionTypes)+", dimensionSizes=")+ dimensionSizes)+", dimensionValueTypes=")+ dimensionValueTypes)+", dimensionScalarTypes=")+ dimensionScalarTypes)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((((((((((((((((((("GenericMetadata"+" [objectType=")+ objectType)+", dataType=")+ dataType)+", nDimensions=")+ nDimensions)+", isMapped=")+ isMapped)+", valueTypes=")+ valueTypes)+", scalarTypes=")+ scalarTypes)+", dimensionTypes=")+ dimensionTypes)+", dimensionSizes=")+ dimensionSizes)+", hasSubindices=")+ hasSubindices)+", dimensionValueTypes=")+ dimensionValueTypes)+", dimensionScalarTypes=")+ dimensionScalarTypes)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

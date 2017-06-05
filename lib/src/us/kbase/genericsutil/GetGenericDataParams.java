@@ -26,9 +26,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * of labels, or by fixing a dimension index (e.g., "2/3" for the
  *  3rd type of values in the 2nd dimension) to an index in the
  * list of unique labels for that dimension index.
- * return values:
- * data_x_float is a list of x-axis values
- * data_y_float is a list of y-axis values, 1 per series.  The number
+ * returns:
+ * values_x will contain the list of x-axis values
+ * values_y will contain 1 list of of y-axis values per series.  The number
  *   of series depends on the number of variable dimensions.
  * series_labels will show which variable index values correspond
  *   to which series

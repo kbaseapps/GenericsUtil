@@ -537,6 +537,7 @@ GenericMetadata is a reference to a hash where the following keys are defined:
 	scalar_types has a value which is a reference to a list where each element is a string
 	dimension_types has a value which is a reference to a list where each element is a string
 	dimension_sizes has a value which is a reference to a list where each element is an int
+	has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 boolean is an int
@@ -562,6 +563,7 @@ GenericMetadata is a reference to a hash where the following keys are defined:
 	scalar_types has a value which is a reference to a list where each element is a string
 	dimension_types has a value which is a reference to a list where each element is a string
 	dimension_sizes has a value which is a reference to a list where each element is an int
+	has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 	dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 	dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 boolean is an int
@@ -763,9 +765,21 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	data_x_float has a value which is a reference to a list where each element is a float
-	data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	values_x has a value which is a KBaseGenerics.Values
+	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 	series_labels has a value which is a reference to a list where each element is a string
+Values is a reference to a hash where the following keys are defined:
+	scalar_type has a value which is a KBaseGenerics.data_type
+	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a KBaseGenerics.oterm_ref
+	int_values has a value which is a reference to a list where each element is an int
+	float_values has a value which is a reference to a list where each element is a float
+	boolean_values has a value which is a reference to a list where each element is a KBaseGenerics.boolean
+	string_values has a value which is a reference to a list where each element is a string
+data_type is a string
+object_ref is a string
+oterm_ref is a string
+boolean is an int
 
 </pre>
 
@@ -780,9 +794,21 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	data_x_float has a value which is a reference to a list where each element is a float
-	data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+	values_x has a value which is a KBaseGenerics.Values
+	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 	series_labels has a value which is a reference to a list where each element is a string
+Values is a reference to a hash where the following keys are defined:
+	scalar_type has a value which is a KBaseGenerics.data_type
+	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
+	oterm_refs has a value which is a reference to a list where each element is a KBaseGenerics.oterm_ref
+	int_values has a value which is a reference to a list where each element is an int
+	float_values has a value which is a reference to a list where each element is a float
+	boolean_values has a value which is a reference to a list where each element is a KBaseGenerics.boolean
+	string_values has a value which is a reference to a list where each element is a string
+data_type is a string
+object_ref is a string
+oterm_ref is a string
+boolean is an int
 
 
 =end text
@@ -1351,6 +1377,7 @@ value_types has a value which is a reference to a list where each element is a s
 scalar_types has a value which is a reference to a list where each element is a string
 dimension_types has a value which is a reference to a list where each element is a string
 dimension_sizes has a value which is a reference to a list where each element is an int
+has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 
@@ -1369,6 +1396,7 @@ value_types has a value which is a reference to a list where each element is a s
 scalar_types has a value which is a reference to a list where each element is a string
 dimension_types has a value which is a reference to a list where each element is a string
 dimension_sizes has a value which is a reference to a list where each element is an int
+has_subindices has a value which is a reference to a list where each element is a GenericsUtil.boolean
 dimension_value_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 dimension_scalar_types has a value which is a reference to a list where each element is a reference to a list where each element is a string
 
@@ -1518,9 +1546,9 @@ of labels, or by fixing a dimension index (e.g., "2/3" for the
 3rd type of values in the 2nd dimension) to an index in the
 list of unique labels for that dimension index.
 
-return values:
-data_x_float is a list of x-axis values
-data_y_float is a list of y-axis values, 1 per series.  The number
+returns:
+values_x will contain the list of x-axis values
+values_y will contain 1 list of of y-axis values per series.  The number
   of series depends on the number of variable dimensions.
 series_labels will show which variable index values correspond
   to which series
@@ -1566,8 +1594,8 @@ constant_dimension_ids has a value which is a reference to a hash where the key 
 
 <pre>
 a reference to a hash where the following keys are defined:
-data_x_float has a value which is a reference to a list where each element is a float
-data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+values_x has a value which is a KBaseGenerics.Values
+values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 series_labels has a value which is a reference to a list where each element is a string
 
 </pre>
@@ -1577,8 +1605,8 @@ series_labels has a value which is a reference to a list where each element is a
 =begin text
 
 a reference to a hash where the following keys are defined:
-data_x_float has a value which is a reference to a list where each element is a float
-data_y_float has a value which is a reference to a list where each element is a reference to a list where each element is a float
+values_x has a value which is a KBaseGenerics.Values
+values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 series_labels has a value which is a reference to a list where each element is a string
 
 

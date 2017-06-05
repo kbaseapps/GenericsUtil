@@ -20,47 +20,68 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "data_x_float",
-    "data_y_float",
+    "values_x",
+    "values_y",
     "series_labels"
 })
 public class GetGenericDataResult {
 
-    @JsonProperty("data_x_float")
-    private List<Double> dataXFloat;
-    @JsonProperty("data_y_float")
-    private List<List<Double>> dataYFloat;
+    /**
+     * <p>Original spec-file type: Values</p>
+     * <pre>
+     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
+     * </pre>
+     * 
+     */
+    @JsonProperty("values_x")
+    private us.kbase.kbasegenerics.Values valuesX;
+    @JsonProperty("values_y")
+    private List<us.kbase.kbasegenerics.Values> valuesY;
     @JsonProperty("series_labels")
     private List<String> seriesLabels;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
-    @JsonProperty("data_x_float")
-    public List<Double> getDataXFloat() {
-        return dataXFloat;
+    /**
+     * <p>Original spec-file type: Values</p>
+     * <pre>
+     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
+     * </pre>
+     * 
+     */
+    @JsonProperty("values_x")
+    public us.kbase.kbasegenerics.Values getValuesX() {
+        return valuesX;
     }
 
-    @JsonProperty("data_x_float")
-    public void setDataXFloat(List<Double> dataXFloat) {
-        this.dataXFloat = dataXFloat;
+    /**
+     * <p>Original spec-file type: Values</p>
+     * <pre>
+     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
+     * </pre>
+     * 
+     */
+    @JsonProperty("values_x")
+    public void setValuesX(us.kbase.kbasegenerics.Values valuesX) {
+        this.valuesX = valuesX;
     }
 
-    public GetGenericDataResult withDataXFloat(List<Double> dataXFloat) {
-        this.dataXFloat = dataXFloat;
+    public GetGenericDataResult withValuesX(us.kbase.kbasegenerics.Values valuesX) {
+        this.valuesX = valuesX;
         return this;
     }
 
-    @JsonProperty("data_y_float")
-    public List<List<Double>> getDataYFloat() {
-        return dataYFloat;
+    @JsonProperty("values_y")
+    public List<us.kbase.kbasegenerics.Values> getValuesY() {
+        return valuesY;
     }
 
-    @JsonProperty("data_y_float")
-    public void setDataYFloat(List<List<Double>> dataYFloat) {
-        this.dataYFloat = dataYFloat;
+    @JsonProperty("values_y")
+    public void setValuesY(List<us.kbase.kbasegenerics.Values> valuesY) {
+        this.valuesY = valuesY;
     }
 
-    public GetGenericDataResult withDataYFloat(List<List<Double>> dataYFloat) {
-        this.dataYFloat = dataYFloat;
+    public GetGenericDataResult withValuesY(List<us.kbase.kbasegenerics.Values> valuesY) {
+        this.valuesY = valuesY;
         return this;
     }
 
@@ -91,7 +112,7 @@ public class GetGenericDataResult {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((("GetGenericDataResult"+" [dataXFloat=")+ dataXFloat)+", dataYFloat=")+ dataYFloat)+", seriesLabels=")+ seriesLabels)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("GetGenericDataResult"+" [valuesX=")+ valuesX)+", valuesY=")+ valuesY)+", seriesLabels=")+ seriesLabels)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
