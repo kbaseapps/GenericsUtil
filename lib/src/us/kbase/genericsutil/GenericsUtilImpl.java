@@ -1386,6 +1386,68 @@ public class GenericsUtilImpl {
         List<Long> list = new ArrayList<Long>(remainingIndices);
         return list.get(0);
     }
+
+    /**
+       checks whether a dimension has unique subindices (required
+       for mergeUniqueIndices to work).
+    */
+    public static boolean hasUniqueSubindices(DimensionContext dc) {
+        int dLength = (int)(dc.getSize().longValue());
+        List<TypedValues> tvs = dc.getTypedValues();
+        int nIndices = tvs.size();
+
+        // keep track of objects, and of unique objects,
+        // in each subindex.
+        List<List> objects = new ArrayList<List>();
+        List<List> uniqueObjects = new ArrayList<List>();
+
+        for (int i=0; i<nIndices; i++) {
+            Values v = tvs.get(i).getValues();
+            Values uv = findUniqueValues(v);
+            String scalarType = v.getScalarType();
+
+            if (scalarType.equals("int")) {
+                objects.add(v.getIntValues());
+                uniqueObjects.add(uv.getIntValues());
+            }
+            else if (scalarType.equals("float")) {
+                objects.add(v.getFloatValues());
+                uniqueObjects.add(uv.getFloatValues());
+            }
+            else if (scalarType.equals("boolean")) {
+                objects.add(v.getBooleanValues());
+                uniqueObjects.add(uv.getBooleanValues());
+            }
+            else if (scalarType.equals("string")) {
+                objects.add(v.getStringValues());
+                uniqueObjects.add(uv.getStringValues());
+            }
+            else if (scalarType.equals("object_ref")) {
+                objects.add(v.getObjectRefs());
+                uniqueObjects.add(uv.getObjectRefs());
+            }
+            else if (scalarType.equals("oterm_ref")) {
+                objects.add(v.getOtermRefs());
+                uniqueObjects.add(uv.getOtermRefs());
+            }
+        }
+
+        // check that each index can be described by a
+        // unique combination of subindices
+        HashSet<String> usedIndices = new HashSet<String>();
+        for (int i=0; i<dLength; i++) {
+            String subindexCombo = "";
+            for (int j=0; j<nIndices; j++) {
+                Object o = objects.get(j).get(i);
+                int k = uniqueObjects.get(j).indexOf(o);
+                subindexCombo += "_"+k;
+            }
+            if (usedIndices.contains(subindexCombo))
+                return false;
+            usedIndices.add(subindexCombo);
+        }
+        return true;
+    }
     
     /**
        check object references to be sure they're real and readable
@@ -2279,11 +2341,13 @@ public class GenericsUtilImpl {
                 List<String> scalarTypes = new ArrayList<String>();
                 List<String> dimensionTypes = new ArrayList<String>();
                 List<Long> dimensionSizes = new ArrayList<Long>();
+                List<Long> hasUniqueSubindices = new ArrayList<Long>();
                 List<List<String>> dimensionValueTypes = new ArrayList<List<String>>();
                 List<List<String>> dimensionScalarTypes = new ArrayList<List<String>>();
                 for (DimensionContext dc : hnda.getDimContext()) {
                     dimensionTypes.add(toString(dc.getDataType(),false));
                     dimensionSizes.add(dc.getSize());
+                    hasUniqueSubindices.add(new Long(hasUniqueSubindices(dc) ? 1L : 0L));
                     List<String> dimensionValueType = new ArrayList<String>();
                     List<String> dimensionScalarType = new ArrayList<String>();
                     for (TypedValues tv : dc.getTypedValues()) {
@@ -2295,6 +2359,7 @@ public class GenericsUtilImpl {
                 }
                 gm.setDimensionTypes(dimensionTypes);
                 gm.setDimensionSizes(dimensionSizes);
+                gm.setHasUniqueSubindices(hasUniqueSubindices);
                 gm.setDimensionValueTypes(dimensionValueTypes);
                 gm.setDimensionScalarTypes(dimensionScalarTypes);
 
