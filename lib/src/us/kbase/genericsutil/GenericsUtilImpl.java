@@ -1180,27 +1180,37 @@ public class GenericsUtilImpl {
     }
 
     /**
+       Gets list of relevant objects from Values
+    */
+    public static List getObjects(Values v) {
+        String scalarType = v.getScalarType();
+        List rv = null;
+        if (scalarType.equals("int"))
+            rv = v.getIntValues();
+        else if (scalarType.equals("float"))
+            rv = v.getFloatValues();
+        else if (scalarType.equals("boolean"))
+            rv = v.getBooleanValues();
+        else if (scalarType.equals("string"))
+            rv = v.getStringValues();
+        else if (scalarType.equals("oterm_ref"))
+            rv = v.getOtermRefs();
+        else if (scalarType.equals("object_ref"))
+            rv = v.getObjectRefs();
+        return rv;
+    }
+
+    /**
        return a Values object that only includes unique
        values from another object
     */
     public static Values findUniqueValues(Values v) {
         String scalarType = v.getScalarType();
         Values rv = new Values().withScalarType(scalarType);
-        List oldV = null;
-        if (scalarType.equals("int"))
-            oldV = v.getIntValues();
-        else if (scalarType.equals("float"))
-            oldV = v.getFloatValues();
-        else if (scalarType.equals("boolean"))
-            oldV = v.getBooleanValues();
-        else if (scalarType.equals("oterm_ref"))
-            oldV = v.getOtermRefs();
-        else if (scalarType.equals("object_ref"))
-            oldV = v.getObjectRefs();
-
+        List oldV = getObjects(v);
         List newV = null;
 
-        if (oldV != null) {
+        if (!scalarType.equals("string")) {
             // converting to LinkedHashSet preserves order
             // while keeping only unique values
             LinkedHashSet lhs = new LinkedHashSet();
@@ -1340,39 +1350,15 @@ public class GenericsUtilImpl {
             Values uv = findUniqueValues(v);
             String scalarType = v.getScalarType();
 
-            List objects = null;
-            List uniqueObjects = null;
-            if (scalarType.equals("int")) {
-                objects = v.getIntValues();
-                uniqueObjects = uv.getIntValues();
-            }
-            else if (scalarType.equals("float")) {
-                objects = v.getFloatValues();
-                uniqueObjects = uv.getFloatValues();
-            }
-            else if (scalarType.equals("boolean")) {
-                objects = v.getBooleanValues();
-                uniqueObjects = uv.getBooleanValues();
-            }
-            else if (scalarType.equals("string")) {
-                objects = v.getStringValues();
-                uniqueObjects = uv.getStringValues();
-            }
-            else if (scalarType.equals("object_ref")) {
-                objects = v.getObjectRefs();
-                uniqueObjects = uv.getObjectRefs();
-            }
-            else if (scalarType.equals("oterm_ref")) {
-                objects = v.getOtermRefs();
-                uniqueObjects = uv.getOtermRefs();
-            }
+            List objects = getObjects(v);
+            List uniqueObjects = getObjects(uv);
             
             for (int j=0; j<dLength; j++) {
                 if (!remainingIndices.contains(new Long(j+1)))
                     continue;
                     
                 Object o = objects.get(j);
-                Object uo = uniqueObjects.get((int)(valueIndices.get(i).longValue()));
+                Object uo = uniqueObjects.get((int)(valueIndices.get(i).longValue())-1);
                 if (o==null) {
                     if (uo != null)
                         remainingIndices.remove(new Long(j+1));
@@ -1409,31 +1395,8 @@ public class GenericsUtilImpl {
             Values v = tvs.get(i).getValues();
             Values uv = findUniqueValues(v);
             String scalarType = v.getScalarType();
-
-            if (scalarType.equals("int")) {
-                objects.add(v.getIntValues());
-                uniqueObjects.add(uv.getIntValues());
-            }
-            else if (scalarType.equals("float")) {
-                objects.add(v.getFloatValues());
-                uniqueObjects.add(uv.getFloatValues());
-            }
-            else if (scalarType.equals("boolean")) {
-                objects.add(v.getBooleanValues());
-                uniqueObjects.add(uv.getBooleanValues());
-            }
-            else if (scalarType.equals("string")) {
-                objects.add(v.getStringValues());
-                uniqueObjects.add(uv.getStringValues());
-            }
-            else if (scalarType.equals("object_ref")) {
-                objects.add(v.getObjectRefs());
-                uniqueObjects.add(uv.getObjectRefs());
-            }
-            else if (scalarType.equals("oterm_ref")) {
-                objects.add(v.getOtermRefs());
-                uniqueObjects.add(uv.getOtermRefs());
-            }
+            objects.add(getObjects(v));
+            uniqueObjects.add(getObjects(uv));
         }
 
         // check that each index can be described by a
@@ -2378,11 +2341,11 @@ public class GenericsUtilImpl {
     }
 
     /**
-       Translates a dimension label into values.  If no 2nd
-       dimension specified, assumes 1st.
+       Translates a dimension label into the corresponding TypedValues
+       object.  If no 2nd dimension specified, assumes 1st.
     */
-    public static Values getValues(HNDArray hnda,
-                                   String dimensionID) throws Exception {
+    public static TypedValues getTypedValues(HNDArray hnda,
+                                             String dimensionID) throws Exception {
         int pos = dimensionID.indexOf("/");
         int dim1 = 1;
         int dim2 = 1;
@@ -2399,7 +2362,7 @@ public class GenericsUtilImpl {
         List<TypedValues> tvs = dc.getTypedValues();
         if ((dim2 < 1) || (dim2 > tvs.size()))
             throw new Exception("Error: dimension index '"+dimensionID+"'; out of bounds; second number must be in range 1-"+tvs.size());
-        return(tvs.get(dim2-1).getValues());
+        return(tvs.get(dim2-1));
     }
 
     /**
@@ -2432,7 +2395,7 @@ public class GenericsUtilImpl {
             hnda = od.getData().asClassInstance(HNDArray.class);
         
         for (String dimensionID : dimensionIDs) {
-            Values v = getValues(hnda, dimensionID);
+            Values v = getTypedValues(hnda, dimensionID).getValues();
             
             if ((params.getConvertToString() != null) &&
                 (params.getConvertToString().longValue()==1L)) {
@@ -2472,8 +2435,10 @@ public class GenericsUtilImpl {
         ObjectData od = wc.getObjects2(new GetObjects2Params().withObjects(Arrays.asList(new ObjectSpecification().withRef(objectID).withIncluded(Arrays.asList("/dim_context","/typed_values"))))).getData().get(0);
         String objectType = getTypeFromObjectInfo(od.getInfo());
         HNDArray hnda = null;
+        boolean isHeterogeneous = true;
         if (objectType.startsWith("KBaseGenerics.NDArray")) {
             NDArray nda = od.getData().asClassInstance(NDArray.class);
+            isHeterogeneous = false;
             hnda = makeHNDArray(nda);
         }
         else
@@ -2484,8 +2449,10 @@ public class GenericsUtilImpl {
         // fix subindices; otherwise, we must fix the whole dimension
         LinkedHashSet<String> allDimensionIDs = new LinkedHashSet<String>();
         List<DimensionContext> dcs = hnda.getDimContext();
+        List<Long> dLengths = new ArrayList<Long>();
         for (int i=0; i<dcs.size(); i++) {
             DimensionContext dc = dcs.get(i);
+            dLengths.add(new Long((long)dc.getSize()));
             if (hasUniqueSubindices(dc)) {
                 List<TypedValues> tvs = dc.getTypedValues();
                 for (int j=0; j<tvs.size(); j++)
@@ -2548,21 +2515,112 @@ public class GenericsUtilImpl {
         // and save any remaining dimensions as variable
         variableDimensionIDs.addAll(allDimensionIDs);
 
-        // must be at least 1 variable dimension
-        if (variableDimensionIDs.size() < 1)
-            throw new Exception("There must be at least one variable dimension");
+        // must be at least 2 variable dimensions
+        // to return X and Y
+        int nVariableDimensions = variableDimensionIDs.size();
+        if (nVariableDimensions < 2)
+            throw new Exception("There must be at least two variable dimensions");
 
         // make the first variable dimension the X axis
         String dimX = variableDimensionIDs.get(0);
-        Values valuesX = getValues(hnda,dimX);
+        Values valuesX = getTypedValues(hnda,dimX).getValues();
         if (dimX.indexOf("/") > 0)
             valuesX = findUniqueValues(valuesX);
 
-        // loop over all other variable dimensions
+        // set up loop over all other variable dimensions
         List<String> seriesLabels = new ArrayList<String>();
         List<Values> valuesY = new ArrayList<Values>();
-        
-        
+        List<List> variableValues = new ArrayList<List>();
+        List<String> variableNames = new ArrayList<String>();
+        List<Long> curIndex = new ArrayList<Long>();
+        int nSeries = 1;
+        for (int i=1; i<nVariableDimensions; i++) {
+            TypedValues tv = getTypedValues(hnda,variableDimensionIDs.get(i));
+            Values v = tv.getValues();
+            if (variableDimensionIDs.get(i).indexOf("/") > 0)
+                v = findUniqueValues(v);
+            List objects = getObjects(v);
+            variableValues.add(objects);
+            nSeries *= objects.size();
+            variableNames.add(toString(tv,false));
+            curIndex.add(new Long(1L));
+        }
+
+        // loop over all variable dimensions
+        for (int i=0; i<nSeries; i++) {
+            // fix all constant and variable dimensions
+            HashMap<String,Long> fixedDimensionMap = new LinkedHashMap<String,Long>();
+            fixedDimensionMap.putAll(constantDimensionIDMap);
+            String seriesLabel = "";
+            for (int j=0; j<variableNames.size(); j++) {
+                if (j>0)
+                    seriesLabel += " & ";
+                fixedDimensionMap.put(variableDimensionIDs.get(j+1),
+                                      curIndex.get(j));
+                seriesLabel += variableNames.get(j)
+                    + " = "
+                    + variableValues.get(j).get((int)(curIndex.get(j).longValue())-1);
+            }
+            
+            // calculate the unique indices for each dimension
+            List<Long> fixedIndices = new ArrayList<Long>();
+            for (int j=0; j<dLengths.size(); j++) {
+                String dim1 = (j+1)+"";
+                if (fixedDimensionMap.get(dim1) != null)
+                    fixedIndices.add(fixedDimensionMap.get(dim1));
+                else {
+                    // see if all subindices are fixed
+                    DimensionContext dc = dcs.get(j);
+                    boolean found = true;
+                    List<Long> valueIndices = new ArrayList<Long>();
+                    List<TypedValues> tvs = dc.getTypedValues();
+                    for (int k=0; k<tvs.size(); k++) {
+                        String dimensionID = dim1 + "/" + (k+1);
+                        Long l = fixedDimensionMap.get(dimensionID);
+                        if (l==null)
+                            found = false;
+                        else
+                            valueIndices.add(l);
+                    }
+                    if (found)
+                        fixedIndices.add(mergeUniqueIndices(dc,
+                                                            valueIndices));
+                    else
+                        fixedIndices.add(null);
+                }
+            }
+            
+            // find the right set of values and fix them
+            Long hetIndex = new Long(1L);
+            if (isHeterogeneous) {
+                hetIndex = fixedIndices.get(0);
+                if (hetIndex==null)
+                    throw new Exception("If getting data from heterogeneous matrix, the heterogeneous dimension can't be the X axis");
+                hetIndex++;
+                fixedIndices.remove(0);
+            }
+            Values v = hnda.getTypedValues().get((int)(hetIndex.longValue())-1).getValues();
+            Values seriesValues = fixValues(v,
+                                            dLengths,
+                                            fixedIndices);
+
+            // save the data for return to caller
+            valuesY.add(seriesValues);
+            seriesLabels.add(seriesLabel);
+            
+            // increment all indices
+            Long l = curIndex.get(0);
+            l++;
+            curIndex.set(0,l);
+            for (int j=0; j<variableNames.size()-1; j++) {
+                if (curIndex.get(j) > variableValues.get(j).size()) {
+                    curIndex.set(j,new Long(1L));
+                    l = curIndex.get(j+1);
+                    l++;
+                    curIndex.set(j+1,l);
+                }
+            }
+        }
 
         GetGenericDataResult rv = new GetGenericDataResult()
             .withValuesX(valuesX)
