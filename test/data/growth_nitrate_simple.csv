@@ -1,8 +1,8 @@
 name, N2E2_nitrate_growth
 description, N2E2 growth data on nitrate
 type, microbial growth <DA:0000018>
-values, optical density <ME:0000168>, dimensionless unit <UO:0000186>
-meta, temperature <ME:0000164>, 30, degree Celsius <UO:0000027>
+values, optical density <ME:0000126>, dimensionless unit <UO:0000186>
+meta, temperature <ME:0000122>, 30, degree Celsius <UO:0000027>
 meta, date <ME:0000009>, 2014-03-11
 meta, strain name <ME:0000042>, N2E2
 size, 8, 5
@@ -15,7 +15,7 @@ dmeta, 1, time series <ME:0000004>, time since inoculation <ME:0000080>, hour <U
 6, 52
 7, 69
 8, 75
-dmeta, 2, condition <ME:0000006>, concentration <ME:0000170>, molecule <ME:0000027>, nitrate <CHEBI:17632>, mM <UO:0000063>
+dmeta, 2, condition <ME:0000006>, concentration <ME:0000128>, molecule <ME:0000027>, nitrate <CHEBI:17632>, mM <UO:0000063>
 1, 0.01
 2, 0.10
 3, 1.0

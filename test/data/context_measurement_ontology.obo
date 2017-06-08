@@ -880,749 +880,450 @@ is_a: ME:0000110
 
 [Term]
 id: ME:0000119
-name: ENIGMA
-def: "ENIGMA." []
-namespace: measure.ontology
-is_a: ME:0000000
-
-[Term]
-id: ME:0000120
-name: ENIGMA Campaign
-def: "ENIGMA Campaign." []
-namespace: measure.ontology
-is_a: ME:0000119
-
-[Term]
-id: ME:0000121
-name: 100 Well Survey
-def: "100 Well Survey." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000122
-name: ENIGMA Microbial Isolation Characterization
-def: "ENIGMA Microbial Isolation Characterization." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000123
-name: Printable Worlds
-def: "Printable Worlds." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000124
-name: Predictive Network Biology
-def: "Predictive Network Biology." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000125
-name: Time Series
-def: "Time Series." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000126
-name: Memory
-def: "Memory." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000127
-name: Groundwater
-def: "Groundwater." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000128
-name: Natural and Synthetic Ecologies
-def: "Natural and Synthetic Ecologies." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000129
-name: Microparticle
-def: "Microparticle." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000130
-name: Metal Metabolism
-def: "Metal Metabolism." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000131
-name: Microbial Assembly Evolution
-def: "Microbial Assembly Evolution." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000132
-name: BigEMAC
-def: "BigEMAC." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000133
-name: Constructed Community
-def: "Constructed Community." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000134
-name: Sediment-Core
-def: "Sediment-Core." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000135
-name: Nitrate Respiratory Activity
-def: "Nitrate Respiratory Activity." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000136
-name: State
-def: "State." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000137
-name: UPO
-def: "UPO." []
-namespace: measure.ontology
-is_a: ME:0000120
-
-[Term]
-id: ME:0000138
-name: ENIGMA PI
-def: "ENIGMA PI." []
-namespace: measure.ontology
-is_a: ME:0000119
-
-[Term]
-id: ME:0000139
-name: Mike Adams
-def: "Mike Adams." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000140
-name: Paul Adams
-def: "Paul Adams." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000141
-name: Eric Alm
-def: "Eric Alm." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000142
-name: Adam Arkin
-def: "Adam Arkin." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000143
-name: Nitin Baliga
-def: "Nitin Baliga." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000144
-name: Kelly Bender
-def: "Kelly Bender." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000145
-name: Steven Brenner
-def: "Steven Brenner." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000146
-name: Gareth Butland
-def: "Gareth Butland." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000147
-name: Romy Chakraborty
-def: "Romy Chakraborty." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000148
-name: John-Marc Chandonia
-def: "John-Marc Chandonia." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000149
-name: Adam Deutschbauer
-def: "Adam Deutschbauer." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000150
-name: Dwayne Elias
-def: "Dwayne Elias." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000151
-name: Matthew Fields
-def: "Matthew Fields." []
-namespace: measure.ontology
-is_a: ME:0000138
-synonym: "Matt Fields" EXACT []
-
-[Term]
-id: ME:0000152
-name: Terry Hazen
-def: "Terry Hazen." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000153
-name: Trent Northen
-def: "Trent Northen." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000154
-name: Pavel Novichkov
-def: "Pavel Novichkov." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000155
-name: Andrilla Mukhopadhyay
-def: "Andrilla Mukhopadhyay." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000156
-name: Anup Singh
-def: "Anup Singh." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000157
-name: David Stahl
-def: "David Stahl." []
-namespace: measure.ontology
-is_a: ME:0000138
-synonym: "Dave Stahl" EXACT []
-
-[Term]
-id: ME:0000158
-name: Gary Suizdak
-def: "Gary Suizdak." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000159
-name: Judy Wall
-def: "Judy Wall." []
-namespace: measure.ontology
-is_a: ME:0000138
-
-[Term]
-id: ME:0000160
-name: Jizhong Joe Zhou
-def: "Jizhong Joe Zhou." []
-namespace: measure.ontology
-is_a: ME:0000138
-synonym: "Jizhong Zhou" EXACT []
-synonym: "Joe Zhou" EXACT []
-synonym: "Joe Jizhong Zhou" EXACT []
-
-[Term]
-id: ME:0000161
 name: Measurement
 def: "Measurement." []
 namespace: measure.ontology
 is_a: ME:0000000
 
 [Term]
-id: ME:0000162
+id: ME:0000120
 name: pH
 def: "pH." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000163
+id: ME:0000121
 name: Time
 def: "Time." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000164
+id: ME:0000122
 name: Temperature
 def: "Temperature." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000165
+id: ME:0000123
 name: Conductivity
 def: "Conductivity." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000166
+id: ME:0000124
 name: Redox Potential
 def: "Redox Potential." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000167
+id: ME:0000125
 name: Count
 def: "Count." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type int
 
 [Term]
-id: ME:0000168
+id: ME:0000126
 name: Optical Density
 def: "Optical Density." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000169
+id: ME:0000127
 name: Size
 def: "Size." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000170
+id: ME:0000128
 name: Concentration
 def: "Concentration." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000171
+id: ME:0000129
 name: Hybridization Intensity
 def: "Hybridization Intensity." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000172
+id: ME:0000130
 name: Expression Level
 def: "Expression Level." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000173
+id: ME:0000131
 name: Enzyme Activity
 def: "Enzyme Activity." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000174
+id: ME:0000132
 name: Absorbance
 def: "Absorbance." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000175
+id: ME:0000133
 name: Heat
 def: "Heat." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000176
+id: ME:0000134
 name: Mass
 def: "Mass." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000177
+id: ME:0000135
 name: Mutation
 def: "Mutation." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type string
 
 [Term]
-id: ME:0000178
+id: ME:0000136
 name: Genetic Interaction Score
 def: "Genetic Interaction Score." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000179
+id: ME:0000137
 name: Stoichiometric Ratio
 def: "Stoichiometric Ratio." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000180
+id: ME:0000138
 name: Abundance
 def: "Abundance." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type float
 
 [Term]
-id: ME:0000181
+id: ME:0000139
 name: Binary
 def: "Binary." []
 namespace: measure.ontology
-is_a: ME:0000161
+is_a: ME:0000119
 property_value: data_type boolean
 
 [Term]
-id: ME:0000182
+id: ME:0000140
 name: Growth
 def: "Growth." []
 namespace: measure.ontology
-is_a: ME:0000181
+is_a: ME:0000139
 
 [Term]
-id: ME:0000183
+id: ME:0000141
 name: Activity
 def: "Activity." []
 namespace: measure.ontology
-is_a: ME:0000181
+is_a: ME:0000139
 
 [Term]
-id: ME:0000184
+id: ME:0000142
 name: Presence
 def: "Presence." []
 namespace: measure.ontology
-is_a: ME:0000181
+is_a: ME:0000139
 
 [Term]
-id: ME:0000185
+id: ME:0000143
 name: Essentiality
 def: "Essentiality." []
 namespace: measure.ontology
-is_a: ME:0000181
+is_a: ME:0000139
 
 [Term]
-id: ME:0000186
+id: ME:0000144
 name: Statistic
 def: "Statistic." []
 namespace: measure.ontology
 is_a: ME:0000000
 
 [Term]
-id: ME:0000187
+id: ME:0000145
 name: Average
 def: "Average." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000188
+id: ME:0000146
 name: Difference
 def: "Difference." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000189
+id: ME:0000147
 name: Standard Deviation
 def: "Standard Deviation." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000190
+id: ME:0000148
 name: Standard Error
 def: "Standard Error." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000191
+id: ME:0000149
 name: Minimum
 def: "Minimum." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000192
+id: ME:0000150
 name: Maximum
 def: "Maximum." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000193
+id: ME:0000151
 name: Median
 def: "Median." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000194
+id: ME:0000152
 name: Ratio
 def: "Ratio." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000195
+id: ME:0000153
 name: Log Ratio
 def: "Log Ratio." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000196
+id: ME:0000154
 name: p Value
 def: "p Value." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000197
+id: ME:0000155
 name: T Score
 def: "T Score." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000198
+id: ME:0000156
 name: Frequency
 def: "Frequency." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000199
+id: ME:0000157
 name: Fold Enrichment
 def: "Fold Enrichment." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000200
+id: ME:0000158
 name: Evaluation
 def: "Evaluation." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 
 [Term]
-id: ME:0000201
+id: ME:0000159
 name: Precision
 def: "Precision." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type float
 
 [Term]
-id: ME:0000202
+id: ME:0000160
 name: Recall
 def: "Recall." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type float
 
 [Term]
-id: ME:0000203
+id: ME:0000161
 name: TP
 def: "TP." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type int
 
 [Term]
-id: ME:0000204
+id: ME:0000162
 name: FP
 def: "FP." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type int
 
 [Term]
-id: ME:0000205
+id: ME:0000163
 name: TN
 def: "TN." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type int
 
 [Term]
-id: ME:0000206
+id: ME:0000164
 name: FN
 def: "FN." []
 namespace: measure.ontology
-is_a: ME:0000200
+is_a: ME:0000158
 property_value: data_type int
 
 [Term]
-id: ME:0000207
+id: ME:0000165
 name: Correlation
 def: "Correlation." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 property_value: data_type float
 
 [Term]
-id: ME:0000208
+id: ME:0000166
 name: Pearson
 def: "Pearson." []
 namespace: measure.ontology
-is_a: ME:0000207
+is_a: ME:0000165
 
 [Term]
-id: ME:0000209
+id: ME:0000167
 name: Spearman
 def: "Spearman." []
 namespace: measure.ontology
-is_a: ME:0000207
+is_a: ME:0000165
 
 [Term]
-id: ME:0000210
+id: ME:0000168
 name: Kendall tau
 def: "Kendall tau." []
 namespace: measure.ontology
-is_a: ME:0000207
+is_a: ME:0000165
 
 [Term]
-id: ME:0000211
+id: ME:0000169
 name: Goodman and Kruskal's gamma
 def: "Goodman and Kruskal's gamma." []
 namespace: measure.ontology
-is_a: ME:0000207
+is_a: ME:0000165
 
 [Term]
-id: ME:0000212
+id: ME:0000170
 name: Multivariate Analysis
 def: "Multivariate Analysis." []
 namespace: measure.ontology
-is_a: ME:0000186
+is_a: ME:0000144
 
 [Term]
-id: ME:0000213
+id: ME:0000171
 name: Factor Analysis
 def: "Factor Analysis." []
 namespace: measure.ontology
-is_a: ME:0000212
+is_a: ME:0000170
 
 [Term]
-id: ME:0000214
+id: ME:0000172
 name: Factor
 def: "Factor." []
 namespace: measure.ontology
-is_a: ME:0000213
+is_a: ME:0000171
 property_value: data_type int
 
 [Term]
-id: ME:0000215
+id: ME:0000173
 name: Factor Loading
 def: "Factor Loading." []
 namespace: measure.ontology
-is_a: ME:0000213
+is_a: ME:0000171
 property_value: data_type float
 
 [Term]
-id: ME:0000216
+id: ME:0000174
 name: Principal Component Analysis
 def: "Principal Component Analysis." []
 namespace: measure.ontology
-is_a: ME:0000212
+is_a: ME:0000170
 
 [Term]
-id: ME:0000217
+id: ME:0000175
 name: Principal Component
 def: "Principal Component." []
 namespace: measure.ontology
-is_a: ME:0000216
+is_a: ME:0000174
 property_value: data_type int
 
 [Term]
-id: ME:0000218
+id: ME:0000176
 name: Weight
 def: "Weight." []
 namespace: measure.ontology
-is_a: ME:0000216
+is_a: ME:0000174
 property_value: data_type float

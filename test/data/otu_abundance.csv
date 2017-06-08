@@ -1,7 +1,7 @@
 name, OTU_abundance_FW215
 description, Phyla of OTUs found in FW215 by 16S survey
 type, taxonomic abundance <DA:0000026>
-values, abundance <ME:0000180>, context <ME:0000001>, relative <ME:0000020>, dimensionless unit <UO:0000186>
+values, abundance <ME:0000138>, context <ME:0000001>, relative <ME:0000020>, dimensionless unit <UO:0000186>
 meta, well <ME:0000098>, FW215
 meta, date <ME:0000009>, 2009
 meta, condition <ME:0000006>, EVO pre-injection
