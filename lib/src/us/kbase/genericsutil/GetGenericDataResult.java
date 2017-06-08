@@ -20,52 +20,46 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
+    "series_labels",
     "values_x",
-    "values_y",
-    "series_labels"
+    "values_y"
 })
 public class GetGenericDataResult {
 
-    /**
-     * <p>Original spec-file type: Values</p>
-     * <pre>
-     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
-     * </pre>
-     * 
-     */
-    @JsonProperty("values_x")
-    private us.kbase.kbasegenerics.Values valuesX;
-    @JsonProperty("values_y")
-    private List<us.kbase.kbasegenerics.Values> valuesY;
     @JsonProperty("series_labels")
     private List<String> seriesLabels;
+    @JsonProperty("values_x")
+    private List<us.kbase.kbasegenerics.Values> valuesX;
+    @JsonProperty("values_y")
+    private List<us.kbase.kbasegenerics.Values> valuesY;
     private Map<java.lang.String, Object> additionalProperties = new HashMap<java.lang.String, Object>();
 
-    /**
-     * <p>Original spec-file type: Values</p>
-     * <pre>
-     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
-     * </pre>
-     * 
-     */
+    @JsonProperty("series_labels")
+    public List<String> getSeriesLabels() {
+        return seriesLabels;
+    }
+
+    @JsonProperty("series_labels")
+    public void setSeriesLabels(List<String> seriesLabels) {
+        this.seriesLabels = seriesLabels;
+    }
+
+    public GetGenericDataResult withSeriesLabels(List<String> seriesLabels) {
+        this.seriesLabels = seriesLabels;
+        return this;
+    }
+
     @JsonProperty("values_x")
-    public us.kbase.kbasegenerics.Values getValuesX() {
+    public List<us.kbase.kbasegenerics.Values> getValuesX() {
         return valuesX;
     }
 
-    /**
-     * <p>Original spec-file type: Values</p>
-     * <pre>
-     * @optional object_refs oterm_refs int_values float_values string_values boolean_values
-     * </pre>
-     * 
-     */
     @JsonProperty("values_x")
-    public void setValuesX(us.kbase.kbasegenerics.Values valuesX) {
+    public void setValuesX(List<us.kbase.kbasegenerics.Values> valuesX) {
         this.valuesX = valuesX;
     }
 
-    public GetGenericDataResult withValuesX(us.kbase.kbasegenerics.Values valuesX) {
+    public GetGenericDataResult withValuesX(List<us.kbase.kbasegenerics.Values> valuesX) {
         this.valuesX = valuesX;
         return this;
     }
@@ -85,21 +79,6 @@ public class GetGenericDataResult {
         return this;
     }
 
-    @JsonProperty("series_labels")
-    public List<String> getSeriesLabels() {
-        return seriesLabels;
-    }
-
-    @JsonProperty("series_labels")
-    public void setSeriesLabels(List<String> seriesLabels) {
-        this.seriesLabels = seriesLabels;
-    }
-
-    public GetGenericDataResult withSeriesLabels(List<String> seriesLabels) {
-        this.seriesLabels = seriesLabels;
-        return this;
-    }
-
     @JsonAnyGetter
     public Map<java.lang.String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -112,7 +91,7 @@ public class GetGenericDataResult {
 
     @Override
     public java.lang.String toString() {
-        return ((((((((("GetGenericDataResult"+" [valuesX=")+ valuesX)+", valuesY=")+ valuesY)+", seriesLabels=")+ seriesLabels)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("GetGenericDataResult"+" [seriesLabels=")+ seriesLabels)+", valuesX=")+ valuesX)+", valuesY=")+ valuesY)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }

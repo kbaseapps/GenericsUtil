@@ -765,9 +765,9 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	values_x has a value which is a KBaseGenerics.Values
-	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 	series_labels has a value which is a reference to a list where each element is a string
+	values_x has a value which is a reference to a list where each element is a KBaseGenerics.Values
+	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 Values is a reference to a hash where the following keys are defined:
 	scalar_type has a value which is a KBaseGenerics.data_type
 	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
@@ -794,9 +794,9 @@ GetGenericDataParams is a reference to a hash where the following keys are defin
 	variable_dimension_ids has a value which is a reference to a list where each element is a string
 	constant_dimension_ids has a value which is a reference to a hash where the key is a string and the value is an int
 GetGenericDataResult is a reference to a hash where the following keys are defined:
-	values_x has a value which is a KBaseGenerics.Values
-	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 	series_labels has a value which is a reference to a list where each element is a string
+	values_x has a value which is a reference to a list where each element is a KBaseGenerics.Values
+	values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 Values is a reference to a hash where the following keys are defined:
 	scalar_type has a value which is a KBaseGenerics.data_type
 	object_refs has a value which is a reference to a list where each element is a KBaseGenerics.object_ref
@@ -1547,11 +1547,15 @@ of labels, or by fixing a dimension index (e.g., "2/3" for the
 list of unique labels for that dimension index.
 
 returns:
-values_x will contain the list of x-axis values
-values_y will contain 1 list of of y-axis values per series.  The number
-  of series depends on the number of variable dimensions.
 series_labels will show which variable index values correspond
   to which series
+values_x will contain 1 list of of x-axis values per series.  The number
+  of series depends on the number of variable dimensions.
+values_y will contain 1 list of of y-axis values per series.  The number
+  of series depends on the number of variable dimensions.
+
+In each series, values where both the X and Y data are null are
+  be removed.
 
 
 =item Definition
@@ -1594,9 +1598,9 @@ constant_dimension_ids has a value which is a reference to a hash where the key 
 
 <pre>
 a reference to a hash where the following keys are defined:
-values_x has a value which is a KBaseGenerics.Values
-values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 series_labels has a value which is a reference to a list where each element is a string
+values_x has a value which is a reference to a list where each element is a KBaseGenerics.Values
+values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 
 </pre>
 
@@ -1605,9 +1609,9 @@ series_labels has a value which is a reference to a list where each element is a
 =begin text
 
 a reference to a hash where the following keys are defined:
-values_x has a value which is a KBaseGenerics.Values
-values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 series_labels has a value which is a reference to a list where each element is a string
+values_x has a value which is a reference to a list where each element is a KBaseGenerics.Values
+values_y has a value which is a reference to a list where each element is a KBaseGenerics.Values
 
 
 =end text

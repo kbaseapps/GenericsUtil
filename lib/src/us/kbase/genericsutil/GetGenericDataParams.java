@@ -27,11 +27,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *  3rd type of values in the 2nd dimension) to an index in the
  * list of unique labels for that dimension index.
  * returns:
- * values_x will contain the list of x-axis values
- * values_y will contain 1 list of of y-axis values per series.  The number
- *   of series depends on the number of variable dimensions.
  * series_labels will show which variable index values correspond
  *   to which series
+ * values_x will contain 1 list of of x-axis values per series.  The number
+ *   of series depends on the number of variable dimensions.
+ * values_y will contain 1 list of of y-axis values per series.  The number
+ *   of series depends on the number of variable dimensions.
+ * In each series, values where both the X and Y data are null are
+ *   be removed.
  * </pre>
  * 
  */

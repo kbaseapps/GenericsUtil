@@ -182,21 +182,24 @@ class GenericsUtil(object):
            complete list of labels, or by fixing a dimension index (e.g.,
            "2/3" for the 3rd type of values in the 2nd dimension) to an index
            in the list of unique labels for that dimension index. returns:
-           values_x will contain the list of x-axis values values_y will
-           contain 1 list of of y-axis values per series.  The number of
-           series depends on the number of variable dimensions. series_labels
-           will show which variable index values correspond to which series)
-           -> structure: parameter "object_id" of String, parameter
-           "variable_dimension_ids" of list of String, parameter
-           "constant_dimension_ids" of mapping from String to Long
+           series_labels will show which variable index values correspond to
+           which series values_x will contain 1 list of of x-axis values per
+           series.  The number of series depends on the number of variable
+           dimensions. values_y will contain 1 list of of y-axis values per
+           series.  The number of series depends on the number of variable
+           dimensions. In each series, values where both the X and Y data are
+           null are be removed.) -> structure: parameter "object_id" of
+           String, parameter "variable_dimension_ids" of list of String,
+           parameter "constant_dimension_ids" of mapping from String to Long
         :returns: instance of type "GetGenericDataResult" -> structure:
-           parameter "values_x" of type "Values" (@optional object_refs
-           oterm_refs int_values float_values string_values boolean_values)
-           -> structure: parameter "scalar_type" of type "data_type",
-           parameter "object_refs" of list of type "object_ref", parameter
-           "oterm_refs" of list of type "oterm_ref", parameter "int_values"
-           of list of Long, parameter "float_values" of list of Double,
-           parameter "boolean_values" of list of type "boolean", parameter
+           parameter "series_labels" of list of String, parameter "values_x"
+           of list of type "Values" (@optional object_refs oterm_refs
+           int_values float_values string_values boolean_values) ->
+           structure: parameter "scalar_type" of type "data_type", parameter
+           "object_refs" of list of type "object_ref", parameter "oterm_refs"
+           of list of type "oterm_ref", parameter "int_values" of list of
+           Long, parameter "float_values" of list of Double, parameter
+           "boolean_values" of list of type "boolean", parameter
            "string_values" of list of String, parameter "values_y" of list of
            type "Values" (@optional object_refs oterm_refs int_values
            float_values string_values boolean_values) -> structure: parameter
@@ -204,8 +207,7 @@ class GenericsUtil(object):
            of type "object_ref", parameter "oterm_refs" of list of type
            "oterm_ref", parameter "int_values" of list of Long, parameter
            "float_values" of list of Double, parameter "boolean_values" of
-           list of type "boolean", parameter "string_values" of list of
-           String, parameter "series_labels" of list of String
+           list of type "boolean", parameter "string_values" of list of String
         """
         return self._client.call_method(
             'GenericsUtil.get_generic_data',

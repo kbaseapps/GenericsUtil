@@ -189,11 +189,15 @@ module GenericsUtil {
     list of unique labels for that dimension index.
 
     returns:
-    values_x will contain the list of x-axis values
-    values_y will contain 1 list of of y-axis values per series.  The number
-      of series depends on the number of variable dimensions.
     series_labels will show which variable index values correspond
       to which series
+    values_x will contain 1 list of of x-axis values per series.  The number
+      of series depends on the number of variable dimensions.
+    values_y will contain 1 list of of y-axis values per series.  The number
+      of series depends on the number of variable dimensions.
+
+    In each series, values where both the X and Y data are null are
+      be removed.
     */
     typedef structure {
 	string object_id;
@@ -202,9 +206,9 @@ module GenericsUtil {
     } GetGenericDataParams;
 
     typedef structure {
-        KBaseGenerics.Values values_x;
-        list<KBaseGenerics.Values> values_y;
         list<string> series_labels;
+        list<KBaseGenerics.Values> values_x;
+        list<KBaseGenerics.Values> values_y;
     } GetGenericDataResult;
 
     funcdef get_generic_data(GetGenericDataParams params)
