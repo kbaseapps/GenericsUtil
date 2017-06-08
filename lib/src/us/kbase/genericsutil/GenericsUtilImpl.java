@@ -1714,7 +1714,7 @@ public class GenericsUtilImpl {
                 t.setOtermRef(ref);
                 String dictName = od.getTerm(ref);
                 if (!od.matches(ref,name))
-                    System.out.println("mapping "+name+" to "+dictName);
+                    System.out.println("mapping "+name+" to dictionary term "+dictName);
                 t.setOtermName(dictName);
             }
             rv = true;
