@@ -877,34 +877,21 @@ public class GenericsUtilImpl {
         String scalarType = v.getScalarType();
 
         // get correct set(s) of values
-        Object[] objects = null;
-        Object[] refs = null;
-        if (scalarType.equals("int"))
-            objects = v.getIntValues().toArray();
-        else if (scalarType.equals("float"))
-            objects = v.getFloatValues().toArray();
-        else if (scalarType.equals("boolean"))
-            objects = v.getBooleanValues().toArray();
-        else {
-            objects = v.getStringValues().toArray();
-            if (scalarType.equals("object_ref"))
-                refs = v.getObjectRefs().toArray();
-            else if (scalarType.equals("oterm_ref"))
-                refs = v.getOtermRefs().toArray();
-        }
+        List objects = getObjects(v);
+        List refs = getRefs(v);
 
         // print out the values
         for (int i=0; i<length; i++) {
-            if (objects[i] != null) {
+            if (objects.get(i) != null) {
                 if (prefix != null)
                     line.add(prefix.toString());
                 for (int j=0; j<nDimensions; j++)
                     line.add(indices[j].toString());
-                String s = objects[i].toString();
+                String s = objects.get(i).toString();
                 if (includeRefs &&
                     (refs != null) &&
-                    (refs[i] != null))
-                    s += " <"+refs[i].toString()+">";
+                    (refs.get(i) != null))
+                    s += " <"+refs.get(i).toString()+">";
                 line.add(s);
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
@@ -1191,9 +1178,21 @@ public class GenericsUtilImpl {
             rv = v.getFloatValues();
         else if (scalarType.equals("boolean"))
             rv = v.getBooleanValues();
-        else if (scalarType.equals("string"))
+        else if ((scalarType.equals("string")) ||
+                 (scalarType.equals("oterm_ref")) ||
+                 (scalarType.equals("object_ref")))
             rv = v.getStringValues();
-        else if (scalarType.equals("oterm_ref"))
+        return rv;
+    }
+    
+    /**
+       Gets list of relevant refs from Values, or null
+       if it doesn't have the right scalar type
+    */
+    public static List getRefs(Values v) {
+        String scalarType = v.getScalarType();
+        List rv = null;
+        if (scalarType.equals("oterm_ref"))
             rv = v.getOtermRefs();
         else if (scalarType.equals("object_ref"))
             rv = v.getObjectRefs();
@@ -1201,44 +1200,75 @@ public class GenericsUtilImpl {
     }
 
     /**
+       Sets list of relevant objects in Values
+    */
+    public static void setObjects(Values v, List objects) {
+        String scalarType = v.getScalarType();
+        if (scalarType.equals("int"))
+            v.setIntValues(objects);
+        else if (scalarType.equals("float"))
+            v.setFloatValues(objects);
+        else if (scalarType.equals("boolean"))
+            v.setBooleanValues(objects);
+        else if ((scalarType.equals("string")) ||
+                 (scalarType.equals("oterm_ref")) ||
+                 (scalarType.equals("object_ref")))
+            v.setStringValues(objects);
+    }
+    
+    /**
+       Sets list of relevant refs in Values; does nothing
+       if not a reference type
+    */
+    public static void setRefs(Values v, List refs) {
+        String scalarType = v.getScalarType();
+        if (scalarType.equals("oterm_ref"))
+            v.setOtermRefs(refs);
+        else if (scalarType.equals("object_ref"))
+            v.setObjectRefs(refs);
+    }
+
+    /**
+       Copy values, so that items can be removed from lists.
+       Does not make deep copy of objects inside of the lists.
+    */
+    public static Values copyValues(Values v) {
+        Values rv = new Values().withScalarType(v.getScalarType());
+        List objects = getObjects(v);
+        List refs = getRefs(v);
+        setObjects(rv,new ArrayList(objects));
+        if (refs != null)
+            setRefs(rv,new ArrayList(refs));
+        return rv;
+    }
+    
+    /**
        return a Values object that only includes unique
        values from another object
     */
     public static Values findUniqueValues(Values v) {
-        String scalarType = v.getScalarType();
-        Values rv = new Values().withScalarType(scalarType);
-        List oldV = getObjects(v);
-        List newV = null;
+        Values rv = new Values().withScalarType(v.getScalarType());
+        List oldObjects = getObjects(v);
+        List oldRefs = getRefs(v);
+        int n = oldObjects.size();
 
-        if (!scalarType.equals("string")) {
-            // converting to LinkedHashSet preserves order
-            // while keeping only unique values
-            LinkedHashSet lhs = new LinkedHashSet();
-            lhs.addAll(oldV);
-            newV = new ArrayList(lhs);
+        List newObjects = new ArrayList();
+        List newRefs = new ArrayList();
+
+        HashSet h = new HashSet();
+        for (int i=0; i<n; i++) {
+            Object o = oldObjects.get(i);
+            if (!h.contains(o)) {
+                h.add(o);
+                newObjects.add(o);
+                if (oldRefs != null)
+                    newRefs.add(oldRefs.get(i));
+            }
         }
 
-        if (scalarType.equals("int"))
-            rv.setIntValues(newV);
-        else if (scalarType.equals("float"))
-            rv.setFloatValues(newV);
-        else if (scalarType.equals("boolean"))
-            rv.setBooleanValues(newV);
-        else if (scalarType.equals("oterm_ref"))
-            rv.setOtermRefs(newV);
-        else if (scalarType.equals("object_ref"))
-            rv.setObjectRefs(newV);
+        setObjects(rv,newObjects);
+        setRefs(rv,newRefs);
 
-        // ref types also store data in the string array
-        if ((scalarType.equals("string")) ||
-            (scalarType.equals("oterm_ref")) ||
-            (scalarType.equals("object_ref"))) {
-            oldV = v.getStringValues();
-            LinkedHashSet lhs = new LinkedHashSet();
-            lhs.addAll(oldV);
-            newV = new ArrayList(lhs);
-            rv.setStringValues(newV);
-        }
         return rv;
     }
 
@@ -1250,26 +1280,9 @@ public class GenericsUtilImpl {
     public static Values fixValues(Values v,
                                    List<Long> dLengths,
                                    List<Long> fixedIndices) {
-        String scalarType = v.getScalarType();
-        Values rv = new Values().withScalarType(scalarType);
-        List oldV = null;
-        List oldRefs = null;
-        if (scalarType.equals("int"))
-            oldV = v.getIntValues();
-        else if (scalarType.equals("float"))
-            oldV = v.getFloatValues();
-        else if (scalarType.equals("boolean"))
-            oldV = v.getBooleanValues();
-        else if (scalarType.equals("string"))
-            oldV = v.getStringValues();
-        else if (scalarType.equals("oterm_ref")) {
-            oldV = v.getStringValues();
-            oldRefs = v.getOtermRefs();
-        }
-        else if (scalarType.equals("object_ref")) {
-            oldV = v.getStringValues();
-            oldRefs = v.getObjectRefs();
-        }
+        Values rv = new Values().withScalarType(v.getScalarType());
+        List oldV = getObjects(v);
+        List oldRefs = getRefs(v);
 
         // loop over array to get only the right data
         // this is inefficient and could be made faster if bottleneck!
@@ -1309,24 +1322,46 @@ public class GenericsUtilImpl {
         }
 
         // save in new object
-        if (scalarType.equals("int"))
-            rv.setIntValues(newV);
-        else if (scalarType.equals("float"))
-            rv.setFloatValues(newV);
-        else if (scalarType.equals("boolean"))
-            rv.setBooleanValues(newV);
-        else if (scalarType.equals("string"))
-            rv.setStringValues(newV);
-        else if (scalarType.equals("oterm_ref")) {
-            rv.setStringValues(newV);
-            rv.setOtermRefs(newRefs);
-        }
-        else if (scalarType.equals("object_ref")) {
-            rv.setStringValues(newV);
-            rv.setObjectRefs(newRefs);
-        }
+        setObjects(rv,newV);
+        setRefs(rv,newRefs);
 
         return rv;
+    }
+
+    /**
+       remove values from both X and Y axes where X or Y is null
+    */
+    public static void removeNullValues(Values valuesX, Values valuesY) throws Exception{
+        List oldVX = getObjects(valuesX);
+        List oldVY = getObjects(valuesY);
+        int n = oldVX.size();
+        if (n != oldVY.size())
+            throw new Exception("When removing null values, X and Y arrays must be same size; X size is "+n+" and Y size is "+oldVY.size());
+           
+        List oldRX = getRefs(valuesX);
+        List oldRY = getRefs(valuesY);
+        List newVX = new ArrayList();
+        List newVY = new ArrayList();
+        List newRX = new ArrayList();
+        List newRY = new ArrayList();
+
+        for (int i=0; i<n; i++) {
+            Object vx = oldVX.get(i);
+            Object vy = oldVY.get(i);
+            if ((vx != null) && (vy != null)) {
+                newVX.add(vx);
+                newVY.add(vy);
+                if (oldRX != null)
+                    newRX.add(oldRX.get(i));
+                if (oldRY != null)
+                    newRY.add(oldRY.get(i));
+            }
+        }
+
+        setObjects(valuesX,newVX);
+        setObjects(valuesY,newVY);
+        setRefs(valuesX,newRX);
+        setRefs(valuesY,newRY);
     }
 
     /**
@@ -2505,7 +2540,7 @@ public class GenericsUtilImpl {
                     String dimensionID2 = iterator.next();
                     if (dimensionID2.startsWith(dim1+"/")) {
                         found = true;
-                        allDimensionIDs.remove(dimensionID2);
+                        iterator.remove();
                     }
                 }
                 if (!found)
@@ -2523,12 +2558,10 @@ public class GenericsUtilImpl {
 
         // make the first variable dimension the X axis
         String dimX = variableDimensionIDs.get(0);
-        Values valuesX = getTypedValues(hnda,dimX).getValues();
-        if (dimX.indexOf("/") > 0)
-            valuesX = findUniqueValues(valuesX);
 
         // set up loop over all other variable dimensions
         List<String> seriesLabels = new ArrayList<String>();
+        List<Values> valuesX = new ArrayList<Values>();
         List<Values> valuesY = new ArrayList<Values>();
         List<List> variableValues = new ArrayList<List>();
         List<String> variableNames = new ArrayList<String>();
@@ -2600,13 +2633,24 @@ public class GenericsUtilImpl {
                 fixedIndices.remove(0);
             }
             Values v = hnda.getTypedValues().get((int)(hetIndex.longValue())-1).getValues();
-            Values seriesValues = fixValues(v,
-                                            dLengths,
-                                            fixedIndices);
+            Values seriesYValues = fixValues(v,
+                                             dLengths,
+                                             fixedIndices);
+
+            // get the X values
+            Values seriesXValues = getTypedValues(hnda,dimX).getValues();
+            if (dimX.indexOf("/") > 0)
+                seriesXValues = findUniqueValues(seriesXValues);
+            else
+                seriesXValues = copyValues(seriesXValues);
+
+            // remove missing values
+            removeNullValues(seriesXValues, seriesYValues);
 
             // save the data for return to caller
-            valuesY.add(seriesValues);
             seriesLabels.add(seriesLabel);
+            valuesX.add(seriesXValues);
+            valuesY.add(seriesYValues);
             
             // increment all indices
             Long l = curIndex.get(0);
@@ -2623,9 +2667,9 @@ public class GenericsUtilImpl {
         }
 
         GetGenericDataResult rv = new GetGenericDataResult()
+            .withSeriesLabels(seriesLabels)
             .withValuesX(valuesX)
-            .withValuesY(valuesY)
-            .withSeriesLabels(seriesLabels);
+            .withValuesY(valuesY);
         
         return rv;
     }
