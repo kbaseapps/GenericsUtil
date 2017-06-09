@@ -105,6 +105,21 @@ public class GenericsUtilServerTest {
     }
 
     /**
+       import some more pre-mapped growth data
+    */
+    // @Test
+    public void testImportGrowthPreMapped2() throws Exception {
+        ImportCSVParams params = new ImportCSVParams()
+            .withFile(new us.kbase.genericsutil.File().withPath("/kb/module/test/data/20170127_MT94_Metals_2_generic.csv"))
+            .withObjectName("20170127_MT94_Metals_2")
+            .withObjectType("KBaseGenerics.NDArray")
+            .withWorkspaceName("jmc:1480966800200");
+        ImportResult rv = impl.importCsv(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        System.out.println("Import Premapped Growth 2 test finished");
+    }
+    
+    /**
        import some growth data
     */
     // @Test
@@ -178,7 +193,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testGetGenericMetadata() throws Exception {
         GetGenericMetadataParams params = new GetGenericMetadataParams()
-            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/15", "14956/45/25"));
+            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/15", "14956/45/29", "14956/47/4"));
         GetGenericMetadataResult rv = impl.getGenericMetadata(params, token, (RpcContext)null);
         System.out.println(rv.toString());
         System.out.println("Get metadata test finished");
@@ -190,7 +205,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testGetGenericDimensionLabels() throws Exception {
         GetGenericDimensionLabelsParams params = new GetGenericDimensionLabelsParams()
-            .withObjectId("14956/45/25")
+            .withObjectId("14956/45/29")
             .withConvertToString(new Long(1L))
             .withDimensionIds(Arrays.asList("1/1","2/3"));
         GetGenericDimensionLabelsResult rv = impl.getGenericDimensionLabels(params, token, (RpcContext)null);
@@ -203,7 +218,7 @@ public class GenericsUtilServerTest {
     }
 
     /**
-       test getting data
+       test getting data; see center top slide from Farris' deck p. 4
     */
     @Test
     public void testGetGenericData() throws Exception {
@@ -212,12 +227,29 @@ public class GenericsUtilServerTest {
         cdi.put("2/4",new Long(2L));
         cdi.put("3",new Long(1L));
         GetGenericDataParams params = new GetGenericDataParams()
-            .withObjectId("14956/45/25")
+            .withObjectId("14956/45/29")
             .withVariableDimensionIds(Arrays.asList("1/1","2/2","2/3"))
             .withConstantDimensionIds(cdi);            
         GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
         System.out.println(rv.toString());
         System.out.println("Get data test finished");
+    }
+
+    /**
+       test getting data; see bottom right slide from Farris' deck p. 4
+    */
+    // @Test
+    public void testGetGenericData2() throws Exception {
+        Map<String,Long> cdi = new HashMap<String,Long>();
+        cdi.put("1",new Long(11L));
+        cdi.put("4",new Long(1L));
+        GetGenericDataParams params = new GetGenericDataParams()
+            .withObjectId("14956/47/4")
+            .withVariableDimensionIds(Arrays.asList("3","2"))
+            .withConstantDimensionIds(cdi);            
+        GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get data test 2 finished");
     }
     
     /**
@@ -430,6 +462,16 @@ public class GenericsUtilServerTest {
             .withWorkspaceName("jmc:1480966800200");
         rv = impl.importObo(params, token, (RpcContext)null);
         Assert.assertNotNull(rv);
+
+        /*
+        params = new ImportOBOParams()
+            .withFile(new us.kbase.genericsutil.File().withPath("/kb/module/test/data/enigma_specific_ontology.obo"))
+            .withObjectName("enigma_specific_ontology")
+            .withWorkspaceName("jmc:1480966800200");
+        rv = impl.importObo(params, token, (RpcContext)null);
+        Assert.assertNotNull(rv);
+        */
+        
         System.out.println("Import dictionaries data test finished");
     }
     
