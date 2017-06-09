@@ -102,7 +102,7 @@ commit=${git.commit}</echo>
     <property name="jar.absolute.path" location="${dist}/${jar.file}"/>
     <pathconvert targetos="unix" property="lib.classpath" refid="compile.classpath"/>
     <echo file="${bin}/${exec.cmd.file}">#!/bin/bash
-java -cp ${jar.absolute.path}:${lib.classpath} genericsutil.GenericsUtilServer $1 $2 $3
+java -cp ${jar.absolute.path}:${lib.classpath} us.kbase.genericsutil.GenericsUtilServer $1 $2 $3
     </echo>
     <chmod file="${bin}/${exec.cmd.file}" perm="a+x"/>
   </target>
