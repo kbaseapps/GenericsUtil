@@ -238,7 +238,7 @@ public class GenericsUtilServerTest {
     /**
        test getting data; see bottom right slide from Farris' deck p. 4
     */
-    // @Test
+    @Test
     public void testGetGenericData2() throws Exception {
         Map<String,Long> cdi = new HashMap<String,Long>();
         cdi.put("1",new Long(11L));
