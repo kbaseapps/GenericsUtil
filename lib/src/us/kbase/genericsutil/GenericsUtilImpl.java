@@ -1296,6 +1296,11 @@ public class GenericsUtilImpl {
             indices[i] = new Long(1L);
             length *= (int)(dLengths.get(i).longValue());
         }
+
+        // System.out.println("Values: "+v.toString());
+        // System.out.println("dLengths: "+dLengths.toString());
+        // System.out.println("fixed: "+fixedIndices.toString());
+        
         for (int i=0; i<length; i++) {
             boolean keep = true;
             for (int j=0; j<nDimensions; j++)
@@ -1335,8 +1340,11 @@ public class GenericsUtilImpl {
         List oldVX = getObjects(valuesX);
         List oldVY = getObjects(valuesY);
         int n = oldVX.size();
-        if (n != oldVY.size())
+        if (n != oldVY.size()) {
+            System.out.println("valuesX: "+valuesX.toString());
+            System.out.println("valuesY: "+valuesY.toString());
             throw new Exception("When removing null values, X and Y arrays must be same size; X size is "+n+" and Y size is "+oldVY.size());
+        }
            
         List oldRX = getRefs(valuesX);
         List oldRY = getRefs(valuesY);
@@ -2485,9 +2493,12 @@ public class GenericsUtilImpl {
         LinkedHashSet<String> allDimensionIDs = new LinkedHashSet<String>();
         List<DimensionContext> dcs = hnda.getDimContext();
         List<Long> dLengths = new ArrayList<Long>();
+        List<Long> dLengthsHet = new ArrayList<Long>();
         for (int i=0; i<dcs.size(); i++) {
             DimensionContext dc = dcs.get(i);
             dLengths.add(new Long((long)dc.getSize()));
+            if (i>0)
+                dLengthsHet.add(new Long((long)dc.getSize()));
             if (hasUniqueSubindices(dc)) {
                 List<TypedValues> tvs = dc.getTypedValues();
                 for (int j=0; j<tvs.size(); j++)
@@ -2499,7 +2510,8 @@ public class GenericsUtilImpl {
 
         // make sure all dimension ids are either constant or variable
         // and that there are no invalid ids specified
-        List<String> variableDimensionIDs = params.getVariableDimensionIds();
+        List<String> variableDimensionIDs = new ArrayList<String>();
+        variableDimensionIDs.addAll(params.getVariableDimensionIds());
         Map<String,Long> constantDimensionIDMap = params.getConstantDimensionIds();
         if (variableDimensionIDs==null)
             variableDimensionIDs = new ArrayList<String>();
@@ -2547,14 +2559,19 @@ public class GenericsUtilImpl {
                     throw new Exception("Dimension index "+dimensionID+" used in both constant and variable dimension");
             }
         }
-        // and save any remaining dimensions as variable
-        variableDimensionIDs.addAll(allDimensionIDs);
+        // Don't save any remaining dimensions as variable;
+        // doing so requires a calculation of which dimensions
+        // are orthogonal to which others
+        // NO! variableDimensionIDs.addAll(allDimensionIDs);
 
-        // must be at least 2 variable dimensions
+        // System.out.println("Constant dimensions: "+constantDimensionIDMap.toString());
+        // System.out.println("Variable dimensions: "+variableDimensionIDs.toString());
+
+        // must be at least 1 variable dimension
         // to return X and Y
         int nVariableDimensions = variableDimensionIDs.size();
-        if (nVariableDimensions < 2)
-            throw new Exception("There must be at least two variable dimensions");
+        if (nVariableDimensions < 1)
+            throw new Exception("There must be at least one variable dimension");
 
         // make the first variable dimension the X axis
         String dimX = variableDimensionIDs.get(0);
@@ -2625,16 +2642,17 @@ public class GenericsUtilImpl {
             
             // find the right set of values and fix them
             Long hetIndex = new Long(1L);
+            List<Long> dLengthsFix = dLengths;
             if (isHeterogeneous) {
                 hetIndex = fixedIndices.get(0);
                 if (hetIndex==null)
                     throw new Exception("If getting data from heterogeneous matrix, the heterogeneous dimension can't be the X axis");
-                hetIndex++;
                 fixedIndices.remove(0);
+                dLengthsFix = dLengthsHet;
             }
             Values v = hnda.getTypedValues().get((int)(hetIndex.longValue())-1).getValues();
             Values seriesYValues = fixValues(v,
-                                             dLengths,
+                                             dLengthsFix,
                                              fixedIndices);
 
             // get the X values
@@ -2653,15 +2671,17 @@ public class GenericsUtilImpl {
             valuesY.add(seriesYValues);
             
             // increment all indices
-            Long l = curIndex.get(0);
-            l++;
-            curIndex.set(0,l);
-            for (int j=0; j<variableNames.size()-1; j++) {
-                if (curIndex.get(j) > variableValues.get(j).size()) {
-                    curIndex.set(j,new Long(1L));
-                    l = curIndex.get(j+1);
-                    l++;
-                    curIndex.set(j+1,l);
+            if (i < nSeries-1) {
+                Long l = curIndex.get(0);
+                l++;
+                curIndex.set(0,l);
+                for (int j=0; j<variableNames.size()-1; j++) {
+                    if (curIndex.get(j) > variableValues.get(j).size()) {
+                        curIndex.set(j,new Long(1L));
+                        l = curIndex.get(j+1);
+                        l++;
+                        curIndex.set(j+1,l);
+                    }
                 }
             }
         }
