@@ -193,7 +193,7 @@ public class GenericsUtilServerTest {
     @Test
     public void testGetGenericMetadata() throws Exception {
         GetGenericMetadataParams params = new GetGenericMetadataParams()
-            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/15", "14956/45/29", "14956/47/4"));
+            .withObjectIds(Arrays.asList("14956/7/47", "14956/43/20", "14956/45/29", "14956/47/4", "14956/49/1"));
         GetGenericMetadataResult rv = impl.getGenericMetadata(params, token, (RpcContext)null);
         System.out.println(rv.toString());
         System.out.println("Get metadata test finished");
@@ -250,6 +250,38 @@ public class GenericsUtilServerTest {
         GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
         System.out.println(rv.toString());
         System.out.println("Get data test 2 finished");
+    }
+    
+    /**
+       test getting data from heterogeneous set
+    */
+    @Test
+    public void testGetGenericData3() throws Exception {
+        Map<String,Long> cdi = new HashMap<String,Long>();
+        cdi.put("1",new Long(5L));
+        GetGenericDataParams params = new GetGenericDataParams()
+            .withObjectId("14956/43/20")
+            .withVariableDimensionIds(Arrays.asList("2/2"))
+            .withConstantDimensionIds(cdi);            
+        GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get data test 3 finished");
+    }
+
+    /**
+       test getting data; see bottom middle slide from Farris' deck p. 5
+    */
+    @Test
+    public void testGetGenericData4() throws Exception {
+        Map<String,Long> cdi = new HashMap<String,Long>();
+        cdi.put("1",new Long(3L));
+        GetGenericDataParams params = new GetGenericDataParams()
+            .withObjectId("14956/49/1")
+            .withVariableDimensionIds(Arrays.asList("2","3"))
+            .withConstantDimensionIds(cdi);            
+        GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
+        System.out.println(rv.toString());
+        System.out.println("Get data test 4 finished");
     }
     
     /**
