@@ -277,7 +277,7 @@ public class GenericsUtilServerTest {
         cdi.put("1",new Long(3L));
         GetGenericDataParams params = new GetGenericDataParams()
             .withObjectId("14956/49/1")
-            .withVariableDimensionIds(Arrays.asList("2","3"))
+            .withVariableDimensionIds(Arrays.asList("3","2"))
             .withConstantDimensionIds(cdi);            
         GetGenericDataResult rv = impl.getGenericData(params, token, (RpcContext)null);
         System.out.println(rv.toString());
