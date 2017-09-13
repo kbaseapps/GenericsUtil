@@ -1069,7 +1069,7 @@ public class GenericsUtilImpl {
             if (val == null)
                 fv.add(null);
             else
-                fv.add(new Double(StringUtil.atod(val)));
+                fv.add(new Double(Double.parseDouble(val)));
         }
         v.setStringValues(null);
         v.setFloatValues(fv);
@@ -1545,7 +1545,7 @@ public class GenericsUtilImpl {
         for (int i=0; i<l; i++) {
             String val = sv.get(i);
             if (val != null) {
-                allNumeric &= Pattern.matches("^-?[0-9]*\\.?[0-9]+$",val);
+                allNumeric &= Pattern.matches("^-?\\d+(?:\\.\\d+)?(?:[eE]-?\\d+)?$",val);
                 allInt &= Pattern.matches("^-?[0-9]+$",val);
                 allBoolean &= Pattern.matches("^[01]$",val);
                 allOtermRef &= Pattern.matches("^.+:[0-9]+$",val);
@@ -1607,7 +1607,7 @@ public class GenericsUtilImpl {
         if (sv == null)
             v.setFloatValue(null);
         else
-            v.setFloatValue(new Double(StringUtil.atod(sv)));
+            v.setFloatValue(new Double(Double.parseDouble(sv)));
         v.setStringValue(null);
         v.setScalarType("float");
     }
