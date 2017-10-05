@@ -13,3 +13,5 @@ module-version:
 owners:
     [jmc,psnovichkov]
 
+service-config:
+    dynamic-service: true
