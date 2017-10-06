@@ -164,7 +164,7 @@ public class GenericsUtilServerTest {
     /**
        list growth data
     */
-    // @Test
+    @Test
     public void testListGrowth() throws Exception {
         ListGenericObjectsParams params = new ListGenericObjectsParams()
             .withWorkspaceNames(Arrays.asList("jmc:1480966800200"));

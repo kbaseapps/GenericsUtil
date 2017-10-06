@@ -33,8 +33,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *   of series depends on the number of variable dimensions.
  * values_y will contain 1 list of of y-axis values per series.  The number
  *   of series depends on the number of variable dimensions.
- * In each series, values where both the X and Y data are null are
- *   be removed.
+ * In each series, values where either the X and Y data are null are
+ *   removed.
  * </pre>
  * 
  */
