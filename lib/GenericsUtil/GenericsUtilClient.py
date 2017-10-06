@@ -187,8 +187,8 @@ class GenericsUtil(object):
            series.  The number of series depends on the number of variable
            dimensions. values_y will contain 1 list of of y-axis values per
            series.  The number of series depends on the number of variable
-           dimensions. In each series, values where both the X and Y data are
-           null are be removed.) -> structure: parameter "object_id" of
+           dimensions. In each series, values where either the X and Y data
+           are null are removed.) -> structure: parameter "object_id" of
            String, parameter "variable_dimension_ids" of list of String,
            parameter "constant_dimension_ids" of mapping from String to Long
         :returns: instance of type "GetGenericDataResult" -> structure:
