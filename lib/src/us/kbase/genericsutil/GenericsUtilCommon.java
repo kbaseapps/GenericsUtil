@@ -9,7 +9,6 @@ import java.util.zip.*;
 import java.net.URL;
 
 import us.kbase.kbasegenerics.*;
-import us.kbase.kbaseontology.OntologyDictionary;
 
 import org.strbio.IO;
 import org.strbio.io.*;
