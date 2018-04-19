@@ -613,7 +613,7 @@ public class GenericsUtilCommon {
             if (val == null)
                 iv.add(null);
             else
-                iv.add(new Long(StringUtil.atol(val)));
+                iv.add(new Long((long)Double.parseDouble(val)));
         }
         v.setStringValues(null);
         v.setIntValues(iv);
@@ -670,6 +670,39 @@ public class GenericsUtilCommon {
         // refs and orefs are already stored in strings,
         // so no need to change those
         v.setScalarType("string");
+    }
+
+    /**
+       guess the type of data from a list of strings
+    */
+    public static String guessValueType(List<String> strings) throws Exception {
+        boolean allNumeric = true;
+        boolean allBoolean = true;
+        boolean allInt = true;
+        boolean allOtermRef = true;
+        boolean allObjectRef = true;
+        int l = strings.size();
+        for (int i=0; i<l; i++) {
+            String val = strings.get(i);
+            if (val != null) {
+                allNumeric &= Pattern.matches("^-?\\d+(?:\\.\\d+)?(?:[eE][-+]?\\d+)?$",val);
+                allInt &= Pattern.matches("^-?[0-9]+(?:\\.[0-9]+[eE]\\+?[0-9]+)?$",val);
+                allBoolean &= Pattern.matches("^[01]$",val);
+                allOtermRef &= Pattern.matches("^.+:[0-9]+$",val);
+                allObjectRef &= Pattern.matches("^[0-9]+/[0-9]+",val);
+            }
+        }
+        if (allBoolean)
+            return "boolean";
+        else if (allInt)
+            return "int";
+        else if (allNumeric)
+            return "float";
+        else if (allOtermRef)
+            return "oterm_ref";
+        else if (allObjectRef)
+            return "object_ref";
+        return "string";
     }
 
     /**

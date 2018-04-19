@@ -545,22 +545,7 @@ public class GenericsUtilImpl {
     */
     public static void transformValues(Term valueType, Values v) throws Exception {
         List<String> sv = v.getStringValues();
-        boolean allNumeric = true;
-        boolean allBoolean = true;
-        boolean allInt = true;
-        boolean allOtermRef = true;
-        boolean allObjectRef = true;
-        int l = sv.size();
-        for (int i=0; i<l; i++) {
-            String val = sv.get(i);
-            if (val != null) {
-                allNumeric &= Pattern.matches("^-?\\d+(?:\\.\\d+)?(?:[eE]-?\\d+)?$",val);
-                allInt &= Pattern.matches("^-?[0-9]+$",val);
-                allBoolean &= Pattern.matches("^[01]$",val);
-                allOtermRef &= Pattern.matches("^.+:[0-9]+$",val);
-                allObjectRef &= Pattern.matches("^[0-9]+/[0-9]+",val);
-            }
-        }
+        String inferredType = GenericsUtilCommon.guessValueType(sv);
         String dataType = null;
         String ref = valueType.getOtermRef();
         String objectType = null;
@@ -572,40 +557,45 @@ public class GenericsUtilImpl {
         }
         if (dataType==null) {
             // guess based on values
-            if (allBoolean)
+            if (inferredType.equals("boolean"))
                 GenericsUtilCommon.makeBooleanValues(v);
-            else if (allNumeric)
+            else if (inferredType.equals("float") ||
+                     (inferredType.equals("int")))
                 GenericsUtilCommon.makeFloatValues(v);
         }
         else {
             if (dataType.equals("boolean")) {
-                if (allBoolean)
+                if (inferredType.equals("boolean"))
                     GenericsUtilCommon.makeBooleanValues(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
             }
             else if (dataType.equals("int")) {
-                if (allInt)
+                if ((inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
                     GenericsUtilCommon.makeIntValues(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
             }
             else if (dataType.equals("float")) {
-                if (allNumeric)
+                if ((inferredType.equals("float")) ||
+                    (inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
                     GenericsUtilCommon.makeFloatValues(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
             }
             else if ((dataType.equals("ref")) &&
                      (v.getScalarType().equals("string"))) {
-                if (allOtermRef) {
+                if (inferredType.equals("oterm_ref")) {
                     GenericsUtilCommon.makeOtermRefValues(v);
                     for (String val : v.getOtermRefs()) {
                         if (val != null)
                             od.addRef(val); // put ref on list to check
                     }
                 }
-                else if ((allObjectRef) && (objectType != null)) {
+                else if ((inferredType.equals("object_ref")) &&
+                         (objectType != null)) {
                     GenericsUtilCommon.makeObjectRefValues(v,objectType);
                     checkObjects(v.getObjectRefs(), objectType);
                 }
@@ -621,12 +611,7 @@ public class GenericsUtilImpl {
     */
     public static void transformValue(Term valueType, Value v) throws Exception {
         String sv = v.getStringValue();
-        boolean isNumeric = Pattern.matches("^-?[0-9]*\\.?[0-9]+$",sv);
-        boolean isBoolean = Pattern.matches("^[01]$",sv);
-        boolean isInt = Pattern.matches("^-?[0-9]+$",sv);
-        boolean isOtermRef = Pattern.matches("^.+:[0-9]+$",sv);
-        boolean isObjectRef = Pattern.matches("^[0-9]+/[0-9]+",sv);
-
+        String inferredType = GenericsUtilCommon.guessValueType(Arrays.asList(sv));
         String dataType = null;
         String ref = valueType.getOtermRef();
         String objectType = null;
@@ -638,37 +623,42 @@ public class GenericsUtilImpl {
         }
         if (dataType==null) {
             // guess based on values
-            if (isBoolean)
+            if (inferredType.equals("boolean"))
                 GenericsUtilCommon.makeBooleanValue(v);
-            else if (isNumeric)
+            else if (inferredType.equals("float") ||
+                     (inferredType.equals("int")))
                 GenericsUtilCommon.makeFloatValue(v);
         }
         else {
             if (dataType.equals("boolean")) {
-                if (isBoolean)
+                if (inferredType.equals("boolean"))
                     GenericsUtilCommon.makeBooleanValue(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
             }
             else if (dataType.equals("int")) {
-                if (isInt)
+                if ((inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
                     GenericsUtilCommon.makeIntValue(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
             }
             else if (dataType.equals("float")) {
-                if (isNumeric)
+                if ((inferredType.equals("float")) ||
+                    (inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
                     GenericsUtilCommon.makeFloatValue(v);
                 else
                     throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
             }
             else if ((dataType.equals("ref")) &&
                      (v.getScalarType().equals("string"))) {
-                if (isOtermRef) {
+                if (inferredType.equals("oterm_ref")) {
                     GenericsUtilCommon.makeOtermRefValue(v);
                     od.addRef(v.getOtermRef()); // put ref on list to check
                 }
-                else if ((isObjectRef) && (objectType != null)) {
+                else if ((inferredType.equals("object_ref")) &&
+                         (objectType != null)) {
                     GenericsUtilCommon.makeObjectRefValue(v,objectType);
                     checkObjects(Arrays.asList(v.getObjectRef()), objectType);
                 }
