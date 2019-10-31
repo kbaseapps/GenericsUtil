@@ -22,6 +22,339 @@ import com.opencsv.*;
    are not dependent on other KBase services
 */
 public class GenericsUtilCommon {
+    protected static OntologyData2 ontologyData = null;
+
+    /**
+      formats for "toString" methods:
+
+      PRINT_NAME = "concentration (milligram per kilogram)"
+      PRINT_OREF = "concentration <ME:0000129> (milligram per kilogram <UO:0000308>)"
+      PRINT_BRIEF = "concentration, milligram per kilogram"
+    */
+    public static final int PRINT_NAME = 0;
+    public static final int PRINT_OREF = 1;
+    public static final int PRINT_BRIEF = 2;
+
+    /**
+       class encapsulating all the ontology data we've loaded
+    */
+    public static class OntologyData2 {
+        /**
+           map of ontology term ids to strings
+        */
+        public HashMap<String,String> oTermToString;
+
+        /**
+           list of valid microtypes (oterms)
+        */
+        public HashSet<String> microtypes;
+
+        /**
+           list of valid properties (oterms)
+        */
+        public HashSet<String> validProperties;
+
+        /**
+           list of valid dimensions (oterms)
+        */
+        public HashSet<String> validDimensions;
+
+        /**
+           list of valid dimension vars (oterms)
+        */
+        public HashSet<String> validDimensionVars;
+        
+        /**
+           map of case sensitive strings to ontology term ids
+        */
+        public HashMap<String,List<String>> stringToOTerms;
+
+        /**
+           map of lower case strings to ontology term ids
+        */
+        public HashMap<String,List<String>> stringToOTermsLC;
+        
+        /**
+           map of ontology term ids to data types
+        */
+        public HashMap<String,String> oTermToDataType;
+
+        /**
+           map of ontology term ids to valid units (term ids)
+        */
+        public HashMap<String,List<String>> oTermToValidUnits;
+
+        /**
+           map of ontology term ids to valid units parent (term ids)
+        */
+        public HashMap<String,List<String>> oTermToValidUnitsParents;
+            
+        /**
+           map of ontology term ids to (direct, is_a) parents
+        */
+        public HashMap<String,List<String>> oTermToParents;
+        
+        /**
+           map a term
+        */
+        private void mapStringToOTerm(String key, String oTerm) {
+            List<String> terms = stringToOTerms.get(key);
+            if (terms == null) {
+                terms = new ArrayList<String>();
+                stringToOTerms.put(key,terms);
+            }
+            if (!terms.contains(oTerm))
+                terms.add(oTerm);
+            String lcKey = key.toLowerCase();
+            terms = stringToOTermsLC.get(lcKey);
+            if (terms == null) {
+                terms = new ArrayList<String>();
+                stringToOTermsLC.put(lcKey,terms);
+            }
+            if (!terms.contains(oTerm))
+                terms.add(oTerm);
+        }
+
+        /**
+           load in a dictionary, mapping synonyms and terms
+        */
+        public void loadOBO(String fileName) throws Exception {
+            BufferedReader infile = IO.openReader(fileName);
+            String oTerm = null;
+            String buffer = null;
+            while ((buffer = infile.readLine()) != null) {
+                if (buffer.startsWith("id: "))
+                    oTerm = buffer.substring(4);
+                else if (buffer.startsWith("name: ")) {
+                    String key = buffer.substring(6);
+                    mapStringToOTerm(key.toLowerCase(),oTerm);
+                    oTermToString.put(oTerm,key);
+                }
+                else if (buffer.startsWith("synonym: ")) {
+                    int pos = buffer.indexOf("EXACT [");
+                    if (pos == -1)
+                        pos = buffer.indexOf("RELATED [");
+                    if (pos > -1) {
+                        mapStringToOTerm(buffer.substring(10,pos-2),
+                                         oTerm);
+                    }
+                }
+                else if (buffer.startsWith("is_a: ")) {
+                    String parent = buffer.replace("is_a: ","");
+                    int pos = parent.indexOf(" !");
+                    if (pos > -1) {
+                        parent = parent.substring(0,pos);
+                    }
+                    List<String> terms = oTermToParents.get(oTerm);
+                    if (terms == null) {
+                        terms = new ArrayList<String>();
+                        oTermToParents.put(oTerm,terms);
+                    }
+                    terms.add(parent);
+                }
+                else if (buffer.startsWith("property_value: data_type \"")) {
+                    String dataType = buffer.replace("property_value: data_type \"","");
+                    int pos = dataType.indexOf("\"");
+                    dataType = dataType.substring(0,pos);
+                    oTermToDataType.put(oTerm,dataType);
+                }
+                else if (buffer.startsWith("property_value: valid_units_parent \"")) {
+                    String units = buffer.replace("property_value: valid_units_parent \"","");
+                    int pos = units.indexOf("\"");
+                    units = units.substring(0,pos);
+                    oTermToValidUnitsParents.put(oTerm,Arrays.asList(units.split(" ")));
+                }
+                else if (buffer.startsWith("property_value: valid_units \"")) {
+                    String units = buffer.replace("property_value: valid_units \"","");
+                    int pos = units.indexOf("\"");
+                    units = units.substring(0,pos);
+                    oTermToValidUnits.put(oTerm,Arrays.asList(units.split(" ")));
+                }
+                else if (buffer.startsWith("property_value: is_valid_dimension_variable \"")) {
+                    validDimensionVars.add(oTerm);
+                }
+                else if (buffer.startsWith("property_value: is_valid_dimension \"")) {
+                    validDimensions.add(oTerm);
+                }
+                else if (buffer.startsWith("property_value: is_microtype \"")) {
+                    microtypes.add(oTerm);
+                }
+                else if (buffer.startsWith("property_value: is_valid_property \"")) {
+                    validProperties.add(oTerm);
+                }
+                else if (buffer.startsWith("xref: Ref: ")) {
+                    String dataType = buffer.replace("xref: Ref", "ref");
+                    oTermToDataType.put(oTerm,dataType);
+                }
+                else if (buffer.startsWith("xref: ORef: ")) {
+                    String dataType = buffer.replace("xref: ORef", "oref");
+                    oTermToDataType.put(oTerm,dataType);
+                }
+            }
+            infile.close();
+        }
+
+        /**
+           lookup term in all dictionaries; ambiguity results in null return
+        */
+        public String lookupString(String key) throws Exception {
+            List<String> vals = stringToOTerms.get(key);
+            if (vals==null) {
+                String lcKey = key.toLowerCase();
+                vals = stringToOTermsLC.get(lcKey);
+            }
+            if (vals==null) {
+                return null;
+            }
+            if (vals.size() > 1)
+                return null;
+            return vals.get(0);
+        }
+
+        /**
+           lookup term in all dictionaries; first matching term is returned, or null if no match
+        */
+        public String lookupStringFirst(String key) throws Exception {
+            List<String> vals = stringToOTerms.get(key);
+            if (vals==null) {
+                String lcKey = key.toLowerCase();
+                vals = stringToOTermsLC.get(lcKey);
+            }
+            if (vals==null)
+                return null;
+            return vals.get(0);
+        }
+
+        /**
+           lookup term in all dictionaries, under a specified parent.
+           first matching term is returned, or null if no match
+        */
+        public String lookupStringUnder(String key,
+                                        String parentORef) throws Exception {
+            List<String> vals = stringToOTerms.get(key);
+            if (vals!=null)
+                for (String val : vals)
+                    if (inTree(val, parentORef))
+                        return val;
+            String lcKey = key.toLowerCase();
+            vals = stringToOTermsLC.get(lcKey);
+            if (vals!=null)
+                for (String val : vals)
+                    if (inTree(val, parentORef))
+                        return val;
+            return null;
+        }
+        
+        /**
+           lookup term in a dictionary, with specified term prefix.  first matching term is returned, or null if no match
+        */
+        public String lookupString(String key,
+                                   String prefix) throws Exception {
+            List<String> vals = stringToOTerms.get(key);
+            if (vals!=null)
+                for (String val : vals)
+                    if (val.startsWith(prefix))
+                        return val;
+            String lcKey = key.toLowerCase();
+            vals = stringToOTermsLC.get(lcKey);
+            if (vals!=null)
+                for (String val : vals)
+                    if (val.startsWith(prefix))
+                        return val;
+            return null;
+        }
+        
+        /**
+           lookup term in all dictionaries
+        */
+        public String lookupOTerm(String key) throws Exception {
+            return oTermToString.get(key);
+        }
+
+        /**
+           lookup data type, cache it if obtained from parents
+        */
+        public String lookupDataType(String key) throws Exception {
+            String rv = oTermToDataType.get(key);
+            if (rv==null) {
+                List<String> parents = oTermToParents.get(key);
+                if (parents != null) {
+                    for (String term : parents) {
+                        rv = lookupDataType(term);
+                        if (rv != null) {
+                            oTermToDataType.put(key,rv);
+                            return rv;
+                        }
+                    }
+                }
+            }
+            return rv;
+        }
+
+        /**
+           are there valid units?
+        */
+        public boolean validUnits(String oTerm, String unitsTerm) throws Exception {
+            List<String> validUnits = oTermToValidUnits.get(oTerm);
+            List<String> validUnitsParents = oTermToValidUnitsParents.get(oTerm);
+            if ((validUnits == null) &&
+                (validUnitsParents == null))
+                return (inTree(unitsTerm,"UO:0000000"));
+
+            if (validUnits != null) {
+                for (String units : validUnits)
+                    if (unitsTerm.equals(units))
+                        return true;
+            }
+
+            if (validUnitsParents != null) {
+                for (String units : validUnitsParents)
+                    if ((inTree(unitsTerm, units)) &&
+                        (!unitsTerm.equals(units)))
+                        return true;
+            }
+            return false;
+        }
+        
+        /**
+           check lineage; is a (possible) child somewhere in the
+           tree rooted by a (potential) parent node.
+        */
+        public boolean inTree(String child, String parent) {
+            if (parent.equals(child))
+                return true;
+            List<String> directParents = oTermToParents.get(child);
+            if (directParents != null)
+                for (String directParent : directParents)
+                    if (inTree(directParent, parent))
+                        return true;
+            return false;
+        }
+        
+        public OntologyData2() {
+            oTermToString = new HashMap<String,String>();
+            oTermToDataType = new HashMap<String,String>();
+            oTermToParents = new HashMap<String,List<String>>();
+            stringToOTerms = new HashMap<String,List<String>>();
+            stringToOTermsLC = new HashMap<String,List<String>>();
+            microtypes = new HashSet<String>();
+            validProperties = new HashSet<String>();
+            validDimensions = new HashSet<String>();
+            validDimensionVars = new HashSet<String>();
+            oTermToValidUnits = new HashMap<String,List<String>>();
+            oTermToValidUnitsParents = new HashMap<String,List<String>>();
+        }
+    }
+
+    public GenericsUtilCommon(List<String> dictionaries) throws Exception {
+        ontologyData = new OntologyData2();
+        if (dictionaries != null) {
+            for (String dict : dictionaries) {
+                ontologyData.loadOBO(dict);
+            }
+        }
+    }
+    
     /**
        helper function to quote a string, but only if contains commas
     */
@@ -70,16 +403,277 @@ public class GenericsUtilCommon {
         return rv;
     }
 
+
     /**
-       helper function to make a new (unmapped) Value from a description
+       helper function to make a new pre-mapped Term
     */
-    public static Value makeValue(String description) {
+    public static Term makeTerm(String termName,
+                                String termRef) {
+        return new Term()
+            .withTermName(termName)
+            .withOtermRef(termRef)
+            .withOtermName(termName);
+    }
+
+    /**
+       helper function to make a new mapped Term from a description
+    */
+    public static Term mapTerm(String description) throws Exception {
+        String oTerm = ontologyData.lookupStringFirst(description);
+        if (oTerm==null)
+            throw new Exception("unmappable term "+description);
+        String canonicalName = ontologyData.lookupOTerm(oTerm);
+        return new Term()
+            .withTermName(description)
+            .withOtermRef(oTerm)
+            .withOtermName(canonicalName);
+    }
+
+    /**
+       helper function to make a new mapped Term from a description,
+       in a particular ontology
+    */
+    public static Term mapTerm(String description,
+                               String prefix) throws Exception {
+        String oTerm = ontologyData.lookupString(description, prefix);
+        if (oTerm==null)
+            throw new Exception("unmappable term "+description+" under "+prefix);
+        String canonicalName = ontologyData.lookupOTerm(oTerm);
+        return new Term()
+            .withTermName(description)
+            .withOtermRef(oTerm)
+            .withOtermName(canonicalName);
+    }
+    
+    /**
+       helper function to make a new mapped Term from a description,
+       in a particular part of an ontology tree
+    */
+    public static Term mapTermUnder(String description,
+                                    String parentORef) throws Exception {
+        String oTerm = ontologyData.lookupStringUnder(description, parentORef);
+        if (oTerm==null)
+            throw new Exception("unmappable term "+description+" under "+parentORef);
+        String canonicalName = ontologyData.lookupOTerm(oTerm);
+        return new Term()
+            .withTermName(description)
+            .withOtermRef(oTerm)
+            .withOtermName(canonicalName);
+    }
+    
+
+    /**
+       helper function to make a new (unmapped) string value
+    */
+    public static Value makeValue(String val) {
         Value rv = new Value()
             .withScalarType("string")
-            .withStringValue(description);
+            .withStringValue(val);
         return rv;
     }
 
+    /**
+       helper function to make a new pre-mapped Value
+    */
+    public static Value makeValue(String termName,
+                                  String termRef) {
+        return new Value()
+            .withScalarType("oterm_ref")
+            .withOtermRef(termRef)
+            .withStringValue(termName);
+    }
+
+    /**
+       Helper function to make a new mapped Value from a description.
+       Fails if not mappable.
+    */
+    public static Value mapValue(String description) throws Exception {
+        String oTerm = ontologyData.lookupStringFirst(description);
+        if (oTerm==null)
+            throw new Exception("unmappable value "+description);
+        return new Value()
+            .withScalarType("oterm_ref")
+            .withOtermRef(oTerm)
+            .withStringValue(description);
+    }
+
+    /**
+       Helper function to make a new mapped Value from a description
+       If mapping fails, keeps value as string
+    */
+    public static Value mapValueFallback(String description) {
+        try {
+            return mapValue(description);
+        }
+        catch (Exception e) {
+            return makeValue(description);
+        }
+    }
+    
+    /**
+       Helper function to make a new mapped Value from a description.
+       Fails if not mappable.
+    */
+    public static Value mapValueUnder(String description,
+                                      String parentORef) throws Exception {
+        String oTerm = ontologyData.lookupStringUnder(description,
+                                                      parentORef);
+        if (oTerm==null)
+            throw new Exception("unmappable value "+description+" under parent "+parentORef);
+        return new Value()
+            .withScalarType("oterm_ref")
+            .withOtermRef(oTerm)
+            .withStringValue(description);
+    }
+    
+    /**
+       helper function to make a new float value
+    */
+    public static Value makeValue(double val) {
+        return new Value()
+            .withScalarType("float")
+            .withFloatValue(new Double(val));
+    }
+
+    /**
+       helper function to make a new int value
+    */
+    public static Value makeValue(long val) {
+        return new Value()
+            .withScalarType("int")
+            .withIntValue(new Long(val));
+    }
+    
+    /**
+       helper function to make a new boolean value
+    */
+    public static Value makeValue(boolean val) {
+        return new Value()
+            .withScalarType("boolean")
+            .withBooleanValue(new Long(val ? 1L : 0L));
+    }
+
+    /**
+       Helper function to make a new mapped set of oterm_ref Values from a
+       list of descriptions.  Maps null strings to null oterms.
+       Fails if any strings not mappable.
+    */
+    public static Values mapValues(List<String> descriptions) throws Exception {
+        ArrayList<String> oTerms = new ArrayList<String>();
+        for (String description : descriptions) {
+            if (description==null)
+                oTerms.add(null);
+            else {
+                String oTerm = ontologyData.lookupStringFirst(description);
+                if (oTerm==null)
+                    throw new Exception("unmappable value "+description);
+                oTerms.add(oTerm);
+            }
+        }
+        return new Values()
+            .withScalarType("oterm_ref")
+            .withOtermRefs(oTerms)
+            .withStringValues(descriptions);
+    }
+
+    /**
+       Helper function to make a new mapped set of oterm_ref Values from a
+       list of descriptions.  Maps null strings to null.
+       Inserts null oterms if any strings not mappable.
+    */
+    public static Values mapValuesFallback(List<String> descriptions) throws Exception {
+        ArrayList<String> oTerms = new ArrayList<String>();
+        for (String description : descriptions) {
+            if (description==null)
+                oTerms.add(null);
+            else {
+                String oTerm = ontologyData.lookupStringFirst(description);
+                oTerms.add(oTerm);
+            }
+        }
+        return new Values()
+            .withScalarType("oterm_ref")
+            .withOtermRefs(oTerms)
+            .withStringValues(descriptions);
+    }
+    
+    /**
+       Helper function to make a new mapped set of oterm_ref Values from a
+       list of descriptions, under a parent term.  Maps null strings
+       to null.  Fails if any strings not mappable.
+    */
+    public static Values mapValues(List<String> descriptions,
+                                   String parentORef) throws Exception {
+        ArrayList<String> oTerms = new ArrayList<String>();
+        for (String description : descriptions) {
+            if (description==null)
+                oTerms.add(null);
+            else {
+                String oTerm = ontologyData.lookupStringUnder(description,
+                                                          parentORef);
+                if (oTerm==null)
+                    throw new Exception("unmappable value "+description+" under parent "+parentORef);
+                oTerms.add(oTerm);
+            }
+        }
+        return new Values()
+            .withScalarType("oterm_ref")
+            .withOtermRefs(oTerms)
+            .withStringValues(descriptions);
+    }
+    
+    /**
+       map typed value
+    */
+    public static TypedValue mapTV(String description) throws Exception {
+        int pos = description.indexOf("=");
+        String term = description.substring(0,pos).trim();
+        String value = description.substring(pos+1).trim();
+        TypedValue rv = new TypedValue()
+            .withValueType(mapTerm(term));
+
+        // look for units
+        pos = value.indexOf(" (");
+        if (pos > -1) {
+            String units = value.substring(pos+2);
+            int pos2 = units.indexOf(")");
+            if (pos2 == units.length()-1) {
+                units = units.substring(0,pos2).trim();
+                value = value.substring(0,pos);
+                try {
+                    rv.setValueUnits(mapTermUnder(units,"UO:0000000"));
+                }
+                catch (Exception e) {
+                    rv.setValueUnits(mapTerm(units));
+                }
+            }
+        }
+
+        String dataType = ontologyData.lookupDataType(rv.getValueType().getOtermRef());
+        if (dataType==null)
+            dataType = "string";
+        if (dataType.equals("int"))
+            rv.setValue(makeValue((long)Double.parseDouble(value)));
+        else if (dataType.equals("float"))
+            rv.setValue(makeValue(Double.parseDouble(value)));
+        else if (dataType.equals("boolean"))
+            rv.setValue(makeValue(StringUtil.atol(value) != 0L));
+        else if (dataType.equals("string"))
+            rv.setValue(mapValueFallback(value));
+        else if (dataType.startsWith("ref:")) {
+            Value v = makeValue(value);
+            v.setScalarType("object_ref");
+            v.setObjectRef(v.getStringValue());
+            rv.setValue(v);
+        }
+        else if (dataType.startsWith("oref:")) {
+            String parentORef = dataType.substring(5).trim();
+            rv.setValue(mapValueUnder(value, parentORef));
+        }
+
+        return rv;
+    }
+    
     /**
        splits on commas, then trims parts.
     */
@@ -107,6 +701,134 @@ public class GenericsUtilCommon {
         return rv;
     }
 
+    /**
+       parse a description into a TypedValues, with a required prefix
+       for the term type
+    */
+    public static TypedValues mapTVs(String description,
+                                     String prefix) throws Exception {
+        String[] f = splitTrim(description);
+        TypedValues rv = new TypedValues();
+        if (prefix == null)
+            rv.setValueType(mapTerm(f[0]));
+        else
+            rv.setValueType(mapTerm(f[0],prefix));
+        ArrayList<TypedValue> vcs = null;
+        for (int i=1; i<f.length; i++) {
+            String s = f[i];
+            if (s.indexOf("=") > -1) {
+                if (vcs==null)
+                    vcs = new ArrayList<TypedValue>();
+                vcs.add(mapTV(s));
+            }
+            else if (i==f.length-1) {
+                try {
+                    rv.setValueUnits(mapTermUnder(s,"UO:0000000"));
+                }
+                catch (Exception e) {
+                    rv.setValueUnits(mapTerm(s));
+                }
+            }
+            else
+                throw new Exception("unable to parse "+description);
+        }
+        if (vcs != null)
+            rv.setValueContext(vcs);
+        String dataType = ontologyData.lookupDataType(rv.getValueType().getOtermRef());
+        if (dataType==null)
+            dataType = "string";
+        if (dataType.equals("int")) {
+            rv.setValues(new Values()
+                         .withScalarType(dataType)
+                         .withIntValues(new ArrayList<Long>()));
+        }
+        else if (dataType.equals("float")) {
+            rv.setValues(new Values()
+                         .withScalarType(dataType)
+                         .withFloatValues(new ArrayList<Double>()));
+        }
+        else if (dataType.equals("boolean")) {
+            rv.setValues(new Values()
+                         .withScalarType(dataType)
+                         .withBooleanValues(new ArrayList<Long>()));
+        }
+        else if (dataType.equals("string")) {
+            rv.setValues(new Values()
+                         .withScalarType(dataType)
+                         .withStringValues(new ArrayList<String>()));
+        }
+        else if (dataType.startsWith("ref:")) {
+            rv.setValues(new Values()
+                         .withScalarType("object_ref")
+                         .withObjectRefs(new ArrayList<String>())
+                         .withStringValues(new ArrayList<String>()));
+        }
+        else if (dataType.startsWith("oref:")) {
+            rv.setValues(new Values()
+                         .withScalarType("oterm_ref")
+                         .withOtermRefs(new ArrayList<String>())
+                         .withStringValues(new ArrayList<String>()));
+        }
+        else
+            throw new Exception("unimplemented data type "+dataType);
+        return rv;
+    }
+
+    /**
+       parse a description into a TypedValues
+    */
+    public static TypedValues mapTVs(String description) throws Exception {
+        // System.err.println("mapping "+description);
+        return mapTVs(description, (String)null);
+    }    
+
+    /**
+       parse a description and list of values into a TypedValues,
+       mapping the values as appropriate.  This version restricts
+       the data type to a given prefix.
+    */
+    public static TypedValues mapTVs(String description,
+                                     String prefix,
+                                     List<String> valueStrings) throws Exception {
+        TypedValues rv = mapTVs(description, prefix);
+
+        String dataType = ontologyData.lookupDataType(rv.getValueType().getOtermRef());
+        if (dataType==null)
+            dataType = "string";
+
+        Values v = rv.getValues();
+        for (String value : valueStrings) {
+            if (dataType.equals("int"))
+                v.getIntValues().add(new Long((long)Double.parseDouble(value)));
+            else if (dataType.equals("float"))
+                v.getFloatValues().add(new Double(Double.parseDouble(value)));
+            else if (dataType.equals("boolean"))
+                v.getBooleanValues().add(new Long(StringUtil.atol(value) == 0L ? 0L : 1L));
+            else if (dataType.equals("string"))
+                v.getStringValues().add(value);
+            else if (dataType.startsWith("ref:")) {
+                v.getStringValues().add(value);
+                v.getObjectRefs().add(value);
+            }
+            else if (dataType.startsWith("oref:")) {
+                String parentORef = dataType.substring(5).trim();
+                Value vTmp = mapValueUnder(value, parentORef);
+                v.getStringValues().add(value);
+                v.getOtermRefs().add(vTmp.getOtermRef());
+            }
+        }
+        return rv;
+    }
+
+    /**
+       parse a description and list of values into a TypedValues,
+       mapping the values as appropriate.
+    */
+    public static TypedValues mapTVs(String description,
+                                     List<String> valueStrings) throws Exception {
+        return mapTVs(description, null, valueStrings);
+    }
+    
     /**
        parse a description into a TypedValues, minus the
        values.
@@ -140,6 +862,245 @@ public class GenericsUtilCommon {
         return rv;
     }
 
+    /**
+       check validity of Term
+    */
+    public static void validate(Term t) throws Exception {
+        String oTerm = t.getOtermRef();
+        if (t==null)
+            throw new Exception("Unmapped term "+toString(t,PRINT_NAME));
+        String canonicalName = ontologyData.lookupOTerm(oTerm);
+        if (canonicalName==null)
+            throw new Exception("Unable to look up "+toString(t,PRINT_OREF));
+        if (!canonicalName.equals(t.getOtermName()))
+            throw new Exception("Invalid canonical name for "+toString(t,PRINT_OREF)+": "+t.getOtermName()+" vs "+canonicalName);
+    }
+
+    /**
+       check validity of TypedValue
+    */
+    public static void validate(TypedValue tv) throws Exception {
+        Term t = tv.getValueType();
+        validate(t);
+        String oTerm = t.getOtermRef();
+        if (!ontologyData.microtypes.contains(oTerm))
+            throw new Exception("Invalid microtype "+toString(t,PRINT_OREF));
+        if (!ontologyData.validProperties.contains(oTerm))
+            throw new Exception("Invalid property "+toString(t,PRINT_OREF));
+        String valueType = ontologyData.oTermToDataType.get(oTerm);
+        if (valueType==null)
+            throw new Exception("Unknown value type for "+toString(t,PRINT_OREF));
+        Value v = tv.getValue();
+        if (v == null)
+            throw new Exception("Null value for "+toString(t,PRINT_OREF));
+        if (valueType.startsWith("oref: ")) {
+            String valueTypeRef = valueType.replace("oref: ","");
+            if (ontologyData.lookupOTerm(valueTypeRef)==null)
+                throw new Exception("Invalid constraint "+valueTypeRef+"; dictionary not loaded?");
+            valueType = "oterm_ref";
+            String valueRef = v.getOtermRef();
+            if (!ontologyData.inTree(valueRef,valueTypeRef))
+                throw new Exception("Invalid oref value for "+toString(t,PRINT_OREF)+": expected "+valueTypeRef+" got "+valueRef);
+        }
+        if (valueType.startsWith("ref: ")) {
+            // can't validate these currently
+            valueType = "object_ref";
+        }
+        String scalarType = v.getScalarType();
+        if (!valueType.equals(scalarType) &&
+            (!(scalarType.equals("oterm_ref") &&
+               valueType.equals("string"))))
+            throw new Exception("Mismatched value type for "+toString(t,PRINT_OREF)+": expected "+valueType+" got "+scalarType);
+        Term u = tv.getValueUnits();
+        if (u == null) {
+            if (valueType.equals("int") || (valueType.equals("float")))
+                throw new Exception("No units provided for "+toString(t,PRINT_OREF));
+        }
+        else {
+            validate(u);
+            if (valueType.equals("string") ||
+                (valueType.equals("oterm_ref")) ||
+                (valueType.equals("object_ref")))
+                throw new Exception("Units "+toString(u,PRINT_OREF)+" should not be provided for "+toString(t,PRINT_OREF));
+            if (!ontologyData.validUnits(oTerm,u.getOtermRef()))
+                throw new Exception("Units "+toString(u,PRINT_OREF)+" not valid for "+toString(t,PRINT_OREF));
+        }
+    }
+
+    /**
+       check validity of TypedValues
+    */
+    public static void validate(TypedValues tvs) throws Exception {
+        Term t = tvs.getValueType();
+        validate(t);
+        String oTerm = t.getOtermRef();
+        if (!ontologyData.microtypes.contains(oTerm))
+            throw new Exception("Invalid microtype "+toString(t,PRINT_OREF));
+        if (!ontologyData.validDimensionVars.contains(oTerm))
+            throw new Exception("Invalid dimension variable "+toString(t,PRINT_OREF));
+        String valueType = ontologyData.oTermToDataType.get(oTerm);
+        if (valueType==null)
+            throw new Exception("Unknown value type for "+toString(t,PRINT_OREF));
+        Values vals = tvs.getValues();
+        if (vals == null)
+            throw new Exception("Null value for "+toString(t,PRINT_OREF));
+        String scalarType = vals.getScalarType();
+        String valueTypeRef = null;
+        if (valueType.startsWith("oref: ")) {
+            valueTypeRef = valueType.replace("oref: ","");
+            if (ontologyData.lookupOTerm(valueTypeRef)==null)
+                throw new Exception("Invalid constraint "+valueTypeRef+"; dictionary not loaded?");
+            valueType = "oterm_ref";
+        }
+        if (valueType.startsWith("ref: ")) {
+            valueTypeRef = valueType.replace("ref: ","");
+            valueType = "object_ref";
+        }
+        
+        if (!valueType.equals(scalarType) &&
+            (!(scalarType.equals("oterm_ref") &&
+               valueType.equals("string"))))
+            throw new Exception("Mismatched value type for "+toString(t,PRINT_OREF)+": expected "+valueType+" got "+scalarType);
+
+        List objects = getObjects(vals);
+        List<String> refs = (List<String>)getRefs(vals);
+        if (objects == null)
+            throw new Exception("Missing values for "+toString(t,PRINT_OREF)+": expected "+scalarType);
+        if (((scalarType.equals("oterm_ref")) ||
+             (scalarType.equals("object_ref"))) && (refs==null))
+            throw new Exception("Missing refs for "+toString(t,PRINT_OREF)+": expected "+scalarType);
+        if ((scalarType.equals("oterm_ref")) && (valueTypeRef != null)) {
+            for (String valueRef : refs)
+                if ((valueRef != null) && (!ontologyData.inTree(valueRef,valueTypeRef)))
+                    throw new Exception("Invalid oref value for "+toString(t,PRINT_OREF)+": expected "+valueTypeRef+" got "+valueRef);
+        }
+
+        List<TypedValue> tvl = tvs.getValueContext();
+        if (tvl != null)
+            for (TypedValue tv : tvl)
+                validate(tv);
+        
+        Term u = tvs.getValueUnits();
+        if (u == null) {
+            if (valueType.equals("int") || (valueType.equals("float")))
+                throw new Exception("No units provided for "+toString(t,PRINT_OREF));
+        }
+        else {
+            validate(u);
+            if (valueType.equals("string") ||
+                (valueType.equals("oterm_ref")) ||
+                (valueType.equals("object_ref")))
+                throw new Exception("Units "+toString(u,PRINT_OREF)+" should not be provided for "+toString(t,PRINT_OREF));
+            if (!ontologyData.validUnits(oTerm,u.getOtermRef()))
+                throw new Exception("Units "+toString(u,PRINT_OREF)+" not valid for "+toString(t,PRINT_OREF));
+        }
+    }
+
+    /**
+       check validity of DimensionContext
+    */
+    public static void validate(DimensionContext dc) throws Exception {
+        Term t = dc.getDataType();
+        validate(t);
+        String oTerm = t.getOtermRef();
+        if (!ontologyData.validDimensions.contains(oTerm))
+            throw new Exception("Invalid dimension "+toString(t,PRINT_OREF));
+        for (TypedValues tvs : dc.getTypedValues())
+            validate(tvs);
+    }
+
+    /**
+       Get links to static objects from TypedValue.  Returns null if none.
+    */
+    public static HashMap<String,Set<String>> getRefLinks(TypedValue tv) throws Exception {
+        HashMap<String,Set<String>> rv = null;
+        Term t = tv.getValueType();
+        String oTerm = t.getOtermRef();
+        String valueType = ontologyData.oTermToDataType.get(oTerm);
+        if (valueType.startsWith("ref: ")) {
+            valueType = valueType.replace("ref: ","");
+            String value = tv.getValue().getObjectRef();
+            rv = new HashMap<String,Set<String>>();
+            rv.put(valueType,new HashSet<String>(Arrays.asList(value)));
+        }
+        return rv;
+    }
+
+    /**
+       Get links to static objects from TypedValues.  Returns null if none.
+    */
+    public static HashMap<String,Set<String>> getRefLinks(TypedValues tvs) throws Exception {
+        HashMap<String,Set<String>> rv = null;
+        Term t = tvs.getValueType();
+        String oTerm = t.getOtermRef();
+        String valueType = ontologyData.oTermToDataType.get(oTerm);
+        if (valueType.startsWith("ref: ")) {
+            valueType = valueType.replace("ref: ","");
+            List<String> values = (List<String>)getRefs(tvs.getValues());
+            Set<String> uniqueValues = new HashSet<String>();
+            for (String value : values) {
+                if ((value != null) && (!uniqueValues.contains(value)))
+                    uniqueValues.add(value);
+            }
+            if (uniqueValues.size()==0) // e.g., if all values where null
+                return null;
+            rv = new HashMap<String,Set<String>>();
+            rv.put(valueType,uniqueValues);
+        }
+        return rv;
+    }
+
+    /**
+       merge ref links from src into dest, returning dest
+    */
+    private static HashMap<String,Set<String>> mergeRefLinks(HashMap<String,Set<String>> dest, HashMap<String,Set<String>> src) throws Exception {
+        if (src==null)
+            return dest;
+        if (dest==null)
+            dest = new HashMap<String,Set<String>>();
+        for (String key : src.keySet()) {
+            Set<String> oldVals = dest.get(key);
+            if (oldVals==null)
+                oldVals = new HashSet<String>();
+            oldVals.addAll(src.get(key));
+            dest.put(key,oldVals);
+        }
+        return dest;
+    }
+
+    /**
+       Get links to static objects from DimensionContext.  Returns null if none.
+    */
+    public static HashMap<String,Set<String>> getRefLinks(DimensionContext dc) throws Exception {
+        HashMap<String,Set<String>> rv = null;
+        for (TypedValues tvs : dc.getTypedValues()) {
+            HashMap<String,Set<String>> rls = getRefLinks(tvs);
+            rv = mergeRefLinks(rv, rls);
+        }
+        return rv;
+    }
+    
+    /**
+       Get links to static objects from HNDArray.  Returns null if none.
+    */
+    public static HashMap<String,Set<String>> getRefLinks(HNDArray hnda) throws Exception {
+        HashMap<String,Set<String>> rv = null;
+        if (hnda.getArrayContext() != null)
+            for (TypedValue tv : hnda.getArrayContext()) {
+                HashMap<String,Set<String>> rls = getRefLinks(tv);
+                rv = mergeRefLinks(rv, rls);
+            }
+        for (DimensionContext dc : hnda.getDimContext()) {
+            HashMap<String,Set<String>> rls = getRefLinks(dc);
+            rv = mergeRefLinks(rv, rls);
+        }
+        for (TypedValues tvs : hnda.getTypedValues()) {
+            HashMap<String,Set<String>> rls = getRefLinks(tvs);
+            rv = mergeRefLinks(rv, rls);
+        }
+        return rv;
+    }
+    
     /**
        Makes a HNDArray object from CSV file.
        Reads NDArrays also, modeling them as an HNDArray with
@@ -337,9 +1298,9 @@ public class GenericsUtilCommon {
     /**
        make a Term into a String
     */
-    public static String toString(Term t, boolean includeRef) {
+    public static String toString(Term t, int printMode) {
         String rv = t.getTermName();
-        if (includeRef && (t.getOtermRef() != null))
+        if ((printMode==PRINT_OREF) && (t.getOtermRef() != null))
             rv += " <"+t.getOtermRef()+">";
         return rv;
     }
@@ -347,7 +1308,7 @@ public class GenericsUtilCommon {
     /**
        make a Value into a String
     */
-    public static String toString(Value v, boolean includeRef) {
+    public static String toString(Value v, int printMode) {
         String scalarType = v.getScalarType();
         if (scalarType.equals("int"))
             return new Long(v.getIntValue()).toString();
@@ -357,7 +1318,7 @@ public class GenericsUtilCommon {
             return new Long(v.getBooleanValue()).toString();
 
         String rv = v.getStringValue();
-        if (includeRef) {
+        if (printMode==PRINT_OREF) {
             if (scalarType.equals("object_ref"))
                 rv += " <"+v.getObjectRef()+">";
             else if (scalarType.equals("oterm_ref"))
@@ -371,7 +1332,7 @@ public class GenericsUtilCommon {
        dimension index, which will be prepended to each line.  If null,
        nothing will be prepended.
     */
-    public static void writeValues(Long prefix, List<Long> dLengths, Values v, boolean includeRefs, CSVWriter outfile) {
+    public static void writeValues(Long prefix, List<Long> dLengths, Values v, int printMode, CSVWriter outfile) {
         int nDimensions = dLengths.size();
         int length = 1;
         ArrayList<String> line = new ArrayList<String>();
@@ -394,7 +1355,7 @@ public class GenericsUtilCommon {
                 for (int j=0; j<nDimensions; j++)
                     line.add(indices[j].toString());
                 String s = objects.get(i).toString();
-                if (includeRefs &&
+                if ((printMode==PRINT_OREF) &&
                     (refs != null) &&
                     (refs.get(i) != null))
                     s += " <"+refs.get(i).toString()+">";
@@ -419,15 +1380,15 @@ public class GenericsUtilCommon {
        make a TypedValue (including the value) into
        an ArrayList of Strings
     */
-    public static ArrayList<String> toStrings(TypedValue tv, boolean includeRefs) {
+    public static ArrayList<String> toStrings(TypedValue tv, int printMode) {
         ArrayList<String> rv = new ArrayList<String>();
         Term t = tv.getValueType();
-        rv.add(toString(t,includeRefs));
+        rv.add(toString(t,printMode));
         Value v = tv.getValue();
-        rv.add(toString(v,includeRefs));
+        rv.add(toString(v,printMode));
         t = tv.getValueUnits();
         if (t != null)
-            rv.add(toString(t,includeRefs));
+            rv.add(toString(t,printMode));
         return rv;
     }
 
@@ -435,14 +1396,21 @@ public class GenericsUtilCommon {
        make a TypedValue (including the value) into
        a single descriptive string
     */
-    public static String toString(TypedValue tv, boolean includeRefs) {
+    public static String toString(TypedValue tv, int printMode) {
         Term t = tv.getValueType();
-        String rv = toString(t,includeRefs);
+        String rv = toString(t,printMode);
         Value v = tv.getValue();
-        rv += " = "+toString(v,includeRefs);
+        if (printMode==PRINT_BRIEF)
+            rv += "="+toString(v,printMode);
+        else
+            rv += " = "+toString(v,printMode);
         t = tv.getValueUnits();
-        if (t != null)
-            rv += " ("+toString(t,includeRefs)+")";
+        if (t != null) {
+            if (printMode==PRINT_BRIEF)
+                rv += ", "+toString(t,printMode);
+            else
+                rv += " ("+toString(t,printMode)+")";
+        }
         return rv;
     }
     
@@ -450,15 +1418,15 @@ public class GenericsUtilCommon {
        make TypedValues metadata (but not the values) into
        an ArrayList of Strings
     */
-    public static ArrayList<String> toStrings(TypedValues tvs, boolean includeRefs) {
+    public static ArrayList<String> toStrings(TypedValues tvs, int printMode) {
         ArrayList<String> rv = new ArrayList<String>();
-        rv.add(toString(tvs.getValueType(),includeRefs));
+        rv.add(toString(tvs.getValueType(),printMode));
         if (tvs.getValueContext() != null)
             for (TypedValue tv : tvs.getValueContext())
-                rv.addAll(toStrings(tv,includeRefs));
+                rv.addAll(toStrings(tv,printMode));
         Term t = tvs.getValueUnits();
         if (t != null)
-            rv.add(toString(t,includeRefs));
+            rv.add(toString(t,printMode));
         return rv;
     }
 
@@ -466,21 +1434,27 @@ public class GenericsUtilCommon {
        make TypedValues metadata (but not the values) into
        a descriptive String
     */
-    public static String toString(TypedValues tvs, boolean includeRefs) {
-        String rv = toString(tvs.getValueType(),includeRefs);
+    public static String toString(TypedValues tvs, int printMode) {
+        String rv = toString(tvs.getValueType(),printMode);
         if (tvs.getValueContext() != null)
             for (TypedValue tv : tvs.getValueContext())
-                rv += "; "+toString(tv,includeRefs);
+                if (printMode==PRINT_BRIEF)
+                    rv += ", "+toString(tv,printMode);
+                else
+                    rv += "; "+toString(tv,printMode);
         Term t = tvs.getValueUnits();
         if (t != null)
-            rv += " ("+toString(t,includeRefs)+")";
+            if (printMode==PRINT_BRIEF)
+                rv += ", "+toString(t,printMode);
+            else
+                rv += " ("+toString(t,printMode)+")";
         return rv;
     }
     
     /**
        Writes a HNDArray object to a CSV file.
     */
-    public static void writeCSV(HNDArray hnda, boolean includeRefs, CSVWriter outfile) throws Exception {
+    public static void writeCSV(HNDArray hnda, int printMode, CSVWriter outfile) throws Exception {
         // check whether HNDArray is really heterogenous
         int numHet = hnda.getTypedValues().size();
         boolean isHeterogeneous = (numHet > 1);
@@ -501,13 +1475,13 @@ public class GenericsUtilCommon {
         }
         if (hnda.getDataType() != null) {
             line.add("type");
-            line.add(toString(hnda.getDataType(),includeRefs));
+            line.add(toString(hnda.getDataType(),printMode));
             outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
         if (!isHeterogeneous) {
             line.add("values");
-            line.addAll(toStrings(hnda.getTypedValues().get(0),includeRefs));
+            line.addAll(toStrings(hnda.getTypedValues().get(0),printMode));
             outfile.writeNext(line.toArray(new String[line.size()]),false);
             line.clear();
         }
@@ -516,7 +1490,7 @@ public class GenericsUtilCommon {
         if (hnda.getArrayContext() != null) {
             for (TypedValue tv : hnda.getArrayContext()) {
                 line.add("meta");
-                line.addAll(toStrings(tv,includeRefs));
+                line.addAll(toStrings(tv,printMode));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
             }
@@ -538,11 +1512,11 @@ public class GenericsUtilCommon {
             for (TypedValues tvs : dc.getTypedValues()) {
                 line.add("dmeta");
                 line.add(i.toString());
-                line.add(toString(dc.getDataType(),includeRefs));
-                line.addAll(toStrings(tvs,includeRefs));
+                line.add(toString(dc.getDataType(),printMode));
+                line.addAll(toStrings(tvs,printMode));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
-                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), includeRefs, outfile);
+                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), printMode, outfile);
             }
             i++;
         }
@@ -558,9 +1532,22 @@ public class GenericsUtilCommon {
             dLengths.remove(0);
         }
         for (TypedValues tvs : hnda.getTypedValues())
-            writeValues(prefix, dLengths, tvs.getValues(), includeRefs, outfile);
+            writeValues(prefix, dLengths, tvs.getValues(), printMode, outfile);
         
         outfile.flush();
+    }
+
+    public static String getDescriptor(HNDArray hnda) {
+        String typeDescriptor = hnda.getDataType().getOtermName();
+        typeDescriptor += " <";
+        for (DimensionContext dc : hnda.getDimContext()) {
+            if (!typeDescriptor.endsWith(" <")) {
+                typeDescriptor += ", ";
+            }
+            typeDescriptor += dc.getDataType().getOtermName();
+        }
+        typeDescriptor += ">";
+        return typeDescriptor;
     }
     
     /**
