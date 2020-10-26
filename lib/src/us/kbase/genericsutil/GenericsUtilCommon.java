@@ -134,6 +134,8 @@ public class GenericsUtilCommon {
                     int pos = buffer.indexOf("EXACT [");
                     if (pos == -1)
                         pos = buffer.indexOf("RELATED [");
+                    if (pos == -1)
+                        pos = buffer.indexOf("RELATED InChIKey [");
                     if (pos > -1) {
                         mapStringToOTerm(buffer.substring(10,pos-2),
                                          oTerm);
@@ -909,7 +911,11 @@ public class GenericsUtilCommon {
         String scalarType = v.getScalarType();
         if (!valueType.equals(scalarType) &&
             (!(scalarType.equals("oterm_ref") &&
-               valueType.equals("string"))))
+               valueType.equals("string"))) &&
+            (!(scalarType.equals("float") &&
+               valueType.equals("int"))) &&
+            (!(scalarType.equals("int") &&
+               valueType.equals("float"))))
             throw new Exception("Mismatched value type for "+toString(t,PRINT_OREF)+": expected "+valueType+" got "+scalarType);
         Term u = tv.getValueUnits();
         if (u == null) {
@@ -930,7 +936,8 @@ public class GenericsUtilCommon {
     /**
        check validity of TypedValues
     */
-    public static void validate(TypedValues tvs) throws Exception {
+    public static void validate(TypedValues tvs,
+                                int expectedSize) throws Exception {
         Term t = tvs.getValueType();
         validate(t);
         String oTerm = t.getOtermRef();
@@ -959,16 +966,26 @@ public class GenericsUtilCommon {
         
         if (!valueType.equals(scalarType) &&
             (!(scalarType.equals("oterm_ref") &&
-               valueType.equals("string"))))
+               valueType.equals("string"))) &&
+            (!(scalarType.equals("float") &&
+               valueType.equals("int"))) &&
+            (!(scalarType.equals("int") &&
+               valueType.equals("float"))))
             throw new Exception("Mismatched value type for "+toString(t,PRINT_OREF)+": expected "+valueType+" got "+scalarType);
 
         List objects = getObjects(vals);
         List<String> refs = (List<String>)getRefs(vals);
         if (objects == null)
             throw new Exception("Missing values for "+toString(t,PRINT_OREF)+": expected "+scalarType);
-        if (((scalarType.equals("oterm_ref")) ||
-             (scalarType.equals("object_ref"))) && (refs==null))
-            throw new Exception("Missing refs for "+toString(t,PRINT_OREF)+": expected "+scalarType);
+        if (objects.size() != expectedSize)
+            throw new Exception("Wrong number of values for "+toString(t,PRINT_OREF)+": expected "+expectedSize+" got "+objects.size());
+        if ((scalarType.equals("oterm_ref")) ||
+            (scalarType.equals("object_ref"))) {
+            if (refs==null)
+                throw new Exception("Missing refs for "+toString(t,PRINT_OREF)+": expected "+scalarType);
+            if (refs.size() != objects.size())
+                throw new Exception("Different number of refs and objects for "+toString(t,PRINT_OREF));
+        }
         if ((scalarType.equals("oterm_ref")) && (valueTypeRef != null)) {
             for (String valueRef : refs)
                 if ((valueRef != null) && (!ontologyData.inTree(valueRef,valueTypeRef)))
@@ -1005,8 +1022,15 @@ public class GenericsUtilCommon {
         String oTerm = t.getOtermRef();
         if (!ontologyData.validDimensions.contains(oTerm))
             throw new Exception("Invalid dimension "+toString(t,PRINT_OREF));
-        for (TypedValues tvs : dc.getTypedValues())
-            validate(tvs);
+        if (dc.getSize()==null)
+            throw new Exception("Unknown length for dimension "+toString(t,PRINT_OREF));
+        int size = (int)dc.getSize().longValue();
+        for (TypedValues tvs : dc.getTypedValues()) {
+            List objects = getObjects(tvs.getValues());
+            if (objects.size() != size)
+                throw new Exception("Invalid size for typed values in dimension "+toString(t,PRINT_OREF));
+            validate(tvs,size);
+        }
     }
 
     /**
