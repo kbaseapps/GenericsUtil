@@ -1552,11 +1552,13 @@ public class GenericsUtilCommon {
         // write out the actual data
         Long prefix = null;
         if (isHeterogeneous) {
-            prefix = dLengths.get(0);
+            prefix = new Long(0L);
             dLengths.remove(0);
         }
-        for (TypedValues tvs : hnda.getTypedValues())
+        for (TypedValues tvs : hnda.getTypedValues()) {
+            prefix++; // first dimension will print as 1, not 0
             writeValues(prefix, dLengths, tvs.getValues(), printMode, outfile);
+        }
         
         outfile.flush();
     }
