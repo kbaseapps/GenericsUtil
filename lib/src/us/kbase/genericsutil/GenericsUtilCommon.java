@@ -332,6 +332,34 @@ public class GenericsUtilCommon {
                         return true;
             return false;
         }
+
+        /**
+           Checks whether a term matches a reference, or its synonyms,
+           or its parents.  Case insensitive.
+        */
+        public boolean matches(String ref, String term) throws Exception {
+            term = term.toLowerCase();
+            String match = oTermToString.get(ref);
+            // System.out.println("debug5: "+ref+" "+term+" "+match);
+            if (match.toLowerCase().equals(term))
+                return true;
+            List<String> vals = stringToOTermsLC.get(term);
+            if (vals!=null)
+                for (String val : vals)
+                    if (val.equals(term))
+                        return true;
+            List<String> parents = oTermToParents.get(ref);
+            if (parents != null) {
+                for (String parent : parents) {
+                    int pos = parent.indexOf(" ");
+                    if (pos > 0)
+                        parent = parent.substring(0,pos);
+                    if (matches(parent, term))
+                        return true;
+                }
+            }
+            return false;
+        }
         
         public OntologyData2() {
             oTermToString = new HashMap<String,String>();
@@ -865,6 +893,48 @@ public class GenericsUtilCommon {
     }
 
     /**
+       Strip a pre-mapped value from a string
+       */
+    public static String stripTerm(String name) throws Exception {
+        if (name.endsWith(">")) {
+            int pos = name.lastIndexOf(" <");
+            String ref = name.substring(pos+2,name.length()-1);
+            name = name.substring(0,pos);
+        }
+        return name;
+    }
+
+    /**
+       Make TypedValues description line back into English,
+       stripping out terms.
+    */
+    public static String stripTVS(String description) throws Exception {
+        String[] f = splitTrim(description);
+        String rv = stripTerm(f[0]);
+        if (f.length > 1) {
+            if (f.length > 2) {
+                // make user specify details for now;
+                // units and context should be auto-detected!
+                int nContext = 0;
+                if ((f.length % 2) == 0)
+                    nContext = (f.length-2)/2;
+                else
+                    nContext = (f.length-1)/2;
+                for (int i=0; i<nContext; i++) {
+                    String t = stripTerm(f[i*2+1]);
+                    String v = stripTerm(f[i*2+2]);
+                    rv += ", "+t+"="+v;
+                }
+                if ((f.length % 2) == 0)
+                    rv += ", "+stripTerm(f[f.length-1]);
+            }
+            else
+                rv += ", "+stripTerm(f[f.length-1]);
+        }
+        return rv;
+    }
+    
+    /**
        check validity of Term
     */
     public static void validate(Term t) throws Exception {
@@ -1124,6 +1194,308 @@ public class GenericsUtilCommon {
         }
         return rv;
     }
+
+    /**
+       update a Values object from String to another type, based
+       on a reference term
+    */
+    public static void transformValues(Term valueType, Values v) throws Exception {
+        List<String> sv = v.getStringValues();
+        String inferredType = guessValueType(sv);
+        String dataType = null;
+        String ref = valueType.getOtermRef();
+        String objectType = null;
+        if (ref != null) {
+            dataType = ontologyData.lookupDataType(ref);
+        }
+        if (dataType==null) {
+            // guess based on values
+            if (inferredType.equals("boolean"))
+                makeBooleanValues(v);
+            else if (inferredType.equals("float") ||
+                     (inferredType.equals("int")))
+                makeFloatValues(v);
+        }
+        else {
+            if (dataType.equals("boolean")) {
+                if (inferredType.equals("boolean"))
+                    makeBooleanValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
+            }
+            else if (dataType.equals("int")) {
+                if ((inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
+                    makeIntValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
+            }
+            else if (dataType.equals("float")) {
+                if ((inferredType.equals("float")) ||
+                    (inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
+                    makeFloatValues(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
+            }
+            else if ((dataType.equals("ref")) &&
+                     (v.getScalarType().equals("string"))) {
+                if (inferredType.equals("oterm_ref")) {
+                    makeOtermRefValues(v);
+                    for (String val : v.getOtermRefs()) {
+                        if (val != null)
+                            ontologyData.lookupOTerm(val);
+                    }
+                }
+                else if (inferredType.equals("object_ref"))
+                    makeObjectRefValues(v,null);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be references");
+            }
+        }
+    }
+
+    /**
+       update a Value object from String to another type, based
+       on a reference term
+    */
+    public static void transformValue(Term valueType, Value v) throws Exception {
+        String sv = v.getStringValue();
+        String inferredType = guessValueType(Arrays.asList(sv));
+        String dataType = null;
+        String ref = valueType.getOtermRef();
+        if (ref != null)
+            dataType = ontologyData.lookupDataType(ref);
+        if (dataType==null) {
+            // guess based on values
+            if (inferredType.equals("boolean"))
+                makeBooleanValue(v);
+            else if (inferredType.equals("float") ||
+                     (inferredType.equals("int")))
+                makeFloatValue(v);
+        }
+        else {
+            if (dataType.equals("boolean")) {
+                if (inferredType.equals("boolean"))
+                    makeBooleanValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be boolean");
+            }
+            else if (dataType.equals("int")) {
+                if ((inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
+                    makeIntValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be integers");
+            }
+            else if (dataType.equals("float")) {
+                if ((inferredType.equals("float")) ||
+                    (inferredType.equals("int")) ||
+                    (inferredType.equals("boolean")))
+                    makeFloatValue(v);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be numeric");
+            }
+            else if ((dataType.equals("ref")) &&
+                     (v.getScalarType().equals("string"))) {
+                if (inferredType.equals("oterm_ref")) {
+                    makeOtermRefValue(v);
+                    ontologyData.lookupOTerm(v.getOtermRef());
+                }
+                else if (inferredType.equals("object_ref"))
+                    makeObjectRefValue(v,null);
+                else
+                    throw new Exception("Data for objects of type "+valueType.getTermName()+" must be references");
+            }
+        }
+    }
+
+    /**
+       update a pre-mapped term with a mapping (in angle brackets).
+       Returns true if it mapped.
+    */
+    public static boolean mapPremapped(Term t) throws Exception {
+        boolean rv = false;
+        if (t==null)
+            return rv;
+        String name = t.getTermName();
+        if (name.endsWith(">")) {
+            int pos = name.lastIndexOf(" <");
+            String ref = name.substring(pos+2,name.length()-1);
+            name = name.substring(0,pos);
+            t.setTermName(name);
+            t.setOtermRef(ref);
+            String dictName = ontologyData.lookupOTerm(ref);
+            if (!ontologyData.matches(ref,name))
+                System.out.println("mapping "+name+" to dictionary term "+dictName);
+            t.setOtermName(dictName);
+            rv = true;
+        }
+        return rv;
+    }
+
+    /**
+       update a pre-mapped value with a reference.  Returns true if it mapped.
+    */
+    public static boolean mapPremapped(Value v) throws Exception {
+        boolean rv = false;
+        if (v==null)
+            return rv;
+        String sv = v.getStringValue();
+        if (sv.endsWith(">")) {
+            int pos = sv.lastIndexOf(" <");
+            String ref = sv.substring(pos+2,sv.length()-1);
+            sv = sv.substring(0,pos);
+            v.setStringValue(sv);
+            if (ref.indexOf(":")>-1) {
+                v.setOtermRef(ref);
+                v.setScalarType("oterm_ref");
+                String dictName = ontologyData.lookupOTerm(ref);
+                if (!sv.toLowerCase().equals(dictName.toLowerCase()))
+                    System.out.println("mapping "+sv+" to "+dictName);
+            }
+            else {
+                v.setObjectRef(ref);
+                v.setScalarType("object_ref");
+            }
+            rv = true;
+        }
+        return rv;
+    }
+
+    /**
+       update pre-mapped values with a reference.  Returns true if it mapped.
+    */
+    public static boolean mapPremapped(Values v) throws Exception {
+        boolean rv = false;
+        if (v==null)
+            return rv;
+        List<String> svs = v.getStringValues();
+        int l = svs.size();
+        List<String> refs = new ArrayList<String>(l);
+        boolean oTerm = false;
+        for (int i=0; i<l; i++) {
+            String sv = svs.get(i);
+            int pos;
+            if ((sv != null) &&
+                (sv.endsWith(">")) &&
+                ((pos = sv.lastIndexOf(" <")) > -1)) {
+
+                String ref = sv.substring(pos+2,sv.length()-1);
+                rv = true;
+                if (ref.indexOf(":")>-1)
+                    oTerm = true;
+                sv = sv.substring(0,pos);
+                svs.set(i,sv);
+                refs.add(ref);
+                if (oTerm) {
+                    String dictName = ontologyData.lookupOTerm(ref);
+                    if (!sv.toLowerCase().equals(dictName.toLowerCase()))
+                        System.out.println("mapping "+sv+" to "+dictName);
+                }
+            }
+            refs.add(null);
+        }
+        if (rv) {
+            if (oTerm) {
+                v.setOtermRefs(refs);
+                v.setScalarType("oterm_ref");
+            }
+            else {
+                v.setObjectRefs(refs);
+                v.setScalarType("object_ref");
+            }
+        }
+        return rv;
+    }
+    
+    /**
+       Map premapped types in a TypedValue.  Returns true if any mapped.
+    */
+    public static boolean mapPremapped(TypedValue tv) throws Exception {
+        boolean rv = false;
+        if (tv==null)
+            return rv;
+        Term t = tv.getValueType();
+        rv |= mapPremapped(t);
+        Value v = tv.getValue();
+        rv |= mapPremapped(v);
+        rv |= mapPremapped(tv.getValueUnits());
+        if (t != null) 
+            transformValue(t, v);
+        return rv;
+    }
+
+    /**
+       Map premapped types in a TypedValues.  Returns true if any mapped.
+    */
+    public static boolean mapPremapped(TypedValues tvs) throws Exception {
+        boolean rv = false;
+        if (tvs==null)
+            return rv;
+        Term t = tvs.getValueType();
+        rv |= mapPremapped(t);
+        List<TypedValue> vc = tvs.getValueContext();
+        if (vc != null) {
+            for (TypedValue tv : vc)
+                rv |= mapPremapped(tv);
+        }
+        Values v = tvs.getValues();
+        rv |= mapPremapped(v);
+        rv |= mapPremapped(tvs.getValueUnits());
+        if (t != null)
+            transformValues(t, v);
+        return rv;
+    }
+
+    /**
+       Map premapped types in a DimensionContext.  Returns true if any mapped.
+    */
+    public static boolean mapPremapped(DimensionContext dc) throws Exception {
+        boolean rv = false;
+        if (dc==null)
+            return rv;
+        rv |= mapPremapped(dc.getDataType());
+        for (TypedValues tvs : dc.getTypedValues())
+            rv |= mapPremapped(tvs);
+        return rv;
+    }
+    
+    /**
+       Map premapped types in NDArray.  Returns true if any mapped.
+    */
+    public static boolean mapPremapped(NDArray nda) throws Exception {
+        boolean rv = false;
+        rv |= mapPremapped(nda.getDataType());
+        for (DimensionContext dc : nda.getDimContext())
+            rv |= mapPremapped(dc);
+        List<TypedValue> arrayContext = nda.getArrayContext();
+        if (arrayContext != null) {
+            for (TypedValue tv : arrayContext)
+                rv |= mapPremapped(tv);
+        }
+        rv |= mapPremapped(nda.getTypedValues());
+        return rv;
+    }
+
+    /**
+       Map premapped types in HNDArray.  Returns true if any mapped.
+    */
+    public static boolean mapPremapped(HNDArray hnda) throws Exception {
+        boolean rv = false;
+        rv |= mapPremapped(hnda.getDataType());
+        for (DimensionContext dc : hnda.getDimContext())
+            rv |= mapPremapped(dc);
+        List<TypedValue> arrayContext = hnda.getArrayContext();
+        if (arrayContext != null) {
+            for (TypedValue tv : arrayContext)
+                rv |= mapPremapped(tv);
+        }
+        for (TypedValues tv : hnda.getTypedValues())
+            rv |= mapPremapped(tv);
+        return rv;
+    }
+    
     
     /**
        Makes a HNDArray object from CSV file.
@@ -1306,6 +1678,9 @@ public class GenericsUtilCommon {
                     // treat each row like a "values" line
                     TypedValues tvs = makeTVS(val);
                     hnda.getTypedValues().set((int)index, tvs);
+
+                    // convert the value back to string, losing the mapped terms
+                    val = stripTVS(val);
                 }
 
                 // store the value in the string data array
@@ -1540,7 +1915,21 @@ public class GenericsUtilCommon {
                 line.addAll(toStrings(tvs,printMode));
                 outfile.writeNext(line.toArray(new String[line.size()]),false);
                 line.clear();
-                writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), printMode, outfile);
+                if ((i==1) && (isHeterogeneous)) {
+                    Integer j = 1;
+                    // first dimension should encode heterogenous measurements
+                    for (TypedValues tvs2 : hnda.getTypedValues()) {
+                        line.add(j.toString());
+                        line.addAll(toStrings(tvs2,printMode));
+                        outfile.writeNext(line.toArray(new String[line.size()]),false);
+                        line.clear();
+                        j++;
+                    }
+                }
+                else {
+                    // first dimension is just values
+                    writeValues(null, Arrays.asList(dc.getSize()), tvs.getValues(), printMode, outfile);
+                }
             }
             i++;
         }
