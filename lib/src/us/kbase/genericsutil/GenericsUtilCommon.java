@@ -446,6 +446,18 @@ public class GenericsUtilCommon {
     }
 
     /**
+       helper function to turn a Oterm value into a Term
+    */
+    public static Term makeTerm(Value v) throws Exception {
+        if (!v.getScalarType().equals("oterm_ref"))
+            throw new Exception("can only turn Oterm values into Terms");
+        return new Term()
+            .withTermName(v.getStringValue())
+            .withOtermRef(v.getOtermRef())
+            .withOtermName(v.getStringValue());
+    }
+
+    /**
        helper function to make a new mapped Term from a description
     */
     public static Term mapTerm(String description) throws Exception {
@@ -1855,8 +1867,7 @@ public class GenericsUtilCommon {
     */
     public static void writeCSV(HNDArray hnda, int printMode, CSVWriter outfile) throws Exception {
         // check whether HNDArray is really heterogenous
-        int numHet = hnda.getTypedValues().size();
-        boolean isHeterogeneous = (numHet > 1);
+        boolean isHeterogeneous = isHeterogeneous(hnda);
 
         // write out common headers
         ArrayList<String> line = new ArrayList<String>();
@@ -2521,8 +2532,7 @@ public class GenericsUtilCommon {
        Convert a HNDArray to a NDArray
     */
     public static NDArray makeNDArray(HNDArray hnda) throws Exception {
-        int numHet = hnda.getTypedValues().size();
-        if (numHet > 1)
+         if (!isHeterogeneous(hnda))
             throw new Exception("Data are not in a homogeneous array; did you forget a 'values' line when importing?");
         NDArray rv = new NDArray()
             .withName(hnda.getName())
@@ -2533,6 +2543,15 @@ public class GenericsUtilCommon {
             .withDimContext(hnda.getDimContext())
             .withTypedValues(hnda.getTypedValues().get(0));
         return rv;
+    }
+
+    /**
+       test whether a HNDArray is really heterogenous, or if it's
+       save to convert to a NDArray
+    */
+    public static boolean isHeterogeneous(HNDArray hnda) throws Exception {
+        int numHet = hnda.getTypedValues().size();
+        return (numHet > 1);
     }
 
     /**
