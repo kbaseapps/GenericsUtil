@@ -1711,6 +1711,8 @@ public class GenericsUtilCommon {
     */
     public static String toString(Term t, int printMode) {
         String rv = t.getTermName();
+        if (rv==null)
+            rv = t.getOtermName();
         if ((printMode==PRINT_OREF) && (t.getOtermRef() != null))
             rv += " <"+t.getOtermRef()+">";
         return rv;
@@ -1729,6 +1731,13 @@ public class GenericsUtilCommon {
             return new Long(v.getBooleanValue()).toString();
 
         String rv = v.getStringValue();
+        if (rv==null) {
+            if (scalarType.equals("object_ref"))
+                rv = v.getObjectRef();
+            else if (scalarType.equals("oterm_ref"))
+                rv = v.getOtermRef();
+        }
+            
         if (printMode==PRINT_OREF) {
             if (scalarType.equals("object_ref"))
                 rv += " <"+v.getObjectRef()+">";
@@ -1757,6 +1766,10 @@ public class GenericsUtilCommon {
         // get correct set(s) of values
         List objects = getObjects(v);
         List refs = getRefs(v);
+
+        // only refs are available for DC-style objects
+        if (objects==null)
+            objects = refs;
 
         // print out the values
         for (int i=0; i<length; i++) {
@@ -1956,7 +1969,8 @@ public class GenericsUtilCommon {
             dLengths.remove(0);
         }
         for (TypedValues tvs : hnda.getTypedValues()) {
-            prefix++; // first dimension will print as 1, not 0
+            if (prefix != null)
+                prefix++; // first dimension will print as 1, not 0
             writeValues(prefix, dLengths, tvs.getValues(), printMode, outfile);
         }
         
