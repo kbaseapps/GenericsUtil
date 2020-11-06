@@ -451,10 +451,18 @@ public class GenericsUtilCommon {
     public static Term makeTerm(Value v) throws Exception {
         if (!v.getScalarType().equals("oterm_ref"))
             throw new Exception("can only turn Oterm values into Terms");
-        return new Term()
-            .withTermName(v.getStringValue())
-            .withOtermRef(v.getOtermRef())
-            .withOtermName(v.getStringValue());
+        Term rv = new Term()
+            .withOtermRef(v.getOtermRef());
+        String sv = v.getStringValue();
+        if (sv != null)
+            rv.setTermName(sv);
+        try {
+            sv = ontologyData.lookupOTerm(rv.getOtermRef());
+            rv.setOtermName(sv);
+        }
+        catch (Exception e) {
+        }
+        return rv;        
     }
 
     /**
@@ -1406,7 +1414,8 @@ public class GenericsUtilCommon {
                         System.out.println("mapping "+sv+" to "+dictName);
                 }
             }
-            refs.add(null);
+            else
+                refs.add(null);
         }
         if (rv) {
             if (oTerm) {
@@ -1734,8 +1743,19 @@ public class GenericsUtilCommon {
         if (rv==null) {
             if (scalarType.equals("object_ref"))
                 rv = v.getObjectRef();
-            else if (scalarType.equals("oterm_ref"))
+            else if (scalarType.equals("oterm_ref")) {
                 rv = v.getOtermRef();
+                // translate oterm back to english, if we can:
+                if (rv != null) {
+                    try {
+                        rv = ontologyData.lookupOTerm(rv);
+                    }
+                    catch (Exception e) {
+                        rv = v.getOtermRef();
+                    }
+                }
+            }
+
         }
             
         if (printMode==PRINT_OREF) {
@@ -1779,6 +1799,17 @@ public class GenericsUtilCommon {
                 for (int j=0; j<nDimensions; j++)
                     line.add(indices[j].toString());
                 String s = objects.get(i).toString();
+                if ((objects==refs) && (scalarType.equals("oterm_ref"))) {
+                    // try to translate oterm back to english
+                    if (s != null) {
+                        try {
+                            s = ontologyData.lookupOTerm(s);
+                        }
+                        catch (Exception e) {
+                            s = objects.get(i).toString();
+                        }
+                    }
+                }
                 if ((printMode==PRINT_OREF) &&
                     (refs != null) &&
                     (refs.get(i) != null))
