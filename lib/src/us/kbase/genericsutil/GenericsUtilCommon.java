@@ -2179,6 +2179,9 @@ public class GenericsUtilCommon {
                  (scalarType.equals("oterm_ref")) ||
                  (scalarType.equals("object_ref")))
             rv = v.getStringValues();
+        if ((rv==null) && ((scalarType.equals("oterm_ref")) ||
+                           (scalarType.equals("object_ref"))))
+            rv = getRefs(v); // for DC objects
         return rv;
     }
     
@@ -2247,6 +2250,8 @@ public class GenericsUtilCommon {
         Values rv = new Values().withScalarType(v.getScalarType());
         List oldObjects = getObjects(v);
         List oldRefs = getRefs(v);
+        if (oldObjects==null) // for DC objects pointing to refs or objects
+            oldObjects = oldRefs;
         int n = oldObjects.size();
 
         List newObjects = new ArrayList();
