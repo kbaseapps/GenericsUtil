@@ -2336,42 +2336,63 @@ public class GenericsUtilCommon {
     }
 
     /**
-       remove values from both X and Y axes where X or Y is null
+       remove values from multiple axes where any values are null
     */
-    public static void removeNullValues(Values valuesX, Values valuesY) throws Exception{
-        List oldVX = getObjects(valuesX);
-        List oldVY = getObjects(valuesY);
-        int n = oldVX.size();
-        if (n != oldVY.size()) {
-            System.out.println("valuesX: "+valuesX.toString());
-            System.out.println("valuesY: "+valuesY.toString());
-            throw new Exception("When removing null values, X and Y arrays must be same size; X size is "+n+" and Y size is "+oldVY.size());
-        }
-           
-        List oldRX = getRefs(valuesX);
-        List oldRY = getRefs(valuesY);
-        List newVX = new ArrayList();
-        List newVY = new ArrayList();
-        List newRX = new ArrayList();
-        List newRY = new ArrayList();
+    public static void removeNullValues(List<Values> valuesList) throws Exception{
+        int nAxes = valuesList.size();
+        
+        if (nAxes < 1)
+            return;
 
-        for (int i=0; i<n; i++) {
-            Object vx = oldVX.get(i);
-            Object vy = oldVY.get(i);
-            if ((vx != null) && (vy != null)) {
-                newVX.add(vx);
-                newVY.add(vy);
-                if (oldRX != null)
-                    newRX.add(oldRX.get(i));
-                if (oldRY != null)
-                    newRY.add(oldRY.get(i));
+        ArrayList<List> oldVList = new ArrayList<List>();
+        ArrayList<List> oldRList = new ArrayList<List>();
+        ArrayList<List> newVList = new ArrayList<List>();
+        ArrayList<List> newRList = new ArrayList<List>();
+
+        int nObjects = 0;
+        for (int i=0; i<nAxes; i++) {
+            List oldV = getObjects(valuesList.get(i));
+            oldVList.add(oldV);
+            if (i==0)
+                nObjects = oldV.size();
+            else if (nObjects != oldV.size()) {
+                throw new Exception("When removing null values, arrays must be same size; first size is "+nObjects+" and next size is "+oldV.size());
+            }
+            List oldR = getRefs(valuesList.get(i));
+            oldRList.add(oldR);
+            List newV = new ArrayList();
+            newVList.add(newV);
+            List newR = new ArrayList();
+            newRList.add(newR);
+        }
+
+        for (int i=0; i<nObjects; i++) {
+            boolean allPresent = true;
+            for (int j=0; j<nAxes; j++) {
+                List oldV = oldVList.get(j);
+                Object v = oldV.get(i);
+                if (v == null) {
+                    allPresent = false;
+                    j = nAxes;
+                }
+            }
+            if (allPresent) {
+                for (int j=0; j<nAxes; j++) {
+                    List oldV = oldVList.get(j);
+                    List newV = newVList.get(j);
+                    List oldR = oldRList.get(j);
+                    List newR = newRList.get(j);
+                    newV.add(oldV.get(i));
+                    if (oldR != null)
+                        newR.add(oldR.get(i));
+                }
             }
         }
 
-        setObjects(valuesX,newVX);
-        setObjects(valuesY,newVY);
-        setRefs(valuesX,newRX);
-        setRefs(valuesY,newRY);
+        for (int i=0; i<nAxes; i++) {
+            setObjects(valuesList.get(i),newVList.get(i));
+            setRefs(valuesList.get(i),newRList.get(i));
+        }        
     }
 
     /**
