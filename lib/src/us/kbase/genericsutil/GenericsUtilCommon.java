@@ -12,6 +12,7 @@ import us.kbase.kbasegenerics.*;
 
 import org.strbio.IO;
 import org.strbio.io.*;
+import org.strbio.math.*;
 import org.strbio.util.*;
 import com.fasterxml.jackson.databind.*;
 
@@ -1676,7 +1677,7 @@ public class GenericsUtilCommon {
                         firstHomogeneousDimension = 1;
                         curValues = hnda.getTypedValues().get((int)(indices[0])-1).getValues();
                     }
-                    // use row major order to find real index:
+                    // use row major order (C-style) to find real index:
                     index = 0L;
                     for (int i=firstHomogeneousDimension; i<dLengths.length; i++) {
                         long k = 1L;
@@ -2292,7 +2293,6 @@ public class GenericsUtilCommon {
         List newRefs = new ArrayList();
         int nDimensions = dLengths.size();
         int length = 1;
-        ArrayList<String> line = new ArrayList<String>();
         Long[] indices = new Long[nDimensions];
         for (int i=0; i<nDimensions; i++) {
             indices[i] = new Long(1L);
@@ -2331,6 +2331,99 @@ public class GenericsUtilCommon {
         // save in new object
         setObjects(rv,newV);
         setRefs(rv,newRefs);
+
+        return rv;
+    }
+
+    /**
+       return a Values object with one or more dimensions
+       reduced by replacing with an average and standard deviation.
+       If Values are a string/oref type, throws error.
+       Null values in input are not considered in the calculation.
+       SD of one or fewer values is calculated as null.
+       Average/SD is effectively the last dimension in the
+       returned object; i.e., average and sd are stored adjacent
+       to each other in the returned values.
+    */
+    public static Values averageSDValues(Values v,
+                                         List<Long> dLengths,
+                                         List<Boolean> avgIndices) {
+        String scalarType = v.getScalarType();
+        if ((scalarType.equals("string")) ||
+            (scalarType.equals("oterm_ref")) ||
+            (scalarType.equals("object_ref")))
+            throw new IllegalArgumentException("Input values to averageSD must have numeric type");
+
+        Values rv = new Values().withScalarType("float");
+        List oldV = getObjects(v);
+
+        // calculate length of values before and after averaging, and
+        // set up array of DVectors with the number of avgs and sds to return
+        ArrayList<DVector> numbersToAverage = new ArrayList<DVector>();
+        int nDimensions = dLengths.size();
+        int startLength = 1; // before averaging anything
+        int endLength = 1; // matrix size after averaging
+        Long[] indices = new Long[nDimensions];
+        for (int i=0; i<nDimensions; i++) {
+            indices[i] = new Long(1L);
+            startLength *= (int)(dLengths.get(i).longValue());
+            if (!avgIndices.get(i))
+                endLength *= (int)(dLengths.get(i).longValue());
+        }
+        for (int i=0; i<endLength; i++)
+            numbersToAverage.add(new DVector());
+
+        // loop over array to put the right data into the dvectors
+        DVector dv = new DVector(1);
+        for (int i=0; i<startLength; i++) {
+            // calculate which place this will be in the final
+            // vector
+            int endIndex = 0;
+            for (int j=0; j<nDimensions; j++) {
+                if (!avgIndices.get(j)) {
+                    int l = 1;
+                    for (int k=j+1; k<nDimensions; k++)
+                        l *= (int)(dLengths.get(k).longValue());
+                    endIndex += (indices[j]-1) * l;
+                }
+            }
+
+            // append value to end of DVector, if not null
+            Object val = oldV.get(i);
+            if (val != null) {
+                if (val instanceof Boolean)
+                    dv.data[0] = (((Boolean)val).booleanValue() ? 1.0 : 0.0);
+                else
+                    dv.data[0] = (((Number)val).doubleValue());
+                numbersToAverage.get(endIndex).append(dv);
+            }
+
+            // increment all indices
+            if (i<startLength-1) {
+                indices[nDimensions-1]++;
+                for (int j=nDimensions-1; j>=0; j--) {
+                    if (indices[j] > dLengths.get(j)) {
+                        indices[j] = new Long(1L);
+                        indices[j-1]++;
+                    }
+                }
+            }
+        }
+
+        // calculate all avg and sd, then save in new object
+        List<Double> newV = new ArrayList<Double>();
+        for (int i=0; i<endLength; i++) {
+            dv = numbersToAverage.get(i);
+            Double avg = null;
+            Double sd = null;
+            if (dv.data.length > 0)
+                avg = new Double(dv.average());
+            if (dv.data.length > 1)
+                sd = new Double(dv.stdev());
+            newV.add(avg);
+            newV.add(sd);
+        }
+        setObjects(rv,newV);
 
         return rv;
     }
