@@ -2386,10 +2386,14 @@ public class GenericsUtilCommon {
                 if (!avgIndices.get(j)) {
                     int l = 1;
                     for (int k=j+1; k<nDimensions; k++)
-                        l *= (int)(dLengths.get(k).longValue());
+                        if (!avgIndices.get(k))
+                            l *= (int)(dLengths.get(k).longValue());
                     endIndex += (indices[j]-1) * l;
                 }
             }
+
+            // System.err.println("averaging, i="+i);
+            // System.err.println("endindex="+endIndex);
 
             // append value to end of DVector, if not null
             Object val = oldV.get(i);
