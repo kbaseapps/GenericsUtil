@@ -2370,8 +2370,11 @@ public class GenericsUtilCommon {
             if (!avgIndices.get(i))
                 endLength *= (int)(dLengths.get(i).longValue());
         }
-        for (int i=0; i<endLength; i++)
-            numbersToAverage.add(new DVector());
+        for (int i=0; i<endLength; i++) {
+            DVector dv = new DVector();
+            dv.data = new double[0];
+            numbersToAverage.add(dv);
+        }
 
         // loop over array to put the right data into the dvectors
         DVector dv = new DVector(1);
