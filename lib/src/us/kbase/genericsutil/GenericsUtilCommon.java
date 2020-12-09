@@ -2253,6 +2253,8 @@ public class GenericsUtilCommon {
         List oldRefs = getRefs(v);
         if (oldObjects==null) // for DC objects pointing to refs or objects
             oldObjects = oldRefs;
+        if (oldObjects==null)
+            throw new IllegalArgumentException("Values have null objects; scalar type is "+v.getScalarType());
         int n = oldObjects.size();
 
         List newObjects = new ArrayList();
@@ -2513,6 +2515,7 @@ public class GenericsUtilCommon {
             throw new Exception("to find unique index for dimension, must fix all value indices");
         for (int i=0; i<nIndices; i++) {
             Values v = tvs.get(i).getValues();
+            // System.err.println("checking "+toString(tvs.get(i).getValueType(),PRINT_BRIEF));
             Values uv = findUniqueValues(v);
             String scalarType = v.getScalarType();
 
@@ -2559,6 +2562,7 @@ public class GenericsUtilCommon {
 
         for (int i=0; i<nIndices; i++) {
             Values v = tvs.get(i).getValues();
+            // System.err.println("checking "+toString(tvs.get(i).getValueType(),PRINT_BRIEF));
             Values uv = findUniqueValues(v);
             String scalarType = v.getScalarType();
             objects.add(getObjects(v));
