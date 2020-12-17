@@ -2283,8 +2283,8 @@ public class GenericsUtilCommon {
        indices should be set to the 1-based index to fix.
     */
     public static Values fixValues(Values v,
-                                   List<Long> dLengths,
-                                   List<Long> fixedIndices) {
+                                   ArrayList<Long> dLengths,
+                                   ArrayList<HashSet<Long>> fixedIndices) {
         Values rv = new Values().withScalarType(v.getScalarType());
         List oldV = getObjects(v);
         List oldRefs = getRefs(v);
@@ -2309,7 +2309,7 @@ public class GenericsUtilCommon {
             boolean keep = true;
             for (int j=0; j<nDimensions; j++)
                 if ((fixedIndices.get(j) != null) &&
-                    (!fixedIndices.get(j).equals(indices[j]))) {
+                    (!fixedIndices.get(j).contains(indices[j]))) {
                     keep = false;
                     j = nDimensions;
                 }
@@ -2498,11 +2498,13 @@ public class GenericsUtilCommon {
     }
 
     /**
-       Find the index in a dimension that matches a combination
-       of unique value indices.  All values are 1-based.
+       Find the indices in a dimension that matches a combination
+       of unique value indices.  All values are 1-based.  If not
+       all indices are specified (i.e., some are null), then
+       multiple indices will be returned.
     */
-    public static Long mergeUniqueIndices(DimensionContext dc,
-                                          List<Long> valueIndices) throws Exception {
+    public static HashSet<Long> mergeUniqueIndices(DimensionContext dc,
+                                                   List<Long> valueIndices) throws Exception {
         // kepp list of possible answers
         HashSet<Long> remainingIndices = new HashSet<Long>();
         int dLength = (int)(dc.getSize().longValue());
@@ -2512,38 +2514,36 @@ public class GenericsUtilCommon {
         List<TypedValues> tvs = dc.getTypedValues();
         int nIndices = tvs.size();
         if (nIndices != valueIndices.size())
-            throw new Exception("to find unique index for dimension, must fix all value indices");
+            throw new Exception("to find unique indices for dimension, must fix all value indices, or explicitly mark them null");
         for (int i=0; i<nIndices; i++) {
-            Values v = tvs.get(i).getValues();
-            // System.err.println("checking "+toString(tvs.get(i).getValueType(),PRINT_BRIEF));
-            Values uv = findUniqueValues(v);
-            String scalarType = v.getScalarType();
+            if (valueIndices.get(i) != null) { // skip if not fixing this index
+                Values v = tvs.get(i).getValues();
+                // System.err.println("checking "+toString(tvs.get(i).getValueType(),PRINT_BRIEF));
+                Values uv = findUniqueValues(v);
+                String scalarType = v.getScalarType();
 
-            List objects = getObjects(v);
-            List uniqueObjects = getObjects(uv);
+                List objects = getObjects(v);
+                List uniqueObjects = getObjects(uv);
             
-            for (int j=0; j<dLength; j++) {
-                if (!remainingIndices.contains(new Long(j+1)))
-                    continue;
+                for (int j=0; j<dLength; j++) {
+                    if (!remainingIndices.contains(new Long(j+1)))
+                        continue;
                     
-                Object o = objects.get(j);
-                Object uo = uniqueObjects.get((int)(valueIndices.get(i).longValue())-1);
-                if (o==null) {
-                    if (uo != null)
-                        remainingIndices.remove(new Long(j+1));
-                    continue;
-                }
+                    Object o = objects.get(j);
+                    Object uo = uniqueObjects.get((int)(valueIndices.get(i).longValue())-1);
+                    if (o==null) {
+                        if (uo != null)
+                            remainingIndices.remove(new Long(j+1));
+                        continue;
+                    }
 
-                if (!o.equals(uo))
-                    remainingIndices.remove(new Long(j+1));
+                    if (!o.equals(uo))
+                        remainingIndices.remove(new Long(j+1));
+                }
             }
         }
 
-        // make sure there is ony one answer
-        if (remainingIndices.size() != 1)
-            throw new Exception("Error - unique indices not found for dimension");
-        List<Long> list = new ArrayList<Long>(remainingIndices);
-        return list.get(0);
+        return remainingIndices;
     }
 
     /**
