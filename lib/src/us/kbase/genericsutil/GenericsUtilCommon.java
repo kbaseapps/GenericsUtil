@@ -2302,6 +2302,27 @@ public class GenericsUtilCommon {
     }
 
     /**
+       return a Values object that only includes unique
+       values from another object
+    */
+    public static boolean hasUniqueValues(Values v) {
+        Values rv = new Values().withScalarType(v.getScalarType());
+        List oldObjects = getObjects(v);
+        List oldRefs = getRefs(v);
+        if (oldObjects==null) // for DC objects pointing to refs or objects
+            oldObjects = oldRefs;
+        if (oldObjects==null)
+            throw new IllegalArgumentException("Values have null objects; scalar type is "+v.getScalarType());
+        int n = oldObjects.size();
+
+        Values uv = findUniqueValues(v);
+        List newObjects = getObjects(uv);
+        int un = newObjects.size();
+
+        return (n==un);
+    }
+    
+    /**
        return a Values object with one or more dimensions
        fixed.  Non-fixed indices should be left null, and fixed
        indices should be set to the 1-based index to fix.
@@ -2610,6 +2631,34 @@ public class GenericsUtilCommon {
         return true;
     }
 
+    /**
+       checks whether a dimension has pseudo-dimensions, where
+       a combination of each variable's unique indices specifies
+       each index in the dimension.
+    */
+    public static boolean hasPseudoDimensions(DimensionContext dc) {
+        if (!hasUniqueSubindices(dc))
+            return false;
+        
+        int dLength = (int)(dc.getSize().longValue());
+        List<TypedValues> tvs = dc.getTypedValues();
+        int nIndices = tvs.size();
+
+        int expectedDLength = 1;
+
+        for (int i=0; i<nIndices; i++) {
+            Values v = tvs.get(i).getValues();
+            Values uv = findUniqueValues(v);
+            int nUnique = getObjects(uv).size();
+            expectedDLength *= nUnique;
+        }
+
+        if (dLength == expectedDLength)
+            return true;
+        else
+            return false;
+    }
+    
     /**
        update a Values object from String to ObjectRef, check refs
     */
