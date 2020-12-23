@@ -2127,7 +2127,31 @@ public class GenericsUtilCommon {
             v.setStringValues(sv);
         }
         // refs and orefs are already stored in strings,
-        // so no need to change those
+        // so usually no need to change those.  Look them up
+        // if they're not already there
+        List<String> sv = v.getStringValues();
+        if (sv == null) {
+            List<String> refs = getRefs(v);
+            if (scalarType.equals("object_ref"))
+                sv = new ArrayList<String>(refs);
+            else {
+                int l = refs.size();
+                sv = new ArrayList<String>(l);
+                for (int i=0; i<l; i++) {
+                    String s = refs.get(i);
+                    if (s != null) {
+                        try {
+                            s = ontologyData.lookupOTerm(s);
+                        }
+                        catch (Exception e) {
+                            s = refs.get(i);
+                        }
+                    }
+                    sv.add(s);
+                }
+            }
+            v.setStringValues(sv);
+        }
         v.setScalarType("string");
     }
 
