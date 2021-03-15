@@ -341,6 +341,8 @@ public class GenericsUtilCommon {
         public boolean matches(String ref, String term) throws Exception {
             term = term.toLowerCase();
             String match = oTermToString.get(ref);
+            if (match == null)
+                throw new Exception("Unknown term ID "+ref);
             // System.out.println("debug5: "+ref+" "+term+" "+match);
             if (match.toLowerCase().equals(term))
                 return true;
