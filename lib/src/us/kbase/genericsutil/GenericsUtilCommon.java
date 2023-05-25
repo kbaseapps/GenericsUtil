@@ -94,11 +94,25 @@ public class GenericsUtilCommon {
            map of ontology term ids to (direct, is_a) parents
         */
         public HashMap<String,List<String>> oTermToParents;
+
+        /**
+           true if no key contains a comma followed by a space
+        */
+        private boolean isCommaSafe;
+
+        /**
+           true if no key contains a semicolon followed by a space
+        */
+        private boolean isSemicolonSafe;
         
         /**
            map a term
         */
         private void mapStringToOTerm(String key, String oTerm) {
+            if (key.indexOf(", ") > -1)
+                isCommaSafe = false;
+            if (key.indexOf("; ") > -1)
+                isSemicolonSafe = false;
             List<String> terms = stringToOTerms.get(key);
             if (terms == null) {
                 terms = new ArrayList<String>();
@@ -363,7 +377,15 @@ public class GenericsUtilCommon {
             }
             return false;
         }
-        
+
+        public boolean isCommaSafe() {
+            return isCommaSafe;
+        }
+
+        public boolean isSemicolonSafe() {
+            return isSemicolonSafe;
+        }
+
         public OntologyData2() {
             oTermToString = new HashMap<String,String>();
             oTermToDataType = new HashMap<String,String>();
@@ -376,6 +398,8 @@ public class GenericsUtilCommon {
             validDimensionVars = new HashSet<String>();
             oTermToValidUnits = new HashMap<String,List<String>>();
             oTermToValidUnitsParents = new HashMap<String,List<String>>();
+            isCommaSafe = true;
+            isSemicolonSafe = true;
         }
     }
 
@@ -674,9 +698,9 @@ public class GenericsUtilCommon {
             .withOtermRefs(oTerms)
             .withStringValues(descriptions);
     }
-    
+
     /**
-       map typed value
+       Map description into typed value.  Looks for units in parentheses, if applicable
     */
     public static TypedValue mapTV(String description) throws Exception {
         int pos = description.indexOf("=");
@@ -724,6 +748,34 @@ public class GenericsUtilCommon {
             rv.setValue(mapValueUnder(value, parentORef));
         }
 
+        return rv;
+    }
+
+    /**
+       map description into a list of TypedValue objects.  Splits on commas with spaces after them.
+    */
+    public static ArrayList<TypedValue> mapTVList(String description) throws Exception {
+        // do warning instead when mapping in other direction:
+        // if (!ontologyData.isCommaSafe())
+        // throw new Exception("Error - ontology is not comma-safe");
+        ArrayList<TypedValue> rv = new ArrayList<TypedValue>();
+        for (String d : description.split(", ")) {
+            rv.add(mapTV(d));
+        }
+        return rv;
+    }
+
+    /**
+       map description into a list of lists of TypedValue objects.  Splits on semicolons with spaces after then, then re-splits on commas with spaces after them.
+    */
+    public static ArrayList<ArrayList<TypedValue>> mapTVListList(String description) throws Exception {
+        // do warning instead when mapping in other direction:
+        // if (!ontologyData.isSemicolonSafe())
+        // throw new Exception("Error - ontology is not semicolon-safe");
+        ArrayList<ArrayList<TypedValue>> rv = new ArrayList<ArrayList<TypedValue>>();
+        for (String d : description.split("; ")) {
+            rv.add(mapTVList(d));
+        }
         return rv;
     }
     
@@ -1868,6 +1920,52 @@ public class GenericsUtilCommon {
                 rv += ", "+toString(t,printMode);
             else
                 rv += " ("+toString(t,printMode)+")";
+        }
+        return rv;
+    }
+
+    /**
+       make a list of TypedValue objects (including the values) into
+       a single descriptive string, separated by commas.  Throws
+       error if printMode is PRINT_BRIEF, since reverse parsing will
+       be ambiguous.  Throws error if any of the objects have commas
+       in the names.
+    */
+    public static String toString(List<TypedValue> tvl, int printMode) {
+        if (printMode==PRINT_BRIEF)
+            throw new IllegalArgumentException("printMode cannot be PRINT_BRIEF when printing lists of TypedValue objects");
+        String rv = null;
+        for (TypedValue tv : tvl) {
+            String s = toString(tv, printMode);
+            if (s.indexOf(',') > -1)
+                throw new IllegalArgumentException("list of TypedValue objects cannot be parsed because term '"+s+"' contains a comma");
+            if (rv==null)
+                rv = s;
+            else
+                rv += ", "+s;
+        }
+        return rv;
+    }
+
+    /**
+       make a list of lists of TypedValue objects (including the values) into
+       a single descriptive string, with the outer list separated by
+       semicolons and the inner list separated by commas.  Throws
+       error if printMode is PRINT_BRIEF, since reverse parsing will
+       be ambiguous.
+    */
+    public static String toStringLL(List<List<TypedValue>> tvll, int printMode) {
+        if (printMode==PRINT_BRIEF)
+            throw new IllegalArgumentException("printMode cannot be PRINT_BRIEF when printing lists of TypedValue objects");
+        String rv = null;
+        for (List<TypedValue> tvl : tvll) {
+            String s = toString(tvl, printMode);
+            if (s.indexOf(',') > -1)
+                throw new IllegalArgumentException("list of lists of TypedValue objects cannot be parsed because list '"+s+"' contains a semicolon");
+            if (rv==null)
+                rv = s;
+            else
+                rv += "; "+s;
         }
         return rv;
     }
