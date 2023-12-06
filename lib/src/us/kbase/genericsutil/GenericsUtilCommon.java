@@ -1960,7 +1960,7 @@ public class GenericsUtilCommon {
         String rv = null;
         for (List<TypedValue> tvl : tvll) {
             String s = toString(tvl, printMode);
-            if (s.indexOf(',') > -1)
+            if (s.indexOf(';') > -1)
                 throw new IllegalArgumentException("list of lists of TypedValue objects cannot be parsed because list '"+s+"' contains a semicolon");
             if (rv==null)
                 rv = s;
